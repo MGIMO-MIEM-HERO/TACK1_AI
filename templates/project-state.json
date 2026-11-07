@@ -1,0 +1,19 @@
+{
+  "project_id": "replace-with-stable-id",
+  "title": "",
+  "updated_at": "YYYY-MM-DD",
+  "objective": "",
+  "decision_owner": "",
+  "stage": "intake",
+  "constraints": [],
+  "sources": [],
+  "evidence": [],
+  "research_questions": [],
+  "options": [],
+  "chosen_option_id": null,
+  "commitments": [],
+  "unresolved_questions": [],
+  "next_action": "",
+  "path_base": "project",
+  "checkpoints": []
+}

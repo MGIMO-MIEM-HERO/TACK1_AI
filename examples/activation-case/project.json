@@ -1,0 +1,314 @@
+{
+  "project_id": "demo-activation-message-2026-11",
+  "title": "Синтетический тест объясняющего приветственного сообщения",
+  "updated_at": "2026-11-07",
+  "objective": "Подготовить решение о следующем исследовании для улучшения первой активации в вымышленном цифровом сервисе.",
+  "decision_owner": "Руководитель продукта (роль в демо)",
+  "stage": "options",
+  "constraints": [
+    "Все данные и продукт вымышлены и синтетические.",
+    "Демо не относится к реальным клиентам или системам МегаФона.",
+    "Не называть наблюдательные различия по устройству или каналу причинным эффектом.",
+    "Окончательное продуктовое решение принимает человек."
+  ],
+  "sources": [
+    {
+      "source_id": "GENERATOR",
+      "kind": "synthetic",
+      "title": "Synthetic deterministic generator for activation case",
+      "url_or_path": "scripts/generate_demo.py",
+      "published_at": null,
+      "accessed_at": "2026-11-07",
+      "scope": "Synthetic data simulation; 1,200 fictional users, assigned A/B welcome-message variant, events, outcomes and support contacts.",
+      "limitations": "Designed to demonstrate the workflow and contains simulated relationships. No external validity; not evidence about actual demand, behavior or Megafon customers."
+    },
+    {
+      "source_id": "USERS",
+      "kind": "synthetic",
+      "title": "Synthetic user-level assignment and profile table",
+      "url_or_path": "examples/activation-case/inputs/users.csv",
+      "published_at": null,
+      "accessed_at": "2026-11-07",
+      "scope": "One record per fictional user; variant, device, acquisition channel, plan and join time.",
+      "limitations": "Simulation only. The randomized assignment exists only in the generated demo."
+    },
+    {
+      "source_id": "OUTCOMES",
+      "kind": "synthetic",
+      "title": "Synthetic user-level outcome table",
+      "url_or_path": "examples/activation-case/inputs/outcomes.csv",
+      "published_at": null,
+      "accessed_at": "2026-11-07",
+      "scope": "One record per fictional user; 24-hour activation, day-7 return, support contact and refund indicators.",
+      "limitations": "Simulation only. The metrics are not observed product performance."
+    },
+    {
+      "source_id": "EVENTS",
+      "kind": "synthetic",
+      "title": "Synthetic product path events",
+      "url_or_path": "examples/activation-case/inputs/events.csv",
+      "published_at": null,
+      "accessed_at": "2026-11-07",
+      "scope": "Event records by fictional user and session for offer view, activation and return journey.",
+      "limitations": "Simulation only; event coverage and timings are generated, not instrumented from a real product."
+    },
+    {
+      "source_id": "SUPPORT",
+      "kind": "synthetic",
+      "title": "Synthetic support ticket table",
+      "url_or_path": "examples/activation-case/inputs/support.csv",
+      "published_at": null,
+      "accessed_at": "2026-11-07",
+      "scope": "Zero or one synthetic ticket per fictional user, with topic and resolution details.",
+      "limitations": "Simulation only; ticket topics and volumes are not representative of any real service."
+    },
+    {
+      "source_id": "ANALYSIS",
+      "kind": "tool_output",
+      "title": "Reproducible synthetic experiment analysis",
+      "url_or_path": "examples/activation-case/outputs/analysis.json",
+      "published_at": null,
+      "accessed_at": "2026-11-07",
+      "scope": "User-level metrics, Wilson intervals, Newcombe difference intervals, event funnel and descriptive segments.",
+      "limitations": "Output is only as representative as synthetic inputs. No p-values, FDR or production launch decision."
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "E-001",
+      "claim": "The synthetic demonstration assigns a welcome-message variant at the fictional user level using a fixed random seed.",
+      "claim_type": "source_fact",
+      "source_ids": [
+        "GENERATOR",
+        "USERS"
+      ],
+      "method": "Code and generated CSV inspection; not a real-world randomized experiment.",
+      "sample_n": 1200,
+      "effect": null,
+      "interval": null,
+      "p_value": null,
+      "q_value": null,
+      "status": "provisional",
+      "limitations": "Synthetic assignment and simulated outcomes do not establish the effect of a real message or product change.",
+      "related_evidence_ids": []
+    },
+    {
+      "evidence_id": "E-002",
+      "claim": "In the synthetic run, variant B activation is 5.3 percentage points above A; the approximate 95% Newcombe interval ranges from about -0.2 to +10.8 percentage points.",
+      "claim_type": "measured_fact",
+      "source_ids": [
+        "OUTCOMES",
+        "ANALYSIS"
+      ],
+      "method": "Difference of user-level proportions with a Newcombe hybrid score interval formed from Wilson intervals.",
+      "sample_n": 1200,
+      "effect": 0.05317206754906434,
+      "interval": [
+        -0.0023169876221686703,
+        0.10831461803236167
+      ],
+      "p_value": null,
+      "q_value": null,
+      "status": "provisional",
+      "limitations": "Synthetic simulation only. The interval includes zero, and this result says nothing about a real product or market.",
+      "related_evidence_ids": [
+        "E-001"
+      ]
+    },
+    {
+      "evidence_id": "E-003",
+      "claim": "In the synthetic run, the support-contact rate point estimate for B is 2.2 percentage points above A, with an approximate 95% interval from -0.6 to +5.2 percentage points.",
+      "claim_type": "measured_fact",
+      "source_ids": [
+        "OUTCOMES",
+        "SUPPORT",
+        "ANALYSIS"
+      ],
+      "method": "User-level support-contact proportions; contacts are aggregated to one boolean outcome per user before the arm comparison.",
+      "sample_n": 1200,
+      "effect": 0.022486669412563588,
+      "interval": [
+        -0.00592313151379394,
+        0.05178225994893811
+      ],
+      "p_value": null,
+      "q_value": null,
+      "status": "provisional",
+      "limitations": "Synthetic simulation only. The interval is wide and crosses zero; no claim of a real harm or benefit is warranted.",
+      "related_evidence_ids": [
+        "E-001"
+      ]
+    }
+  ],
+  "research_questions": [
+    {
+      "question_id": "RQ-1",
+      "question": "Does the generated B message increase 24-hour activation relative to A in the simulated dataset?",
+      "could_change": "Whether the demo should pass a mechanical gate for human review.",
+      "source_ids": [
+        "USERS",
+        "OUTCOMES",
+        "ANALYSIS"
+      ]
+    },
+    {
+      "question_id": "RQ-2",
+      "question": "Do support contact or refund point estimates exceed the demo guardrails?",
+      "could_change": "Whether the demo recommends additional investigation before advancing the message variant.",
+      "source_ids": [
+        "OUTCOMES",
+        "ANALYSIS"
+      ]
+    },
+    {
+      "question_id": "RQ-3",
+      "question": "At which step do users leave the simulated activation path, and which segments merit a real follow-up study?",
+      "could_change": "Which next research or product instrumentation step should be proposed.",
+      "source_ids": [
+        "EVENTS",
+        "USERS",
+        "ANALYSIS"
+      ]
+    }
+  ],
+  "options": [
+    {
+      "option_id": "O-0",
+      "title": "Оставить приветственный сценарий без изменений",
+      "benefits": [
+        "Не требует реализации или дополнительного трафика."
+      ],
+      "costs_and_risks": [
+        "Если понятность сообщения — реальный барьер, он останется."
+      ],
+      "objection": "У нас нет реальных пользовательских данных, позволяющих оценить масштаб проблемы.",
+      "evidence_ids": [
+        "E-001",
+        "E-002",
+        "E-003"
+      ]
+    },
+    {
+      "option_id": "O-1",
+      "title": "Проверить более ясное сообщение в контролируемом пилоте",
+      "benefits": [
+        "Небольшой, измеримый тест может проверить близкую к изменению метрику."
+      ],
+      "costs_and_risks": [
+        "Нужно проверить реальную формулировку, инструментирование и защитные показатели."
+      ],
+      "objection": "Синтетический результат не является основанием для запуска реальной кампании.",
+      "evidence_ids": [
+        "E-001",
+        "E-002",
+        "E-003"
+      ]
+    },
+    {
+      "option_id": "O-2",
+      "title": "Сначала исследовать барьеры активации и проверить технический путь",
+      "benefits": [
+        "Может выявить продуктовую или техническую причину, которую текст не устранит."
+      ],
+      "costs_and_risks": [
+        "Увеличивает время до тестирования коммуникации."
+      ],
+      "objection": "Если проблема действительно в понимании предложения, исследование может отложить недорогую проверку.",
+      "evidence_ids": [
+        "E-001",
+        "E-002",
+        "E-003"
+      ]
+    },
+    {
+      "option_id": "O-3",
+      "title": "Заморозить направление до появления реальных оснований",
+      "benefits": [
+        "Не создаёт впечатления, что симуляция подтверждает спрос."
+      ],
+      "costs_and_risks": [
+        "Откладывает продуктовую возможность, если реальная потребность существует."
+      ],
+      "objection": "Данных может быть возможно собрать с небольшим объёмом риска и затрат.",
+      "evidence_ids": [
+        "E-001",
+        "E-002",
+        "E-003"
+      ]
+    }
+  ],
+  "chosen_option_id": null,
+  "commitments": [],
+  "unresolved_questions": [
+    "Какова реальная целевая аудитория и какая задача ценна для неё?",
+    "Какой официальный демонстрационный бриф опубликует МегаФон?",
+    "Какие реальные метрики и ограничения станут доступны в разрешённых открытых материалах?"
+  ],
+  "next_action": "Сравнить варианты O-0–O-3 с владельцем решения и согласовать следующий исследовательский шаг.",
+  "checkpoints": [
+    {
+      "at": "2026-11-07T14:18:04+00:00",
+      "stage": "options",
+      "summary": "Готовы расчёты и черновик сравнения вариантов.",
+      "next_action": "Сравнить варианты O-0–O-3 с владельцем решения и согласовать следующий исследовательский шаг.",
+      "sources": {
+        "GENERATOR": {
+          "location": "scripts/generate_demo.py",
+          "fingerprint": "aea7aeaa42748ef7a8b0db16d9b34423e79ff33287abc12d46cce238fb70cd5e"
+        },
+        "USERS": {
+          "location": "examples/activation-case/inputs/users.csv",
+          "fingerprint": "f283eeb9a132958dbcf3b79433b33bec7ef471a05580cdcf4ee4c9b984919911"
+        },
+        "OUTCOMES": {
+          "location": "examples/activation-case/inputs/outcomes.csv",
+          "fingerprint": "9d65bec59d92d48a0b3461751839af8f05a96c6f03e3b082a8d7cdd22b0b78e1"
+        },
+        "EVENTS": {
+          "location": "examples/activation-case/inputs/events.csv",
+          "fingerprint": "c42d2090e228a80426472e5134337af194a1c1dc7e16c1517cf4485ed04080a2"
+        },
+        "SUPPORT": {
+          "location": "examples/activation-case/inputs/support.csv",
+          "fingerprint": "8f1f1c6aef975f2c5cc9dd740e0a9a8bfbd087da379009218d4e6e87d9e6bc75"
+        },
+        "ANALYSIS": {
+          "location": "examples/activation-case/outputs/analysis.json",
+          "fingerprint": "5bb29548b83fe2ae64ca68bf364b5168b6f6b0607f60ee9439f7510d10a2c334"
+        }
+      }
+    },
+    {
+      "at": "2026-11-07T14:18:51+00:00",
+      "stage": "options",
+      "summary": "Демо сохранено в переносимом формате CSV.",
+      "next_action": "Сравнить варианты O-0–O-3 с владельцем решения и согласовать следующий исследовательский шаг.",
+      "sources": {
+        "GENERATOR": {
+          "location": "scripts/generate_demo.py",
+          "fingerprint": "8bee3e1f9019d39825931759f60d89400093001b983874ae86a0722501f816df"
+        },
+        "USERS": {
+          "location": "examples/activation-case/inputs/users.csv",
+          "fingerprint": "b6a1530518b46775536a94a71a767bb0ea298fc73f6e774db1d6349eac3ce322"
+        },
+        "OUTCOMES": {
+          "location": "examples/activation-case/inputs/outcomes.csv",
+          "fingerprint": "bd181a40dd08eb7fe10843414da32b5ed68f39cc239ad844ba416365bbce23e3"
+        },
+        "EVENTS": {
+          "location": "examples/activation-case/inputs/events.csv",
+          "fingerprint": "23864d6f141b133b81d4b6a28c9248372dd895e56026232d3b88490acdcab7cc"
+        },
+        "SUPPORT": {
+          "location": "examples/activation-case/inputs/support.csv",
+          "fingerprint": "aa1f7114014b864741dde507c378366fd860fa489bd55e5a65ad2ef138b32162"
+        },
+        "ANALYSIS": {
+          "location": "examples/activation-case/outputs/analysis.json",
+          "fingerprint": "5bb29548b83fe2ae64ca68bf364b5168b6f6b0607f60ee9439f7510d10a2c334"
+        }
+      }
+    }
+  ]
+}

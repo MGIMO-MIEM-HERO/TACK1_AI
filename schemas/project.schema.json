@@ -1,0 +1,312 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/megafon/project.schema.json",
+  "title": "Контур решения project state",
+  "type": "object",
+  "required": [
+    "project_id",
+    "title",
+    "updated_at",
+    "objective",
+    "stage",
+    "sources",
+    "evidence",
+    "options",
+    "next_action"
+  ],
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title": {
+      "type": "string"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date"
+    },
+    "objective": {
+      "type": "string"
+    },
+    "decision_owner": {
+      "type": "string"
+    },
+    "stage": {
+      "enum": [
+        "intake",
+        "research_plan",
+        "research",
+        "synthesis",
+        "options",
+        "strategy",
+        "validation",
+        "follow_up",
+        "blocked",
+        "complete"
+      ]
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/source"
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidence"
+      }
+    },
+    "research_questions": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "options": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/option"
+      }
+    },
+    "chosen_option_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "commitments": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "unresolved_questions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "next_action": {
+      "type": "string"
+    },
+    "path_base": {
+      "enum": [
+        "project",
+        "repository"
+      ]
+    },
+    "checkpoints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "at",
+          "stage",
+          "summary",
+          "next_action",
+          "sources"
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "required": [
+        "source_id",
+        "kind",
+        "title",
+        "url_or_path",
+        "accessed_at",
+        "scope",
+        "limitations"
+      ],
+      "properties": {
+        "source_id": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "document",
+            "table",
+            "website",
+            "interview",
+            "synthetic",
+            "tool_output"
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "url_or_path": {
+          "type": "string"
+        },
+        "published_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "accessed_at": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "limitations": {
+          "type": "string"
+        },
+        "snapshot_path": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "evidence_id",
+        "claim",
+        "claim_type",
+        "source_ids",
+        "method",
+        "status",
+        "limitations"
+      ],
+      "properties": {
+        "evidence_id": {
+          "type": "string"
+        },
+        "claim": {
+          "type": "string"
+        },
+        "claim_type": {
+          "enum": [
+            "source_fact",
+            "measured_fact",
+            "association",
+            "qualitative_signal",
+            "hypothesis",
+            "forecast",
+            "decision"
+          ]
+        },
+        "source_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "method": {
+          "type": "string"
+        },
+        "sample_n": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "effect": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "interval": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "p_value": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "q_value": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "status": {
+          "enum": [
+            "provisional",
+            "corroborated",
+            "contradicted",
+            "stale",
+            "withdrawn"
+          ]
+        },
+        "limitations": {
+          "type": "string"
+        },
+        "related_evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "option": {
+      "type": "object",
+      "required": [
+        "option_id",
+        "title",
+        "benefits",
+        "costs_and_risks",
+        "objection",
+        "evidence_ids"
+      ],
+      "properties": {
+        "option_id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "benefits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "costs_and_risks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "objection": {
+          "type": "string"
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

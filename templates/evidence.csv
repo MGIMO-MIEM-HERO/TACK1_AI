@@ -1,0 +1,1 @@
+evidence_id,claim,claim_type,source_id,source_url_or_path,observed_at,excerpt_or_method,sample_n,effect,interval_low,interval_high,p_value,q_value,limitations,status,related_evidence_ids

@@ -1,0 +1,351 @@
+{
+  "case": "synthetic_onboarding_message_experiment",
+  "created_by": "scripts/analyze_experiment.py",
+  "synthetic_only": true,
+  "unit_of_analysis": "unique user; support contacts aggregated to user before comparison",
+  "data_quality": {
+    "users_rows": 1200,
+    "outcome_rows": 1200,
+    "unique_users": 1200,
+    "duplicate_user_ids": 0,
+    "duplicate_outcome_user_ids": 0,
+    "users_without_outcome": 0,
+    "outcomes_without_user": 0,
+    "events_without_user": 0,
+    "support_without_user": 0,
+    "support_ticket_rows": 80,
+    "joined_user_level_before_support": true
+  },
+  "allocation": {
+    "counts": {
+      "A": 626,
+      "B": 574
+    },
+    "absolute_share_difference": 0.04333333333333328,
+    "note": "Descriptive allocation only; this is not a sample-ratio mismatch test."
+  },
+  "primary_and_guardrail_metrics": {
+    "activation_24h": {
+      "label": "Primary: activation within 24h",
+      "A": {
+        "n": 626,
+        "successes": 235,
+        "rate": 0.3753993610223642,
+        "wilson_95": [
+          0.3383345900548129,
+          0.4139840881652347
+        ]
+      },
+      "B": {
+        "n": 574,
+        "successes": 246,
+        "rate": 0.42857142857142855,
+        "wilson_95": [
+          0.38869343871353357,
+          0.4693991596732907
+        ]
+      },
+      "absolute_difference_B_minus_A": 0.05317206754906434,
+      "difference_interval_95": [
+        -0.0023169876221686703,
+        0.10831461803236167
+      ]
+    },
+    "retained_d7": {
+      "label": "Secondary: returned on day 7",
+      "A": {
+        "n": 626,
+        "successes": 174,
+        "rate": 0.2779552715654952,
+        "wilson_95": [
+          0.24429613104886153,
+          0.3143230519330183
+        ]
+      },
+      "B": {
+        "n": 574,
+        "successes": 155,
+        "rate": 0.2700348432055749,
+        "wilson_95": [
+          0.23533108630476313,
+          0.3077963036235494
+        ]
+      },
+      "absolute_difference_B_minus_A": -0.007920428359920295,
+      "difference_interval_95": [
+        -0.05818936699891524,
+        0.042664803014629604
+      ]
+    },
+    "support_contact_7d": {
+      "label": "Guardrail: support contact within 7d",
+      "A": {
+        "n": 626,
+        "successes": 35,
+        "rate": 0.05591054313099041,
+        "wilson_95": [
+          0.040472939311800044,
+          0.07676542665195972
+        ]
+      },
+      "B": {
+        "n": 574,
+        "successes": 45,
+        "rate": 0.078397212543554,
+        "wilson_95": [
+          0.05910497000925883,
+          0.10329524485931413
+        ]
+      },
+      "absolute_difference_B_minus_A": 0.022486669412563588,
+      "difference_interval_95": [
+        -0.00592313151379394,
+        0.05178225994893811
+      ]
+    },
+    "refund_30d": {
+      "label": "Guardrail: refund within 30d",
+      "A": {
+        "n": 626,
+        "successes": 10,
+        "rate": 0.01597444089456869,
+        "wilson_95": [
+          0.00869962737694865,
+          0.02915369955477513
+        ]
+      },
+      "B": {
+        "n": 574,
+        "successes": 12,
+        "rate": 0.020905923344947737,
+        "wilson_95": [
+          0.011998645397816497,
+          0.03618341695283463
+        ]
+      },
+      "absolute_difference_B_minus_A": 0.0049314824503790475,
+      "difference_interval_95": [
+        -0.010975511585581264,
+        0.021852614878652636
+      ]
+    }
+  },
+  "funnel": [
+    {
+      "step": "app_open",
+      "unique_users": 1200,
+      "share_of_all_users": 1.0,
+      "conversion_from_previous_step": null
+    },
+    {
+      "step": "view_offer",
+      "unique_users": 1014,
+      "share_of_all_users": 0.845,
+      "conversion_from_previous_step": 0.845
+    },
+    {
+      "step": "start_activation",
+      "unique_users": 795,
+      "share_of_all_users": 0.6625,
+      "conversion_from_previous_step": 0.7840236686390533
+    },
+    {
+      "step": "activation_success",
+      "unique_users": 481,
+      "share_of_all_users": 0.4008333333333333,
+      "conversion_from_previous_step": 0.6050314465408805
+    }
+  ],
+  "segments": {
+    "device": {
+      "Android": {
+        "metric": "activation_24h",
+        "A": {
+          "n": 333,
+          "successes": 112,
+          "rate": 0.33633633633633636,
+          "wilson_95": [
+            0.2877133782552554,
+            0.3886923863533916
+          ]
+        },
+        "B": {
+          "n": 300,
+          "successes": 118,
+          "rate": 0.3933333333333333,
+          "wilson_95": [
+            0.33973815664027024,
+            0.44962577509258
+          ]
+        }
+      },
+      "Desktop": {
+        "metric": "activation_24h",
+        "A": {
+          "n": 68,
+          "successes": 29,
+          "rate": 0.4264705882352941,
+          "wilson_95": [
+            0.31597057562082875,
+            0.5448343062303549
+          ]
+        },
+        "B": {
+          "n": 72,
+          "successes": 37,
+          "rate": 0.5138888888888888,
+          "wilson_95": [
+            0.40069555910198956,
+            0.625675192569916
+          ]
+        }
+      },
+      "iOS": {
+        "metric": "activation_24h",
+        "A": {
+          "n": 225,
+          "successes": 94,
+          "rate": 0.4177777777777778,
+          "wilson_95": [
+            0.35524244608799793,
+            0.48307366426955944
+          ]
+        },
+        "B": {
+          "n": 202,
+          "successes": 91,
+          "rate": 0.4504950495049505,
+          "wilson_95": [
+            0.3834421999784951,
+            0.5193957103370098
+          ]
+        }
+      }
+    },
+    "acquisition_channel": {
+      "Email": {
+        "metric": "retained_d7",
+        "A": {
+          "n": 97,
+          "successes": 34,
+          "rate": 0.35051546391752575,
+          "wilson_95": [
+            0.2629094857379734,
+            0.4495107852612967
+          ]
+        },
+        "B": {
+          "n": 89,
+          "successes": 18,
+          "rate": 0.20224719101123595,
+          "wilson_95": [
+            0.1319367734752211,
+            0.29719844177311583
+          ]
+        }
+      },
+      "Органический поиск": {
+        "metric": "retained_d7",
+        "A": {
+          "n": 270,
+          "successes": 80,
+          "rate": 0.2962962962962963,
+          "wilson_95": [
+            0.24499506899852308,
+            0.35331285791981215
+          ]
+        },
+        "B": {
+          "n": 201,
+          "successes": 58,
+          "rate": 0.2885572139303483,
+          "wilson_95": [
+            0.23034729419176855,
+            0.354697930996865
+          ]
+        }
+      },
+      "Реклама": {
+        "metric": "retained_d7",
+        "A": {
+          "n": 132,
+          "successes": 36,
+          "rate": 0.2727272727272727,
+          "wilson_95": [
+            0.20398430212669705,
+            0.3543247872833216
+          ]
+        },
+        "B": {
+          "n": 151,
+          "successes": 42,
+          "rate": 0.2781456953642384,
+          "wilson_95": [
+            0.21285694664438737,
+            0.3544427970937294
+          ]
+        }
+      },
+      "Рекомендация": {
+        "metric": "retained_d7",
+        "A": {
+          "n": 127,
+          "successes": 24,
+          "rate": 0.1889763779527559,
+          "wilson_95": [
+            0.1304078981380311,
+            0.26580859569879145
+          ]
+        },
+        "B": {
+          "n": 133,
+          "successes": 37,
+          "rate": 0.2781954887218045,
+          "wilson_95": [
+            0.2090832078017854,
+            0.3597613540858276
+          ]
+        }
+      }
+    }
+  },
+  "support_topics": {
+    "Как пользоваться": 51,
+    "Ошибка активации": 29
+  },
+  "demo_thresholds": {
+    "minimum_activation_lift": 0.03,
+    "maximum_support_increase": 0.02,
+    "maximum_refund_increase": 0.01
+  },
+  "sample_planning": {
+    "baseline_rate_from_A": 0.3753993610223642,
+    "minimum_absolute_detectable_effect": 0.03,
+    "two_sided_alpha": 0.05,
+    "target_power": 0.8,
+    "approximate_required_users_per_arm": 4146,
+    "method_note": "Approximate normal formula for two independent proportions; planning aid only, not production power analysis."
+  },
+  "decision_gate": {
+    "status": "not_eligible_under_demo_rule",
+    "meaning": "Mechanical synthetic-data gate only; never an automatic ship/no-ship decision.",
+    "primary_interval_above_zero": false,
+    "primary_lift_meets_demo_threshold": true,
+    "guardrail_interval_status": {
+      "support_contact_7d": "uncertain",
+      "refund_30d": "uncertain"
+    }
+  },
+  "caveats": [
+    "All records are synthetic and do not describe real Megafon customers or market behavior.",
+    "The A/B assignment and effects are simulated; this run is not a real experiment.",
+    "Segment breakdowns are exploratory and are not causal estimates of device or acquisition-channel effects.",
+    "Difference intervals use a Newcombe hybrid score method based on Wilson intervals; read code and design docs before extending to production.",
+    "No p-value, multiplicity correction, production power analysis, or real experiment validity checks are claimed by this demo analyzer."
+  ],
+  "suggested_follow_up": [
+    "Compare the primary interval with zero and the minimum useful effect.",
+    "If planning a real test, validate the primary metric and use the sample-size estimate only as a rough starting point.",
+    "Investigate guardrail differences and segment patterns as questions; do not treat these synthetic segment associations as causal."
+  ]
+}
