@@ -1,0 +1,13 @@
+ticket_id,topic,synthetic
+DEMO-001,status,true
+DEMO-002,status,true
+DEMO-003,status,true
+DEMO-004,status,true
+DEMO-005,status,true
+DEMO-006,status,true
+DEMO-007,status,true
+DEMO-008,missing_information,true
+DEMO-009,missing_information,true
+DEMO-010,missing_information,true
+DEMO-011,other,true
+DEMO-012,other,true
