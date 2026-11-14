@@ -15,5 +15,10 @@
   "unresolved_questions": [],
   "next_action": "",
   "path_base": "project",
-  "checkpoints": []
+  "checkpoints": [],
+  "recommended_option_id": null,
+  "recommendation_rationale": "",
+  "product_strategy": {},
+  "communication_strategy": {},
+  "validation_plan": {}
 }

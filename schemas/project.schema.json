@@ -115,6 +115,36 @@
           "sources"
         ]
       }
+    },
+    "product_strategy": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "communication_strategy": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "validation_plan": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "recommended_option_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "recommendation_rationale": {
+      "type": "string"
     }
   },
   "$defs": {
@@ -167,6 +197,9 @@
         "snapshot_path": {
           "type": "string",
           "minLength": 1
+        },
+        "synthetic": {
+          "type": "boolean"
         }
       }
     },
@@ -265,6 +298,9 @@
           "items": {
             "type": "string"
           }
+        },
+        "locator": {
+          "type": "string"
         }
       }
     },
