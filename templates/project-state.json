@@ -15,5 +15,10 @@
   "unresolved_questions": [],
   "next_action": "",
   "path_base": "project",
-  "checkpoints": []
+  "checkpoints": [],
+  "manual_baseline": {
+    "hours": null,
+    "basis": "как оценено время ручного способа",
+    "measured": false
+  }
 }

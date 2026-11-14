@@ -1,7 +1,7 @@
 {
   "project_id": "demo-activation-message-2026-11",
   "title": "Синтетический тест объясняющего приветственного сообщения",
-  "updated_at": "2026-11-07",
+  "updated_at": "2026-11-14",
   "objective": "Подготовить решение о следующем исследовании для улучшения первой активации в вымышленном цифровом сервисе.",
   "decision_owner": "Руководитель продукта (роль в демо)",
   "stage": "options",
@@ -174,6 +174,7 @@
   "options": [
     {
       "option_id": "O-0",
+      "kind": "status_quo",
       "title": "Оставить приветственный сценарий без изменений",
       "benefits": [
         "Не требует реализации или дополнительного трафика."
@@ -190,6 +191,7 @@
     },
     {
       "option_id": "O-1",
+      "kind": "change",
       "title": "Проверить более ясное сообщение в контролируемом пилоте",
       "benefits": [
         "Небольшой, измеримый тест может проверить близкую к изменению метрику."
@@ -206,6 +208,7 @@
     },
     {
       "option_id": "O-2",
+      "kind": "learn",
       "title": "Сначала исследовать барьеры активации и проверить технический путь",
       "benefits": [
         "Может выявить продуктовую или техническую причину, которую текст не устранит."
@@ -222,6 +225,7 @@
     },
     {
       "option_id": "O-3",
+      "kind": "stop",
       "title": "Заморозить направление до появления реальных оснований",
       "benefits": [
         "Не создаёт впечатления, что симуляция подтверждает спрос."
@@ -309,6 +313,43 @@
           "fingerprint": "5bb29548b83fe2ae64ca68bf364b5168b6f6b0607f60ee9439f7510d10a2c334"
         }
       }
+    },
+    {
+      "at": "2026-11-14T13:08:24+00:00",
+      "stage": "options",
+      "summary": "Варианты размечены kind (status_quo/change/learn/stop), добавлен manual_baseline",
+      "next_action": "Сравнить варианты O-0–O-3 с владельцем решения и согласовать следующий исследовательский шаг.",
+      "sources": {
+        "GENERATOR": {
+          "location": "scripts/generate_demo.py",
+          "fingerprint": "8bee3e1f9019d39825931759f60d89400093001b983874ae86a0722501f816df"
+        },
+        "USERS": {
+          "location": "examples/activation-case/inputs/users.csv",
+          "fingerprint": "b6a1530518b46775536a94a71a767bb0ea298fc73f6e774db1d6349eac3ce322"
+        },
+        "OUTCOMES": {
+          "location": "examples/activation-case/inputs/outcomes.csv",
+          "fingerprint": "bd181a40dd08eb7fe10843414da32b5ed68f39cc239ad844ba416365bbce23e3"
+        },
+        "EVENTS": {
+          "location": "examples/activation-case/inputs/events.csv",
+          "fingerprint": "23864d6f141b133b81d4b6a28c9248372dd895e56026232d3b88490acdcab7cc"
+        },
+        "SUPPORT": {
+          "location": "examples/activation-case/inputs/support.csv",
+          "fingerprint": "aa1f7114014b864741dde507c378366fd860fa489bd55e5a65ad2ef138b32162"
+        },
+        "ANALYSIS": {
+          "location": "examples/activation-case/outputs/analysis.json",
+          "fingerprint": "5bb29548b83fe2ae64ca68bf364b5168b6f6b0607f60ee9439f7510d10a2c334"
+        }
+      }
     }
-  ]
+  ],
+  "manual_baseline": {
+    "hours": 6,
+    "basis": "оценка автора: аналитик вручную сводит 4 CSV в таблице, считает интервалы и пишет записку; не измерено",
+    "measured": false
+  }
 }
