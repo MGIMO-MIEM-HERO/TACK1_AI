@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import io
 from datetime import datetime, timezone, date
 from html.parser import HTMLParser
 import json
@@ -80,6 +81,8 @@ def audit(project, path, ready=False):
         if dependent <= unusable:
             break
         unusable |= dependent
+    if recommendation and not project.get('recommendation_rationale', '').strip():
+        warnings.append('Recommendation needs an explicit rationale')
     if not recommendation:
         warnings.append('No recommendation; alternatives are not yet a strategy')
     elif recommendation not in {o['option_id'] for o in project['options']}:
@@ -127,7 +130,7 @@ def inspect_file(path):
         raise ValueError('Source exceeds 5 MB; extract a relevant subset first')
     text = path.read_text(encoding='utf-8-sig')
     if path.suffix.lower() in ('.csv', '.tsv'):
-        reader = csv.DictReader(text.splitlines(), delimiter='\t' if path.suffix.lower() == '.tsv' else ',')
+        reader = csv.DictReader(io.StringIO(text, newline=''), delimiter='\t' if path.suffix.lower() == '.tsv' else ',')
         rows = list(reader)
         if not reader.fieldnames or len(reader.fieldnames) != len(set(reader.fieldnames)):
             raise ValueError('Missing or duplicate column names')
@@ -228,6 +231,15 @@ def main():
             print(json.dumps(result, ensure_ascii=False, indent=2))
             return 0 if result['ready'] else 1
         if args.command == 'report':
+            base = path.parent if project.get('path_base') == 'project' else ROOT
+            protected = {path, (path.parent / 'runs.jsonl').resolve()}
+            for source in project['sources']:
+                for key in ('url_or_path', 'snapshot_path'):
+                    location = source.get(key)
+                    if location and not location.startswith(('http://', 'https://')):
+                        protected.add((base / location).resolve())
+            if args.out.resolve() in protected:
+                raise ValueError('Report output must not overwrite project state, sources or run log')
             text = report(project, path)
             args.out.parent.mkdir(parents=True, exist_ok=True)
             args.out.write_text(text, encoding='utf-8')

@@ -72,7 +72,7 @@ def main() -> None:
 
     try:
         path = args.project.resolve()
-        project = json.loads(path.read_text(encoding="utf-8"))
+        project = json.loads(path.read_text(encoding="utf-8-sig"))
         if not isinstance(project, dict):
             raise ValueError("Project state must be a JSON object")
         errors = validate(project)

@@ -23,6 +23,8 @@ def string_list(value: object) -> bool:
 
 
 def validate(project: dict[str, object]) -> list[str]:
+    if not isinstance(project, dict):
+        return ["Project state must be a JSON object"]
     errors: list[str] = []
     for field in REQUIRED_PROJECT:
         if field not in project:
@@ -33,6 +35,17 @@ def validate(project: dict[str, object]) -> list[str]:
             errors.append(f"{field} must be a nonempty string")
     if project.get("stage") not in tuple(STAGES):
         errors.append("stage is unknown")
+
+    if "path_base" in project and project["path_base"] not in ("project", "repository"):
+        errors.append("path_base must be project or repository")
+    for field in ("constraints", "unresolved_questions"):
+        if field in project and not string_list(project[field]):
+            errors.append(f"{field} must be an array of nonempty strings")
+    recommended = project.get("recommended_option_id")
+    if recommended is not None and (not isinstance(recommended, str) or not recommended.strip()):
+        errors.append("recommended_option_id must be a nonempty string or null")
+    if "recommendation_rationale" in project and not isinstance(project["recommendation_rationale"], str):
+        errors.append("recommendation_rationale must be text")
 
     sources = project.get("sources", [])
     evidence = project.get("evidence", [])
@@ -48,6 +61,10 @@ def validate(project: dict[str, object]) -> list[str]:
         for field in REQUIRED_SOURCE:
             if not isinstance(source.get(field), str) or not source[field].strip():
                 errors.append(f"sources[{index}] is missing {field}")
+        if "snapshot_path" in source and (not isinstance(source["snapshot_path"], str) or not source["snapshot_path"].strip()):
+            errors.append(f"sources[{index}].snapshot_path must be a nonempty string")
+        if "synthetic" in source and not isinstance(source["synthetic"], bool):
+            errors.append(f"sources[{index}].synthetic must be boolean")
         source_id = source.get("source_id")
         if source.get("kind") not in tuple(SOURCE_KINDS):
             errors.append(f"source {source_id} has an unknown kind")
@@ -71,6 +88,8 @@ def validate(project: dict[str, object]) -> list[str]:
             if evidence_id in evidence_ids:
                 errors.append(f"duplicate evidence_id: {evidence_id}")
             evidence_ids.add(evidence_id)
+        if "locator" in item and not isinstance(item["locator"], str):
+            errors.append(f"evidence {evidence_id} locator must be text")
         claim_type = item.get("claim_type")
         refs = item.get("source_ids")
         if claim_type not in (*FACT_TYPES, "hypothesis", "forecast", "decision"):
@@ -135,6 +154,8 @@ def validate(project: dict[str, object]) -> list[str]:
     chosen = project.get("chosen_option_id")
     if chosen is not None and (not isinstance(chosen, str) or chosen not in option_ids):
         errors.append(f"chosen_option_id references unknown option {chosen}")
+    if isinstance(recommended, str) and recommended not in option_ids:
+        errors.append("recommended_option_id references unknown option")
     for field in ("product_strategy", "communication_strategy", "validation_plan"):
         if field in project and (not isinstance(project[field], dict) or
                                  any(not isinstance(k, str) or not isinstance(v, str) or not v.strip() for k, v in project[field].items())):
@@ -155,7 +176,7 @@ def main() -> None:
     parser.add_argument("project", type=Path, help="Path to project-state JSON")
     args = parser.parse_args()
     try:
-        project = json.loads(args.project.read_text(encoding="utf-8"))
+        project = json.loads(args.project.read_text(encoding="utf-8-sig"))
     except (OSError, json.JSONDecodeError) as error:
         print(f"Cannot read project JSON: {error}", file=sys.stderr)
         raise SystemExit(2)
