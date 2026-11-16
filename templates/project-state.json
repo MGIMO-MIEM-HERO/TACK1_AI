@@ -20,5 +20,10 @@
   "recommendation_rationale": "",
   "product_strategy": {},
   "communication_strategy": {},
-  "validation_plan": {}
+  "validation_plan": {},
+  "manual_baseline": {
+    "hours": null,
+    "basis": "как оценено время ручного способа",
+    "measured": false
+  }
 }

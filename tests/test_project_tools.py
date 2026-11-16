@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 import sys
 import tempfile
+import subprocess
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
@@ -68,6 +69,73 @@ class EvidenceTests(unittest.TestCase):
         self.assertEqual(result['duplicate_rows'], 1)
         self.assertEqual(result['malformed_rows'], 1)
         self.assertEqual(result['missing']['value'], 1)
+
+
+    def run_cli(self, script, *args):
+        return subprocess.run([sys.executable, str(Path(__file__).resolve().parents[1] / 'scripts' / script),
+                               *map(str, args)], capture_output=True, text=True, encoding='utf-8')
+
+    def test_invalid_types_rejected_before_tools_run(self):
+        for field, value in [('recommended_option_id', {}), ('unresolved_questions', [42]),
+                             ('path_base', 'typo'), ('recommendation_rationale', [])]:
+            with self.subTest(field=field):
+                project = copy.deepcopy(self.project)
+                project[field] = value
+                path = self.root / 'project.json'
+                path.write_text(json.dumps(project), encoding='utf-8')
+                result = self.run_cli('project_tool.py', 'audit', path)
+                self.assertEqual(result.returncode, 1)
+                self.assertNotIn('Traceback', result.stderr)
+        for field, value in [('snapshot_path', []), ('synthetic', 'false')]:
+            project = copy.deepcopy(self.project)
+            project['sources'][0][field] = value
+            self.assertTrue(validate(project))
+
+    def test_bom_state_supported_by_all_readers(self):
+        path = self.root / 'project.json'
+        path.write_text(json.dumps(self.project), encoding='utf-8-sig')
+        for script, args in [('validate_project.py', [path]), ('checkpoint.py', [path, 'resume']),
+                             ('project_tool.py', ['audit', path])]:
+            with self.subTest(script=script):
+                result = self.run_cli(script, *args)
+                self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_report_cannot_overwrite_state_sources_or_log(self):
+        path = self.root / 'project.json'
+        path.write_text(json.dumps(self.project), encoding='utf-8')
+        log = self.root / 'runs.jsonl'
+        log.write_text('{}\n', encoding='utf-8')
+        for output in (path, self.root / 'source.md', log):
+            with self.subTest(output=output.name):
+                before = output.read_bytes()
+                result = self.run_cli('project_tool.py', 'report', path, '--out', output)
+                self.assertEqual(result.returncode, 1, result.stdout)
+                self.assertEqual(output.read_bytes(), before)
+        output = self.root / 'outputs' / 'report.md'
+        result = self.run_cli('project_tool.py', 'report', path, '--out', output)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(output.is_file())
+
+    def test_fingerprint_ignores_checkout_line_endings(self):
+        path = self.root / 'source.md'
+        path.write_bytes(b'First\r\nSecond\r\n')
+        windows = fingerprint('source.md', self.root)
+        path.write_bytes(b'First\nSecond\n')
+        self.assertEqual(windows, fingerprint('source.md', self.root))
+        path.write_bytes(b'Changed\nSecond\n')
+        self.assertNotEqual(windows, fingerprint('source.md', self.root))
+
+    def test_fingerprint_resolves_workspace_alias(self):
+        alias = self.root / 'child' / '..'
+        (self.root / 'child').mkdir()
+        self.assertEqual(fingerprint('source.md', alias), fingerprint('source.md', self.root))
+
+    def test_csv_preserves_quoted_newlines(self):
+        path = self.root / 'multiline.csv'
+        path.write_text('id,text\n1,"first line\nsecond line"\n', encoding='utf-8')
+        result = inspect_file(path)
+        self.assertEqual(result['rows'], 1)
+        self.assertEqual(result['preview'][0]['text'], 'first line\nsecond line')
 
 
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
 {
   "project_id": "campus-strategy-demo",
   "title": "Завершённый путь справки или расширение помощника?",
-  "updated_at": "2026-11-14",
+  "updated_at": "2026-11-16",
   "objective": "Выбрать следующий сценарий конкурсного прототипа и способ проверки полезности.",
   "stage": "validation",
   "decision_owner": "Команда продукта; решение ещё не зафиксировано",
@@ -164,7 +164,8 @@
       "objection": "Сохраняется разрыв основного сценария.",
       "evidence_ids": [
         "E1"
-      ]
+      ],
+      "kind": "status_quo"
     },
     {
       "option_id": "O1",
@@ -181,7 +182,8 @@
         "E2",
         "E3",
         "H1"
-      ]
+      ],
+      "kind": "change"
     },
     {
       "option_id": "O2",
@@ -196,7 +198,8 @@
       "evidence_ids": [
         "E1",
         "E3"
-      ]
+      ],
+      "kind": "pivot"
     },
     {
       "option_id": "O3",
@@ -211,7 +214,8 @@
       "evidence_ids": [
         "E1",
         "E4"
-      ]
+      ],
+      "kind": "stop"
     }
   ],
   "recommended_option_id": "O1",
@@ -271,6 +275,30 @@
         "TICKETS": {
           "location": "inputs/synthetic-tickets.csv",
           "fingerprint": "e111516df376d4c80addb4a7aec1e2bde7b42055b542e17ace86444c66981110"
+        }
+      }
+    },
+    {
+      "at": "2026-11-16T21:09:33+00:00",
+      "stage": "validation",
+      "summary": "Normalize source fingerprints for cross-platform LF/CRLF portability; source text unchanged",
+      "next_action": "Показать рекомендацию владельцу. После согласования провести usability-проверку; не публиковать реальные данные.",
+      "sources": {
+        "BRIEF": {
+          "location": "inputs/product-brief.md",
+          "fingerprint": "0fa97ce23c400c8df212f10d965853a0b685137019ffa49327ca6e66ad58a4ca"
+        },
+        "HSE": {
+          "location": "https://www.hse.ru/studyspravka/start",
+          "fingerprint": "c7ac34cd657d46fdfc1bc2d6d44b89895dd950fdddfd14f090d7f4ebe4038abe"
+        },
+        "WAI": {
+          "location": "https://www.w3.org/WAI/tutorials/forms/notifications/",
+          "fingerprint": "f04d1603b5fd2ae952e94e17668cdef03dfffd8f5d06c01a465c447cb9ed7dc6"
+        },
+        "TICKETS": {
+          "location": "inputs/synthetic-tickets.csv",
+          "fingerprint": "bc735b6bbb7cada968ff95e92930018b335ed58dc0a821426eceaa2472942c61"
         }
       }
     }

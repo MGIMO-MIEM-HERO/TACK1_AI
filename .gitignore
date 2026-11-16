@@ -4,3 +4,5 @@
 __pycache__/
 *.py[cod]
 examples/*/private/
+projects/*/private/
+**/sources/private/

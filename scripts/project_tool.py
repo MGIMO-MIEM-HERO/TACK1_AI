@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import io
 from datetime import datetime, timezone, date
 from html.parser import HTMLParser
 import json
@@ -12,7 +13,7 @@ from pathlib import Path
 import sys
 
 from checkpoint import ROOT, fingerprint, impacted, write_state
-from validate_project import validate, FACT_TYPES
+from validate_project import validate, FACT_TYPES, warnings as review_warnings
 
 PRODUCT_FIELDS = ('audience', 'job', 'alternatives', 'direction', 'non_goals', 'economics')
 COMMUNICATION_FIELDS = ('audience', 'situation', 'barrier', 'message', 'proof', 'channels')
@@ -48,7 +49,7 @@ def source_health(project, path):
 
 def audit(project, path, ready=False):
     errors = []
-    warnings = []
+    warnings = review_warnings(project)
     health = source_health(project, path)
     if health['unverifiable_sources']:
         errors.append('Missing/untracked sources: ' + ', '.join(health['unverifiable_sources']))
@@ -80,6 +81,8 @@ def audit(project, path, ready=False):
         if dependent <= unusable:
             break
         unusable |= dependent
+    if recommendation and not project.get('recommendation_rationale', '').strip():
+        warnings.append('Recommendation needs an explicit rationale')
     if not recommendation:
         warnings.append('No recommendation; alternatives are not yet a strategy')
     elif recommendation not in {o['option_id'] for o in project['options']}:
@@ -94,7 +97,7 @@ def audit(project, path, ready=False):
         if not all(commitment.get(k) for k in ('owner', 'due', 'metric', 'review_trigger')):
             warnings.append('Commitment needs owner, due, metric and review_trigger')
     cost_path = path.parent / 'runs.jsonl'
-    if not cost_path.exists():
+    if not cost_path.exists() and not (path.parent / 'ledger.jsonl').exists():
         warnings.append('No measured run log (runs.jsonl); cost and time are unknown')
     if not project.get('checkpoints'):
         warnings.append('No saved checkpoint; resume is not demonstrated')
@@ -127,7 +130,7 @@ def inspect_file(path):
         raise ValueError('Source exceeds 5 MB; extract a relevant subset first')
     text = path.read_text(encoding='utf-8-sig')
     if path.suffix.lower() in ('.csv', '.tsv'):
-        reader = csv.DictReader(text.splitlines(), delimiter='\t' if path.suffix.lower() == '.tsv' else ',')
+        reader = csv.DictReader(io.StringIO(text, newline=''), delimiter='\t' if path.suffix.lower() == '.tsv' else ',')
         rows = list(reader)
         if not reader.fieldnames or len(reader.fieldnames) != len(set(reader.fieldnames)):
             raise ValueError('Missing or duplicate column names')
@@ -228,6 +231,15 @@ def main():
             print(json.dumps(result, ensure_ascii=False, indent=2))
             return 0 if result['ready'] else 1
         if args.command == 'report':
+            base = path.parent if project.get('path_base') == 'project' else ROOT
+            protected = {path, (path.parent / 'runs.jsonl').resolve(), (path.parent / 'ledger.jsonl').resolve()}
+            for source in project['sources']:
+                for key in ('url_or_path', 'snapshot_path'):
+                    location = source.get(key)
+                    if location and not location.startswith(('http://', 'https://')):
+                        protected.add((base / location).resolve())
+            if args.out.resolve() in protected:
+                raise ValueError('Report output must not overwrite project state, sources or run log')
             text = report(project, path)
             args.out.parent.mkdir(parents=True, exist_ok=True)
             args.out.write_text(text, encoding='utf-8')
