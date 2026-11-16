@@ -1,5 +1,7 @@
 # Контур решения
 
+Начните с [START_HERE.md](START_HERE.md). Единый запуск: `python scripts/start.py examples/campus-strategy/project.json`. [Улучшения после проверки в новом чате](docs/agent-v3.md).
+
 **Обновление 14 ноября.** Добавлен [быстрый запуск](docs/quickstart.md),
 [второй сквозной кейс](examples/campus-strategy/README.md), структурный аудит
 стратегии, чтение локальных источников, блокировка экспорта при устаревших

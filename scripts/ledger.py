@@ -64,7 +64,20 @@ def read_entries(path: Path) -> list[dict]:
             if not line:
                 continue
             try:
-                entries.append(json.loads(line))
+                entry = json.loads(line)
+                if not isinstance(entry, dict):
+                    raise ValueError(f"{path}:{number} must be a ledger object")
+                for key in ("cost_usd", "duration_s", "human_minutes"):
+                    value = entry.get(key)
+                    if value is not None and (isinstance(value, bool) or not isinstance(value, (int, float))
+                                              or not math.isfinite(value) or value < 0):
+                        raise ValueError(f"{path}:{number} has invalid {key}")
+                tokens = entry.get("tokens")
+                if tokens is not None and (not isinstance(tokens, dict) or any(
+                    tokens.get(k) is not None and (isinstance(tokens[k], bool) or not isinstance(tokens[k], int) or tokens[k] < 0)
+                    for k in ("input", "output", "cache_read"))):
+                    raise ValueError(f"{path}:{number} has invalid token counts")
+                entries.append(entry)
             except json.JSONDecodeError as error:
                 raise ValueError(f"{path}:{number} is not valid JSON ({error}); the ledger was damaged") from error
     return entries
@@ -72,7 +85,7 @@ def read_entries(path: Path) -> list[dict]:
 
 def load_prices() -> dict:
     try:
-        return json.loads(PRICES.read_text(encoding="utf-8"))
+        return json.loads(PRICES.read_text(encoding="utf-8-sig"))
     except (OSError, json.JSONDecodeError):
         return {"models": {}, "aliases": {}}
 
@@ -157,7 +170,8 @@ def verify(entries: list[dict]) -> list[str]:
 def summarize(entries: list[dict]) -> dict:
     def bucket() -> dict:
         return {"actions": 0, "input_tokens": 0, "output_tokens": 0, "cost_usd": 0.0,
-                "cost_unknown_actions": 0, "duration_s": 0.0, "human_minutes": 0.0}
+                "cost_unknown_actions": 0, "duration_s": 0.0, "human_minutes": 0.0,
+                "unknown_duration_actions": 0, "unknown_human_time_actions": 0, "unknown_token_actions": 0}
 
     totals = bucket()
     groups: dict[str, dict[str, dict]] = {"step": defaultdict(bucket), "tool": defaultdict(bucket), "model": defaultdict(bucket)}
@@ -167,7 +181,13 @@ def summarize(entries: list[dict]) -> dict:
         for target in (totals, groups["step"][entry.get("step", "?")], groups["tool"][entry.get("tool", "?")],
                        groups["model"][entry.get("model") or "—"]):
             target["actions"] += 1
+            if entry.get("duration_s") is None:
+                target["unknown_duration_actions"] += 1
+            if entry.get("human_minutes") is None:
+                target["unknown_human_time_actions"] += 1
             tokens = entry.get("tokens") or {}
+            if entry.get("model") and (tokens.get("input") is None or tokens.get("output") is None):
+                target["unknown_token_actions"] += 1
             target["input_tokens"] += tokens.get("input") or 0
             target["output_tokens"] += tokens.get("output") or 0
             if entry.get("cost_usd") is None:
@@ -184,7 +204,7 @@ def render_report(project_path: Path, entries: list[dict]) -> str:
     summary = summarize(entries)
     totals = summary["totals"]
     try:
-        project = json.loads(Path(project_path).read_text(encoding="utf-8"))
+        project = json.loads(Path(project_path).read_text(encoding="utf-8-sig"))
     except (OSError, json.JSONDecodeError):
         project = {}
     states = key_states(entries)
@@ -201,15 +221,18 @@ def render_report(project_path: Path, entries: list[dict]) -> str:
         "## Итого",
         "",
         f"- Действий: {totals['actions']}; токены вход/выход: {totals['input_tokens']:,} / {totals['output_tokens']:,}".replace(",", " "),
-        f"- Оценка стоимости моделей: **${totals['cost_usd']:.4f}**; действий модели с неизвестной стоимостью: {totals['cost_unknown_actions']}",
+        f"- Известная часть стоимости: **${totals['cost_usd']:.4f}**; полная стоимость неизвестна при пропусках. Действий модели с неизвестной стоимостью: {totals['cost_unknown_actions']}",
         f"- Записей с оценёнными (не измеренными) токенами: {estimated}",
-        f"- Машинное время инструментов: {totals['duration_s'] / 60:.1f} мин; время человека: {totals['human_minutes']:.0f} мин",
+        f"- Учтённое время действий: {totals['duration_s'] / 60:.1f} мин; учтённое время человека: {totals['human_minutes']:.0f} мин",
+        f"- Неизвестно: длительность {totals['unknown_duration_actions']} действий; участие человека {totals['unknown_human_time_actions']} действий; токены {totals['unknown_token_actions']} вызовов модели.",
+        "- Нулевые суммы означают только известную часть. Пропуски не равны нулю; длительности параллельных действий не равны времени по часам.",
         f"- Целостность журнала: {'цепочка хешей сходится' if not integrity else 'НАРУШЕНА: ' + '; '.join(integrity)}",
         f"- Незавершённые действия (begin без finish): {', '.join(pending) if pending else 'нет'}",
         f"- Завершились ошибкой: {', '.join(failed) if failed else 'нет'}",
     ]
     baseline = project.get("manual_baseline")
     if isinstance(baseline, dict) and baseline.get("hours"):
+        incomplete_time = bool(totals["unknown_duration_actions"] or totals["unknown_human_time_actions"])
         spent_h = (totals["duration_s"] / 60 + totals["human_minutes"]) / 60
         lines += [
             "",
@@ -217,7 +240,7 @@ def render_report(project_path: Path, entries: list[dict]) -> str:
             "",
             f"- Ручной способ: {baseline['hours']} ч ({'измерено' if baseline.get('measured') else 'не измерено'}; основание: {baseline.get('basis', 'не указано')})",
             f"- С агентом по журналу: {spent_h:.1f} ч учтённого времени человека и инструментов (время генерации модели в IDE журнал знает только если его записали).",
-            "- Сравнение корректно только при одинаковом объёме результата; см. раздел «Стоимость» в decision-brief.",
+            "- Выигрыш во времени не установлен: журнал неполон." if incomplete_time else "- Сравнение требует одинакового объёма и качества результата; суммы времени не доказывают ускорение.",
         ]
     for name, title in (("step", "По этапам"), ("tool", "По инструментам"), ("model", "По моделям")):
         lines += ["", f"## {title}", "", "| Ключ | Действий | Токены вход | Токены выход | $ (оценка) | $ неизвестна | Время, мин |", "|---|---:|---:|---:|---:|---:|---:|"]
@@ -249,6 +272,20 @@ def fields_from_args(args: argparse.Namespace, status: str) -> dict:
     }
 
 
+def nonnegative(value):
+    number = float(value)
+    if not math.isfinite(number) or number < 0:
+        raise argparse.ArgumentTypeError("Expected a finite nonnegative number")
+    return number
+
+
+def token_count(value):
+    number = int(value)
+    if number < 0:
+        raise argparse.ArgumentTypeError("Token/character counts cannot be negative")
+    return number
+
+
 def add_common(parser: argparse.ArgumentParser, require_step: bool) -> None:
     parser.add_argument("--step", required=require_step, help="workflow stage: intake, research, options, strategy, ...")
     parser.add_argument("--action", required=require_step, help="what was done, one line")
@@ -258,14 +295,14 @@ def add_common(parser: argparse.ArgumentParser, require_step: bool) -> None:
     parser.add_argument("--evidence", help="comma-separated evidence IDs used as basis or produced")
     parser.add_argument("--sources", help="comma-separated source IDs")
     parser.add_argument("--outputs", help="comma-separated files written")
-    parser.add_argument("--input-tokens", type=int)
-    parser.add_argument("--output-tokens", type=int)
-    parser.add_argument("--cache-read-tokens", type=int)
+    parser.add_argument("--input-tokens", type=token_count)
+    parser.add_argument("--output-tokens", type=token_count)
+    parser.add_argument("--cache-read-tokens", type=token_count)
     parser.add_argument("--tokens-estimated", action="store_true", help="token numbers are an estimate, not reported by the provider")
-    parser.add_argument("--estimate-chars", type=int, nargs=2, metavar=("IN_CHARS", "OUT_CHARS"), help="estimate tokens from characters (marked estimated)")
-    parser.add_argument("--cost-usd", type=float, help="known cost from a provider bill (overrides the price table)")
-    parser.add_argument("--duration-s", type=float)
-    parser.add_argument("--human-minutes", type=float)
+    parser.add_argument("--estimate-chars", type=token_count, nargs=2, metavar=("IN_CHARS", "OUT_CHARS"), help="estimate tokens from characters (marked estimated)")
+    parser.add_argument("--cost-usd", type=nonnegative, help="known cost from a provider bill (overrides the price table)")
+    parser.add_argument("--duration-s", type=nonnegative)
+    parser.add_argument("--human-minutes", type=nonnegative)
     parser.add_argument("--note")
 
 
@@ -340,6 +377,9 @@ def main() -> None:
         else:
             text = render_report(args.project, entries)
             if args.out:
+                from output_guard import check_output
+                project = json.loads(args.project.read_text(encoding="utf-8-sig"))
+                check_output(project, args.project, args.out)
                 args.out.parent.mkdir(parents=True, exist_ok=True)
                 args.out.write_text(text, encoding="utf-8")
                 print(f"Report written to {args.out}")

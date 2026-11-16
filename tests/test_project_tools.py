@@ -9,6 +9,8 @@ import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
 from checkpoint import fingerprint, impacted
 from project_tool import audit, inspect_file, report
+from start import restore
+from ledger import append, summarize, render_report
 from validate_project import validate
 
 
@@ -136,6 +138,84 @@ class EvidenceTests(unittest.TestCase):
         result = inspect_file(path)
         self.assertEqual(result['rows'], 1)
         self.assertEqual(result['preview'][0]['text'], 'first line\nsecond line')
+
+
+    def test_start_restores_case_without_writing(self):
+        self.project['recommended_option_id'] = 'O1'
+        self.project['constraints'] = ['Zero budget', 'Three days']
+        path = self.root / 'project.json'
+        path.write_text(json.dumps(self.project), encoding='utf-8')
+        before = path.read_bytes()
+        state = restore(path)
+        self.assertEqual(state['constraints'], ['Zero budget', 'Three days'])
+        self.assertEqual(state['recommendation']['id'], 'O1')
+        self.assertIsNone(state['human_choice'])
+        self.assertTrue(state['workflow_files'])
+        self.assertEqual(path.read_bytes(), before)
+        self.assertFalse((self.root / 'ledger.jsonl').exists())
+
+    def test_search_only_indirect_basis_blocks_report(self):
+        self.project['recommended_option_id'] = 'O1'
+        self.project['sources'][0]['verification'] = 'search_snippet'
+        with self.assertRaisesRegex(ValueError, 'search-only'):
+            report(self.project, self.root / 'project.json')
+
+    def test_expired_source_blocks_chosen_option_too(self):
+        self.project['chosen_option_id'] = 'O1'
+        self.project['sources'][0]['valid_until'] = '2000-01-01'
+        result = audit(self.project, self.root / 'project.json')
+        self.assertTrue(any('Human choice' in e and 'expired' in e for e in result['errors']))
+        self.project['sources'][0]['valid_until'] = 'not-a-date'
+        self.assertTrue(any('valid_until' in e for e in validate(self.project)))
+
+    def test_withdrawn_evidence_blocks_chosen_option(self):
+        self.project['chosen_option_id'] = 'O1'
+        self.project['evidence'][0]['status'] = 'withdrawn'
+        with self.assertRaisesRegex(ValueError, 'Human choice'):
+            report(self.project, self.root / 'project.json')
+
+    def test_damaged_ledger_blocks_report(self):
+        path = self.root / 'project.json'
+        append(path, {'step':'research', 'action':'Read source', 'status':'done'})
+        log = self.root / 'ledger.jsonl'
+        log.write_text(log.read_text(encoding='utf-8').replace('Read source', 'Forged source'), encoding='utf-8')
+        with self.assertRaisesRegex(ValueError, 'ledger is damaged'):
+            report(self.project, path)
+        for content in ('[]\n', '{"cost_usd":"unknown"}\n'):
+            log.write_text(content, encoding='utf-8')
+            with self.assertRaisesRegex(ValueError, 'ledger is damaged'):
+                report(self.project, path)
+
+    def test_unknown_cost_time_and_tokens_are_not_zero_measurements(self):
+        entries = [{'seq':1, 'status':'done', 'model':'unknown', 'action':'Analyze'}]
+        totals = summarize(entries)['totals']
+        self.assertEqual(totals['cost_unknown_actions'], 1)
+        self.assertEqual(totals['unknown_duration_actions'], 1)
+        self.assertEqual(totals['unknown_human_time_actions'], 1)
+        self.assertEqual(totals['unknown_token_actions'], 1)
+        text = render_report(self.root / 'project.json', entries)
+        self.assertIn('Пропуски не равны нулю', text)
+        known = summarize([{'status':'done', 'model':'test', 'cost_usd':0, 'duration_s':0,
+                            'human_minutes':0, 'tokens':{'input':0,'output':0}}])['totals']
+        self.assertEqual(known['unknown_duration_actions'], 0)
+        self.assertEqual(known['cost_unknown_actions'], 0)
+
+    def test_ledger_report_cannot_overwrite_inputs(self):
+        path = self.root / 'project.json'
+        path.write_text(json.dumps(self.project), encoding='utf-8')
+        append(path, {'step':'research', 'action':'Read source', 'status':'done'})
+        for output in (path, self.root / 'source.md', self.root / 'ledger.jsonl'):
+            before = output.read_bytes()
+            result = self.run_cli('ledger.py', 'report', path, '--out', output)
+            self.assertEqual(result.returncode, 1)
+            self.assertEqual(output.read_bytes(), before)
+
+    def test_ledger_rejects_invalid_numbers(self):
+        path = self.root / 'project.json'
+        for flag, value in [('--cost-usd','nan'), ('--duration-s','-1'), ('--input-tokens','-1')]:
+            result = self.run_cli('ledger.py','log',path,'--step','test','--action','test',flag,value)
+            self.assertEqual(result.returncode, 2)
+        self.assertFalse((self.root / 'ledger.jsonl').exists())
 
 
 if __name__ == '__main__':

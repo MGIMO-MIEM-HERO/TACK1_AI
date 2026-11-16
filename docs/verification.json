@@ -1,74 +1,74 @@
 {
-  "at": "2026-11-16T21:09:36+00:00",
+  "at": "2026-11-16T21:49:59+00:00",
   "checks": [
     {
       "tool": "validate_project.py",
       "exit_code": 0,
       "expected": 0,
-      "seconds": 0.1739
+      "seconds": 0.1595
     },
     {
       "tool": "checkpoint.py",
       "exit_code": 0,
       "expected": 0,
-      "seconds": 0.2293
+      "seconds": 0.2207
     },
     {
       "tool": "project_tool.py",
       "exit_code": 0,
       "expected": 0,
-      "seconds": 0.2217
+      "seconds": 0.2001
     },
     {
       "tool": "project_tool.py",
       "exit_code": 0,
       "expected": 0,
-      "seconds": 0.1963
+      "seconds": 0.2146
     },
     {
       "tool": "checkpoint.py",
       "exit_code": 0,
       "expected": 0,
-      "seconds": 0.1823
+      "seconds": 0.1629
     },
     {
       "tool": "project_tool.py",
       "exit_code": 1,
       "expected": 1,
-      "seconds": 0.198
+      "seconds": 0.1896
     },
     {
       "tool": "project_tool.py",
       "exit_code": 1,
       "expected": 1,
-      "seconds": 0.1779
+      "seconds": 0.222
     },
     {
       "tool": "checkpoint.py",
       "exit_code": 1,
       "expected": 1,
-      "seconds": 0.1683
+      "seconds": 0.191
     },
     {
       "tool": "checkpoint.py",
       "exit_code": 0,
       "expected": 0,
-      "seconds": 0.1742
+      "seconds": 0.1717
     },
     {
       "tool": "project_tool.py",
       "exit_code": 0,
       "expected": 0,
-      "seconds": 0.2283
+      "seconds": 0.2047
     },
     {
       "tool": "project_tool.py",
       "exit_code": 1,
       "expected": 1,
-      "seconds": 0.1863
+      "seconds": 0.1724
     }
   ],
-  "elapsed_seconds": 2.1502,
+  "elapsed_seconds": 2.122,
   "network_calls": 0,
   "model_calls": 0,
   "scope": "Local smoke test, source invalidation, blocked export, recovery and missing-file handling. Not an LLM quality benchmark."

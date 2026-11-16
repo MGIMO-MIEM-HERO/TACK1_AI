@@ -75,6 +75,14 @@ def validate(project: dict[str, object]) -> list[str]:
             errors.append(f"sources[{index}].snapshot_path must be a nonempty string")
         if "synthetic" in source and not isinstance(source["synthetic"], bool):
             errors.append(f"sources[{index}].synthetic must be boolean")
+        expiry = source.get("valid_until")
+        if expiry is not None:
+            try:
+                if not isinstance(expiry, str):
+                    raise ValueError()
+                date.fromisoformat(expiry)
+            except ValueError:
+                errors.append(f"sources[{index}].valid_until must be YYYY-MM-DD or null")
         source_id = source.get("source_id")
         if source.get("kind") not in tuple(SOURCE_KINDS):
             errors.append(f"source {source_id} has an unknown kind")
@@ -82,7 +90,7 @@ def validate(project: dict[str, object]) -> list[str]:
             if source_id in source_ids:
                 errors.append(f"duplicate source_id: {source_id}")
             source_ids.add(source_id)
-        if source.get("verification") is not None and source.get("verification") not in VERIFICATION_LEVELS:
+        if source.get("verification") is not None and source.get("verification") not in tuple(VERIFICATION_LEVELS):
             errors.append(f"source {source_id} has an unknown verification level")
         if source.get("kind") == "model_respondent" and not any(mark in str(source.get("title", "")).lower() for mark in ("модельн", "синтет", "synthetic")):
             errors.append(f"model_respondent source {source_id} must say модельный/синтетический in its title")
@@ -266,8 +274,9 @@ def main() -> None:
         print("Project JSON root must be an object", file=sys.stderr)
         raise SystemExit(2)
     errors = validate(project)
-    for note in warnings(project):
-        print(f"WARNING: {note}")
+    if not errors:
+        for note in warnings(project):
+            print(f"WARNING: {note}")
     if errors:
         for error in errors:
             print(f"ERROR: {error}")
