@@ -116,6 +116,20 @@ class EvidenceTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertTrue(output.is_file())
 
+    def test_fingerprint_ignores_checkout_line_endings(self):
+        path = self.root / 'source.md'
+        path.write_bytes(b'First\r\nSecond\r\n')
+        windows = fingerprint('source.md', self.root)
+        path.write_bytes(b'First\nSecond\n')
+        self.assertEqual(windows, fingerprint('source.md', self.root))
+        path.write_bytes(b'Changed\nSecond\n')
+        self.assertNotEqual(windows, fingerprint('source.md', self.root))
+
+    def test_fingerprint_resolves_workspace_alias(self):
+        alias = self.root / 'child' / '..'
+        (self.root / 'child').mkdir()
+        self.assertEqual(fingerprint('source.md', alias), fingerprint('source.md', self.root))
+
     def test_csv_preserves_quoted_newlines(self):
         path = self.root / 'multiline.csv'
         path.write_text('id,text\n1,"first line\nsecond line"\n', encoding='utf-8')

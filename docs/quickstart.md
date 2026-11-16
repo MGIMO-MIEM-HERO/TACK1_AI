@@ -26,7 +26,7 @@ python scripts/project_tool.py new projects/my-case --title "Мой продук
 
 ```text
 python scripts/project_tool.py audit examples/campus-strategy/project.json --ready
-python scripts/project_tool.py costs examples/campus-strategy/project.json
+python scripts/ledger.py report examples/campus-strategy/project.json
 python scripts/project_tool.py report examples/campus-strategy/project.json --out examples/campus-strategy/outputs/decision-brief.md
 ```
 
@@ -53,3 +53,7 @@ python scripts/verify_demo.py
 Вторая команда использует временную копию: меняет источник, проверяет отказ
 экспорта, восстанавливает источник и проверяет недоступный файл. Результат —
 `docs/verification.json`. Это не сравнительная оценка качества LLM.
+
+Новые действия записываются через `ledger.py log`; `runs.jsonl` и команда
+`project_tool.py costs` оставлены для чтения старых записей. Не складывайте
+два журнала без проверки повторов.

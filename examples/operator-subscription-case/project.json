@@ -1,0 +1,644 @@
+{
+  "project_id": "operator-multisubscription-2026-11",
+  "title": "Мультиподписка цифрового оператора: развивать, менять или закрывать (кейс-каркас на открытых данных)",
+  "updated_at": "2026-11-14",
+  "objective": "Подготовить для руководителя цифрового продукта оператора решение: что делать с мультиподпиской на цифровые сервисы на фоне замедления рынка экосистемных подписок. Учебный кейс по открытым публикациям; не официальный бриф МегаФона.",
+  "decision_owner": "Руководитель цифрового продукта (роль в демо)",
+  "stage": "options",
+  "constraints": [
+    "Только открытые источники; закрытые данные МегаФона не запрашиваются и не используются.",
+    "Сеть в сессии подготовки была ограничена: источники известны по поисковой выдаче и требуют снимка страницы (verification=search_snippet).",
+    "Внутренние метрики (число подписчиков, активация, отток, стоимость контента) неизвестны; любые числа о них — допущения сценария.",
+    "Модельные респонденты — синтетика, только для формулировки гипотез и гайда интервью.",
+    "Окончательный выбор делает человек."
+  ],
+  "path_base": "project",
+  "manual_baseline": {
+    "hours": 16,
+    "basis": "оценка: продакт-аналитик вручную ищет и читает ~10 открытых публикаций, сводит факты/противоречия, пишет 3+ варианта и записку на 6–8 страниц; не измерено",
+    "measured": false
+  },
+  "sources": [
+    {
+      "source_id": "S-MF-FY2025",
+      "kind": "website",
+      "title": "New Retail: МегаФон сократил чистую прибыль за 2025 год на 8,19% (пересказ отчётности)",
+      "url_or_path": "https://new-retail.ru/novosti/retail/megafon_sokratil_chistuyu_pribyl_za_2025_god_na_8_19/",
+      "publisher_or_owner": "New Retail (СМИ)",
+      "accessed_at": "2026-11-14",
+      "scope": "Годовые финансовые итоги МегаФона 2025, пересказ СМИ",
+      "limitations": "Вторичный пересказ; известен по поисковой выдаче; первоисточник — пресс-релиз/МСФО МегаФона, нужно открыть и снять.",
+      "snapshot_path": "sources/snapshots/S-MF-FY2025__20261114T130111Z.md",
+      "verification": "search_snippet",
+      "content_sha256": "026d8e584a4b2f14187d8507e0d754a855ae5052b98ce3dd32adcf80dd62f44f",
+      "injection_flags": [],
+      "valid_until": "2026-12-15"
+    },
+    {
+      "source_id": "S-MF-H1-2026",
+      "kind": "website",
+      "title": "ComNews: МегаФон подвёл финансовые итоги первого полугодия 2026 г.",
+      "url_or_path": "https://www.comnews.ru/content/247010/2026-08-21/2026-w34/1010/megafon-podvel-finansovye-itogi-pervogo-polugodiya-2026-g",
+      "publisher_or_owner": "ComNews (СМИ)",
+      "published_at": "2026-08-21",
+      "accessed_at": "2026-11-14",
+      "scope": "Полугодовые финансовые итоги МегаФона 2026",
+      "limitations": "Известен по поисковой выдаче; прямой доступ к comnews.ru из сессии был заблокирован; сверить с пресс-релизом компании.",
+      "snapshot_path": "sources/snapshots/S-MF-H1-2026__20261114T130111Z.md",
+      "verification": "search_snippet",
+      "content_sha256": "01b3baf00e42d92edb1a9e28641e3136830714227f25c730d82f45bd1b780de5",
+      "injection_flags": [],
+      "valid_until": "2026-12-15"
+    },
+    {
+      "source_id": "S-ECO-PENETRATION",
+      "kind": "website",
+      "title": "ComNews: Более половины горожан в России пользуются экосистемными подписками",
+      "url_or_path": "https://www.comnews.ru/content/244453/2026-03-26/2026-w13/1009/bolee-poloviny-gorozhan-rossii-polzuyutsya-ekosistemnymi-podpiskami",
+      "publisher_or_owner": "ComNews со ссылкой на TelecomDaily",
+      "published_at": "2026-03-26",
+      "accessed_at": "2026-11-14",
+      "scope": "Проникновение экосистемных подписок в городах РФ, 4 кв. 2025",
+      "limitations": "Известен по поисковой выдаче; цифры платящих/бесплатных в выдаче не привязаны однозначно к этому материалу; методика опроса не изучена.",
+      "snapshot_path": "sources/snapshots/S-ECO-PENETRATION__20261114T130111Z.md",
+      "verification": "search_snippet",
+      "content_sha256": "63744cf94309af0109ea408ec8389fb5638bf214e99d014399860ec0dae0902a",
+      "injection_flags": [],
+      "valid_until": "2026-12-15"
+    },
+    {
+      "source_id": "S-ECO-SLOWDOWN",
+      "kind": "website",
+      "title": "Sostav: Экосистемные подписки упёрлись в потолок",
+      "url_or_path": "https://www.sostav.ru/publication/ekosistemnye-podpiski-uperlis-v-potolok-83352.html",
+      "publisher_or_owner": "Sostav (СМИ)",
+      "accessed_at": "2026-11-14",
+      "scope": "Динамика аудитории экосистемных подписок 2025",
+      "limitations": "Известен по поисковой выдаче; данные Яндекса — раскрытие компании; причины замедления — мнения участников рынка.",
+      "snapshot_path": "sources/snapshots/S-ECO-SLOWDOWN__20261114T130111Z.md",
+      "verification": "search_snippet",
+      "content_sha256": "0fe14d09664d9acfc9354b44df860368360baad836e5b8d035837b4fcaef03d4",
+      "injection_flags": [],
+      "valid_until": "2026-12-15"
+    },
+    {
+      "source_id": "S-FRANKRG",
+      "kind": "document",
+      "title": "Frank RG: исследование экосистемных подписок (атрибуция фрагмента не подтверждена)",
+      "url_or_path": "https://frankrg.com/wp-content/uploads/2026/01/36681518f698.pdf",
+      "publisher_or_owner": "Frank RG",
+      "accessed_at": "2026-11-14",
+      "scope": "Осознанность подписок и доля платящих",
+      "limitations": "Поисковая сводка не привязала цитату к конкретному PDF; в выдаче есть PDF Frank RG с пометкой DEMO/данные вымышлены. Не использовать как факт до открытия первоисточника.",
+      "snapshot_path": "sources/snapshots/S-FRANKRG__20261114T130111Z.md",
+      "verification": "search_snippet",
+      "content_sha256": "b9a115561693ece8594dc4c556ddcb1f46b8863f15d111ed79a9450e4a465ede",
+      "injection_flags": [],
+      "valid_until": "2026-12-15"
+    },
+    {
+      "source_id": "S-MF-PLUS",
+      "kind": "website",
+      "title": "Mobile-review (пресс-релиз): МегаФон запустил мультиподписку «МегаФон Плюс»",
+      "url_or_path": "https://mobile-review.com/all/press_releases/megafon-zapustil-multipodpisku-megafon-plyus/",
+      "publisher_or_owner": "МегаФон через Mobile-review",
+      "accessed_at": "2026-11-14",
+      "scope": "Состав и цена мультиподписки на момент запуска",
+      "limitations": "Дата публикации в выдаче отсутствует; условия могли измениться или продукт мог быть закрыт; актуальные условия — только с официального сайта.",
+      "snapshot_path": "sources/snapshots/S-MF-PLUS__20261114T130111Z.md",
+      "verification": "search_snippet",
+      "content_sha256": "aa12e6921662400575294e4fb5bcc73eeb15394813caf89cc006e5feae700081",
+      "injection_flags": [],
+      "valid_until": "2026-12-15"
+    },
+    {
+      "source_id": "S-MF-MEGAKINO",
+      "kind": "website",
+      "title": "Mobile-review: МегаФон запустил подписку «МегаКино»",
+      "url_or_path": "https://mobile-review.com/all/news/chetyre-onlajn-kinoteatra-srazu-megafon-zapustil-dostupnuyu-podpisku-megakino/",
+      "publisher_or_owner": "Mobile-review (СМИ)",
+      "accessed_at": "2026-11-14",
+      "scope": "Факт запуска видеоподписки оператора",
+      "limitations": "Известен только заголовок; состав, цена и дата не проверены.",
+      "snapshot_path": "sources/snapshots/S-MF-MEGAKINO__20261114T130112Z.md",
+      "verification": "search_snippet",
+      "content_sha256": "d5a816cc5034878f4be7e58522a9aea16a0406717bef81fd1bbb6b6f6c8b3c1d",
+      "injection_flags": [],
+      "valid_until": "2026-12-15"
+    },
+    {
+      "source_id": "S-MTS-PREMIUM",
+      "kind": "website",
+      "title": "Выберу.ру: изменения подписки МТС Premium с 2026 года",
+      "url_or_path": "https://www.vbr.ru/novosti/banki/2026/07/30/podpiska-mts-premium-s-1-avgysta-2026/",
+      "publisher_or_owner": "Выберу.ру (СМИ)",
+      "published_at": "2026-07-30",
+      "accessed_at": "2026-11-14",
+      "scope": "Изменение модели подписки конкурента",
+      "limitations": "Внутреннее противоречие дат (1 августа vs 1 октября); сверить с media.mts.ru.",
+      "snapshot_path": "sources/snapshots/S-MTS-PREMIUM__20261114T130112Z.md",
+      "verification": "search_snippet",
+      "content_sha256": "a74a82c1088a0967dbf679d4d84ff241f5353a6f1f46fa31809c93a6f2a62353",
+      "injection_flags": [],
+      "valid_until": "2026-12-15"
+    },
+    {
+      "source_id": "S-VIDEO-EXPERT",
+      "kind": "website",
+      "title": "Эксперт: выручка онлайн-кинотеатров в России впервые превысила 200 млрд рублей",
+      "url_or_path": "https://expert.ru/news/vyruchka-onlayn-kinoteatrov-v-rossii-vpervye-prevysila-200-mlrd-rubley",
+      "publisher_or_owner": "Эксперт со ссылкой на TelecomDaily",
+      "accessed_at": "2026-11-14",
+      "scope": "Объём рынка онлайн-кинотеатров 2025",
+      "limitations": "Известен по поисковой выдаче; методика оценки не изучена.",
+      "snapshot_path": "sources/snapshots/S-VIDEO-EXPERT__20261114T130112Z.md",
+      "verification": "search_snippet",
+      "content_sha256": "26b748fa6fe4fc409a5b9d5f77d34ff2c5f3295cda44d7df6fc8b9ebaf510f8a",
+      "injection_flags": [],
+      "valid_until": "2026-12-15"
+    },
+    {
+      "source_id": "S-VIDEO-COMNEWS",
+      "kind": "website",
+      "title": "ComNews: игроки рынка онлайн-кинотеатров остались довольны показателями 2025 г.",
+      "url_or_path": "https://www.comnews.ru/content/243161/2026-01-15/2026-w03/1008/igroki-rynka-onlayn-kinoteatrov-ostalis-dovolny-pokazatelyami-2025-g",
+      "publisher_or_owner": "ComNews (СМИ)",
+      "published_at": "2026-01-15",
+      "accessed_at": "2026-11-14",
+      "scope": "Объём рынка онлайн-кинотеатров 2025, предварительная оценка",
+      "limitations": "Предварительная оценка; известен по поисковой выдаче.",
+      "snapshot_path": "sources/snapshots/S-VIDEO-COMNEWS__20261114T130112Z.md",
+      "verification": "search_snippet",
+      "content_sha256": "4d578685f58a578f16d4fd7a99893bcf5800c4aef79e8cfb82ed88fd5db1b136",
+      "injection_flags": [],
+      "valid_until": "2026-12-15"
+    },
+    {
+      "source_id": "SYN-RESP-1",
+      "kind": "model_respondent",
+      "title": "Модельные респонденты (синтетика): 3 персоны по мультиподписке",
+      "url_or_path": "interviews/synthetic/2026-11-14-model-respondents.md",
+      "accessed_at": "2026-11-14",
+      "scope": "Формулировка гипотез и вопросов к реальным интервью",
+      "limitations": "Сгенерировано моделью; не люди; не показывает частоту или силу потребности.",
+      "verification": "generated",
+      "snapshot_path": "interviews/synthetic/2026-11-14-model-respondents.md"
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "E-01",
+      "claim": "По пересказу СМИ, выручка МегаФона за 2025 год — 525,6 млрд руб. (+8,15%), чистая прибыль — 41,3 млрд руб. (−8,19%).",
+      "claim_type": "source_fact",
+      "source_ids": [
+        "S-MF-FY2025"
+      ],
+      "method": "Фрагмент поисковой выдачи; первоисточник не открыт.",
+      "sample_n": null,
+      "effect": null,
+      "interval": null,
+      "p_value": null,
+      "q_value": null,
+      "status": "provisional",
+      "limitations": "Известно только по поисковой выдаче; требуется снимок первоисточника. Вторичный пересказ.",
+      "related_evidence_ids": []
+    },
+    {
+      "evidence_id": "E-02",
+      "claim": "По ComNews, выручка МегаФона за 1 полугодие 2026 — 264 613 млн руб. (+9,7%), сервисная — 226 693 млн руб. (+7,9%).",
+      "claim_type": "source_fact",
+      "source_ids": [
+        "S-MF-H1-2026"
+      ],
+      "method": "Фрагмент поисковой выдачи.",
+      "sample_n": null,
+      "effect": null,
+      "interval": null,
+      "p_value": null,
+      "q_value": null,
+      "status": "provisional",
+      "limitations": "Известно только по поисковой выдаче; требуется снимок первоисточника. Показывает масштаб ядра бизнеса, не вклад подписок.",
+      "related_evidence_ids": []
+    },
+    {
+      "evidence_id": "E-03",
+      "claim": "По TelecomDaily (через ComNews), в 4 кв. 2025 51% жителей городов РФ пользовались экосистемными подписками.",
+      "claim_type": "source_fact",
+      "source_ids": [
+        "S-ECO-PENETRATION"
+      ],
+      "method": "Фрагмент поисковой выдачи.",
+      "sample_n": null,
+      "effect": null,
+      "interval": null,
+      "p_value": null,
+      "q_value": null,
+      "status": "provisional",
+      "limitations": "Известно только по поисковой выдаче; требуется снимок первоисточника. Методика и выборка опроса не изучены; «пользовались» ≠ «платили».",
+      "related_evidence_ids": []
+    },
+    {
+      "evidence_id": "E-04",
+      "claim": "Доля платящих подписчиков экосистем за 2025 год выросла с 32% до 38%, доля получивших подписку бесплатно снизилась примерно до 26%.",
+      "claim_type": "source_fact",
+      "source_ids": [
+        "S-ECO-PENETRATION"
+      ],
+      "method": "Фрагмент поисковой выдачи.",
+      "sample_n": null,
+      "effect": null,
+      "interval": null,
+      "p_value": null,
+      "q_value": null,
+      "status": "provisional",
+      "limitations": "Известно только по поисковой выдаче; требуется снимок первоисточника. Атрибуция цифр к конкретной публикации не подтверждена.",
+      "related_evidence_ids": []
+    },
+    {
+      "evidence_id": "E-05",
+      "claim": "Рост аудитории крупнейших экосистемных подписок замедлился: у Яндекса аудитория 47,5 млн, +21% за 2025 против +29% в 2024; участники рынка называют насыщение и рост цен.",
+      "claim_type": "source_fact",
+      "source_ids": [
+        "S-ECO-SLOWDOWN"
+      ],
+      "method": "Фрагмент поисковой выдачи.",
+      "sample_n": null,
+      "effect": null,
+      "interval": null,
+      "p_value": null,
+      "q_value": null,
+      "status": "provisional",
+      "limitations": "Известно только по поисковой выдаче; требуется снимок первоисточника. Причины — мнения участников, не измерение.",
+      "related_evidence_ids": []
+    },
+    {
+      "evidence_id": "E-06",
+      "claim": "Исследование Frank RG (по пересказу): почти половина пользователей не осознаёт, что у них есть подписка, или пользуется ограниченным бесплатным доступом.",
+      "claim_type": "source_fact",
+      "source_ids": [
+        "S-FRANKRG"
+      ],
+      "method": "Фрагмент поисковой выдачи.",
+      "sample_n": null,
+      "effect": null,
+      "interval": null,
+      "p_value": null,
+      "q_value": null,
+      "status": "provisional",
+      "limitations": "Атрибуция не подтверждена; в выдаче есть PDF Frank RG с пометкой DEMO/данные вымышлены. До проверки не использовать как факт в рекомендации.",
+      "related_evidence_ids": []
+    },
+    {
+      "evidence_id": "E-07",
+      "claim": "В пресс-релизе (дата не указана) МегаФон Плюс описан как мультиподписка за 399 руб./мес. для абонентов любых операторов: ivi, Start, MyBook, СберЗвук.",
+      "claim_type": "source_fact",
+      "source_ids": [
+        "S-MF-PLUS"
+      ],
+      "method": "Фрагмент поисковой выдачи.",
+      "sample_n": null,
+      "effect": null,
+      "interval": null,
+      "p_value": null,
+      "q_value": null,
+      "status": "provisional",
+      "limitations": "Известно только по поисковой выдаче; требуется снимок первоисточника. Условия могли измениться; актуальность продукта неизвестна.",
+      "related_evidence_ids": []
+    },
+    {
+      "evidence_id": "E-08",
+      "claim": "Конкурент (МТС) в 2026 году переводит МТС Premium на платную модель и делает её семейной (до 4 номеров); дата перехода в источнике противоречива: 1 августа или 1 октября.",
+      "claim_type": "source_fact",
+      "source_ids": [
+        "S-MTS-PREMIUM"
+      ],
+      "method": "Фрагмент поисковой выдачи.",
+      "sample_n": null,
+      "effect": null,
+      "interval": null,
+      "p_value": null,
+      "q_value": null,
+      "status": "provisional",
+      "limitations": "Внутреннее противоречие дат; сверить с официальным сайтом МТС.",
+      "related_evidence_ids": []
+    },
+    {
+      "evidence_id": "E-09",
+      "claim": "Оценки рынка онлайн-кинотеатров за 2025 год расходятся: свыше 200 млрд руб. (TelecomDaily) против ~170 млрд руб. (предварительно, ComNews).",
+      "claim_type": "source_fact",
+      "source_ids": [
+        "S-VIDEO-EXPERT",
+        "S-VIDEO-COMNEWS"
+      ],
+      "method": "Сопоставление двух фрагментов выдачи; не усреднять.",
+      "sample_n": null,
+      "effect": null,
+      "interval": null,
+      "p_value": null,
+      "q_value": null,
+      "status": "contradicted",
+      "limitations": "Разная методика/состав выручки; использовать как диапазон с указанием методики.",
+      "related_evidence_ids": []
+    },
+    {
+      "evidence_id": "H-01",
+      "claim": "Мультиподписка, встроенная в тариф или семейный пакет, может снижать отток мобильных абонентов оператора.",
+      "claim_type": "hypothesis",
+      "source_ids": [
+        "S-ECO-PENETRATION",
+        "S-ECO-SLOWDOWN"
+      ],
+      "method": "Логический вывод из рыночного контекста; эффекта на отток в открытых данных нет.",
+      "sample_n": null,
+      "effect": null,
+      "interval": null,
+      "p_value": null,
+      "q_value": null,
+      "status": "provisional",
+      "limitations": "Нет внутренних данных; наблюдаемая связь «подписчики уходят реже» была бы смещена отбором лояльных. Нужен holdout-эксперимент.",
+      "related_evidence_ids": [
+        "E-03",
+        "E-05"
+      ]
+    },
+    {
+      "evidence_id": "H-02",
+      "claim": "Для части базы ценность не реализуется из-за незнания о включённых сервисах, а не из-за цены.",
+      "claim_type": "hypothesis",
+      "source_ids": [
+        "S-FRANKRG",
+        "SYN-RESP-1"
+      ],
+      "method": "Сочетание непроверенного E-06 и модельных респондентов.",
+      "sample_n": null,
+      "effect": null,
+      "interval": null,
+      "p_value": null,
+      "q_value": null,
+      "status": "provisional",
+      "limitations": "Обе опоры слабые: непроверенная атрибуция и синтетика. Проверить на данных активации и в реальных интервью.",
+      "related_evidence_ids": [
+        "E-06"
+      ]
+    },
+    {
+      "evidence_id": "H-SR-1",
+      "claim": "Главный барьер — дублирование с уже оплаченными экосистемными подписками, а не цена.",
+      "claim_type": "hypothesis",
+      "source_ids": [
+        "SYN-RESP-1"
+      ],
+      "method": "Модельные респонденты (синтетика).",
+      "sample_n": null,
+      "effect": null,
+      "interval": null,
+      "p_value": null,
+      "q_value": null,
+      "status": "provisional",
+      "limitations": "Синтетика: не показывает распространённость.",
+      "related_evidence_ids": []
+    },
+    {
+      "evidence_id": "H-SR-3",
+      "claim": "Агрессивная коммуникация подписки вызовет жалобы и отключения у недоверчивой части базы.",
+      "claim_type": "hypothesis",
+      "source_ids": [
+        "SYN-RESP-1"
+      ],
+      "method": "Модельные респонденты (синтетика).",
+      "sample_n": null,
+      "effect": null,
+      "interval": null,
+      "p_value": null,
+      "q_value": null,
+      "status": "provisional",
+      "limitations": "Синтетика; риск подтверждается/опровергается только guardrail-метриками теста.",
+      "related_evidence_ids": []
+    },
+    {
+      "evidence_id": "F-01",
+      "claim": "При замедлении рынка (E-05) рост самостоятельной подписки за счёт привлечения новых платящих маловероятен в горизонте 12 месяцев; ценность скорее в удержании и ARPU ядра.",
+      "claim_type": "forecast",
+      "source_ids": [
+        "S-ECO-SLOWDOWN",
+        "S-ECO-PENETRATION"
+      ],
+      "method": "Экспертный прогноз агента на основе E-03…E-05.",
+      "sample_n": null,
+      "effect": null,
+      "interval": null,
+      "p_value": null,
+      "q_value": null,
+      "status": "provisional",
+      "limitations": "Допущения: тренд 2025 сохраняется, цены экосистем не снижаются, у оператора нет эксклюзивного контента. Опровергается ростом платящих в подписке оператора > рынка.",
+      "related_evidence_ids": [
+        "E-03",
+        "E-04",
+        "E-05"
+      ]
+    }
+  ],
+  "research_questions": [
+    {
+      "question_id": "RQ-1",
+      "question": "Существует ли продукт сейчас, какие у него условия и сколько у него активных пользователей?",
+      "could_change": "Если продукта нет или он уже закрыт — кейс превращается в решение о запуске, а не о развитии.",
+      "source_ids": [
+        "S-MF-PLUS",
+        "S-MF-MEGAKINO"
+      ],
+      "status": "open: нужен официальный сайт и (для владельца) внутренние данные"
+    },
+    {
+      "question_id": "RQ-2",
+      "question": "Влияет ли подписка на отток мобильных абонентов, если сравнить с честной контрольной группой?",
+      "could_change": "Главный аргумент за O-1; без эффекта на отток остаётся только самостоятельная экономика подписки.",
+      "source_ids": [],
+      "status": "open: только эксперимент владельца"
+    },
+    {
+      "question_id": "RQ-3",
+      "question": "Почему включённые сервисы не активируют: незнание, дублирование, недоверие?",
+      "could_change": "Определяет, что менять: коммуникацию (O-1) или состав предложения (O-2).",
+      "source_ids": [
+        "SYN-RESP-1",
+        "S-FRANKRG"
+      ],
+      "status": "open: 8–12 реальных интервью"
+    },
+    {
+      "question_id": "RQ-4",
+      "question": "Как меняют модель конкуренты (МТС Premium платная/семейная) и что это делает с альтернативами клиента?",
+      "could_change": "Если конкуренты уходят от бесплатного бандла, позиционирование «включено в тариф» может стать отличием.",
+      "source_ids": [
+        "S-MTS-PREMIUM"
+      ],
+      "status": "partly: дата противоречива"
+    }
+  ],
+  "options": [
+    {
+      "option_id": "O-0",
+      "kind": "status_quo",
+      "title": "Оставить мультиподписку как есть",
+      "benefits": [
+        "Нет затрат на изменение и риска для текущих партнёров.",
+        "Сохраняется опция при росте рынка."
+      ],
+      "costs_and_risks": [
+        "На насыщающемся рынке (E-05) продукт без отличий теряет долю тихо.",
+        "Неизвестно, окупается ли он сейчас (RQ-1)."
+      ],
+      "objection": "«Ничего не делать» — тоже решение с ценой: если подписка не активируется (H-02), оператор платит партнёрам за неиспользуемый доступ или теряет выручку незаметно.",
+      "evidence_ids": [
+        "E-05",
+        "E-07",
+        "H-02"
+      ]
+    },
+    {
+      "option_id": "O-1",
+      "kind": "change",
+      "title": "Сделать подписку частью тарифа/семейного пакета и бороться за активацию (ставка на удержание)",
+      "benefits": [
+        "Использует сильную сторону оператора — ежемесячные отношения с абонентом и семьёй.",
+        "Отвечает на гипотезы незнания и дублирования (H-02, H-SR-1) без нового контента."
+      ],
+      "costs_and_risks": [
+        "Стоимость контента партнёров на каждого включённого абонента.",
+        "Эффект на отток не доказан (H-01) и может оказаться отбором лояльных.",
+        "Риск жалоб на «навязанные» подписки (H-SR-3)."
+      ],
+      "objection": "Если включённая подписка не снижает отток в контролируемом сравнении, оператор просто дарит маржу партнёрам; конкурент (E-08) уходит от бесплатного бандла, возможно, именно потому что он не окупался.",
+      "evidence_ids": [
+        "H-01",
+        "H-02",
+        "H-SR-1",
+        "H-SR-3",
+        "E-08",
+        "F-01"
+      ]
+    },
+    {
+      "option_id": "O-2",
+      "kind": "pivot",
+      "title": "Перейти от собственной мультиподписки к витрине партнёрских подписок с биллингом оператора",
+      "benefits": [
+        "Меньше обязательств по контенту; оператор зарабатывает на биллинге и удобстве оплаты.",
+        "Снимает проблему дублирования: клиент выбирает только недостающее."
+      ],
+      "costs_and_risks": [
+        "Слабее связь с тарифом — меньше потенциального эффекта на отток.",
+        "Зависимость от условий партнёров; низкая маржа витрины."
+      ],
+      "objection": "Витрина без собственного ценностного предложения конкурирует с прямой оплатой в приложениях сервисов и экосистемах — неясно, зачем клиенту посредник.",
+      "evidence_ids": [
+        "E-03",
+        "E-04",
+        "E-05",
+        "H-SR-1"
+      ]
+    },
+    {
+      "option_id": "O-3",
+      "kind": "learn",
+      "title": "6–8 недель проверки до инвестиций: интервью, аудит активации, holdout-тест на части базы",
+      "benefits": [
+        "Отвечает на RQ-1…RQ-3 до траты бюджета.",
+        "Даёт основание выбрать между O-1, O-2 и O-4."
+      ],
+      "costs_and_risks": [
+        "Время; решение откладывается на квартал.",
+        "Тест требует доступа к внутренним данным и согласования."
+      ],
+      "objection": "Если рынок меняется быстро (E-08), задержка может стоить окна для перепозиционирования; кроме того, holdout на отток требует долгого окна.",
+      "evidence_ids": [
+        "H-01",
+        "H-02",
+        "E-08"
+      ]
+    },
+    {
+      "option_id": "O-4",
+      "kind": "stop",
+      "title": "Заморозить/закрыть собственную мультиподписку и перевести клиентов на партнёрские предложения",
+      "benefits": [
+        "Освобождает команду и бюджет для ядра (E-01, E-02 — масштаб ядра несопоставимо больше).",
+        "Убирает риск жалоб на подписки."
+      ],
+      "costs_and_risks": [
+        "Потеря возможного инструмента удержания, если H-01 верна.",
+        "Миграция действующих подписчиков, репутационный риск."
+      ],
+      "objection": "Закрыть, не измерив эффект на отток, — значит отказаться от возможного рычага удержания на основании отсутствия данных, а не данных об отсутствии эффекта.",
+      "evidence_ids": [
+        "E-01",
+        "E-02",
+        "F-01",
+        "H-SR-3"
+      ]
+    }
+  ],
+  "chosen_option_id": null,
+  "commitments": [],
+  "unresolved_questions": [
+    "Актуальное состояние продукта (существует ли, условия, цена) — только официальный сайт оператора.",
+    "Внутренние метрики: активные пользователи, активация включённых сервисов, отток, стоимость контента — недоступны в открытых данных; владелец данных должен дать их или разрешить тест.",
+    "Официальный бриф МегаФона для демо-проекта ещё не опубликован."
+  ],
+  "next_action": "Показать владельцу решения варианты O-0…O-4 и рекомендацию (O-3 → условный O-1); параллельно снять первоисточники из outputs/source-collection-todo.md.",
+  "checkpoints": [
+    {
+      "at": "2026-11-14T13:08:15+00:00",
+      "stage": "options",
+      "summary": "Каркас кейса: 11 источников (search_snippet), 14 доказательств, 5 вариантов, критика и черновик записки",
+      "next_action": "Показать владельцу решения варианты O-0…O-4 и рекомендацию (O-3 → условный O-1); параллельно снять первоисточники из outputs/source-collection-todo.md.",
+      "sources": {
+        "S-MF-FY2025": {
+          "location": "https://new-retail.ru/novosti/retail/megafon_sokratil_chistuyu_pribyl_za_2025_god_na_8_19/",
+          "fingerprint": "3235280e6ecee30ae6a606e95d606eed1adcc7951193b53dec0d08765439caa7"
+        },
+        "S-MF-H1-2026": {
+          "location": "https://www.comnews.ru/content/247010/2026-08-21/2026-w34/1010/megafon-podvel-finansovye-itogi-pervogo-polugodiya-2026-g",
+          "fingerprint": "128453d94bb9d1efb7e47c518b139e52e074229d5dceae9332d4f42b693c5104"
+        },
+        "S-ECO-PENETRATION": {
+          "location": "https://www.comnews.ru/content/244453/2026-03-26/2026-w13/1009/bolee-poloviny-gorozhan-rossii-polzuyutsya-ekosistemnymi-podpiskami",
+          "fingerprint": "f1f5342a66ac62ca5d7898f41fbb6bd178f4da32d5693dd170b405cb69b5012d"
+        },
+        "S-ECO-SLOWDOWN": {
+          "location": "https://www.sostav.ru/publication/ekosistemnye-podpiski-uperlis-v-potolok-83352.html",
+          "fingerprint": "c45dfe5f8e912339671bb32ffaeae4db5c7afa0d198153ba11c3c6327bedf2b9"
+        },
+        "S-FRANKRG": {
+          "location": "https://frankrg.com/wp-content/uploads/2026/01/36681518f698.pdf",
+          "fingerprint": "d70df30213a519e521628f52983e30551814cd84bdeab23b923534d32f0dc797"
+        },
+        "S-MF-PLUS": {
+          "location": "https://mobile-review.com/all/press_releases/megafon-zapustil-multipodpisku-megafon-plyus/",
+          "fingerprint": "4599901521a469cd958d072669b7fd9b53be80bb47ba9556b4471bf4e98c77fb"
+        },
+        "S-MF-MEGAKINO": {
+          "location": "https://mobile-review.com/all/news/chetyre-onlajn-kinoteatra-srazu-megafon-zapustil-dostupnuyu-podpisku-megakino/",
+          "fingerprint": "2e78d4bf615a01a2cbaf8a8d14ab9e16615e7c030dfddd0fc1ab2b4134ed4b42"
+        },
+        "S-MTS-PREMIUM": {
+          "location": "https://www.vbr.ru/novosti/banki/2026/07/30/podpiska-mts-premium-s-1-avgysta-2026/",
+          "fingerprint": "3f065b7c55b28ddf7166ffdb59cf925f8a43be9f5f769f196fec63004a4a063d"
+        },
+        "S-VIDEO-EXPERT": {
+          "location": "https://expert.ru/news/vyruchka-onlayn-kinoteatrov-v-rossii-vpervye-prevysila-200-mlrd-rubley",
+          "fingerprint": "27ca078465e832ab9169fa8b663cf0d5c466ed148cba5fe83aae56a8156744e9"
+        },
+        "S-VIDEO-COMNEWS": {
+          "location": "https://www.comnews.ru/content/243161/2026-01-15/2026-w03/1008/igroki-rynka-onlayn-kinoteatrov-ostalis-dovolny-pokazatelyami-2025-g",
+          "fingerprint": "b18706ca2260be883524f4e25746e3ce961a79e1929222a043b15505acdba130"
+        },
+        "SYN-RESP-1": {
+          "location": "interviews/synthetic/2026-11-14-model-respondents.md",
+          "fingerprint": "7d41745bc11b270bdb5698255b459f2b6058def29300ea6a77745a8d585895cb"
+        }
+      }
+    }
+  ]
+}

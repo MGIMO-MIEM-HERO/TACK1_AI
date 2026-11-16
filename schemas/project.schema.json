@@ -85,7 +85,33 @@
     "commitments": {
       "type": "array",
       "items": {
-        "type": "object"
+        "type": "object",
+        "required": [
+          "owner",
+          "metric",
+          "due",
+          "review_trigger"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string"
+          },
+          "metric": {
+            "type": "string"
+          },
+          "due": {
+            "type": "string"
+          },
+          "review_trigger": {
+            "type": "string"
+          },
+          "baseline": {
+            "type": "string"
+          },
+          "stop_rule": {
+            "type": "string"
+          }
+        }
       }
     },
     "unresolved_questions": {
@@ -145,6 +171,23 @@
     },
     "recommendation_rationale": {
       "type": "string"
+    },
+    "manual_baseline": {
+      "type": "object",
+      "properties": {
+        "hours": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "basis": {
+          "type": "string"
+        },
+        "measured": {
+          "type": "boolean"
+        }
+      }
     }
   },
   "$defs": {
@@ -170,7 +213,9 @@
             "website",
             "interview",
             "synthetic",
-            "tool_output"
+            "tool_output",
+            "model_respondent",
+            "agent_note"
           ]
         },
         "title": {
@@ -200,6 +245,41 @@
         },
         "synthetic": {
           "type": "boolean"
+        },
+        "verification": {
+          "enum": [
+            "http_snapshot",
+            "agent_tool_snapshot",
+            "search_snippet",
+            "manual_file",
+            "provided_by_user",
+            "generated"
+          ],
+          "description": "How the content was obtained; search_snippet cannot corroborate evidence alone."
+        },
+        "content_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "injection_flags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Instruction-like text found by scripts/snapshot.py; the source stays data."
+        },
+        "valid_until": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Date after which the source must be re-checked."
+        },
+        "publisher_or_owner": {
+          "type": [
+            "string",
+            "null"
+          ]
         }
       }
     },
@@ -341,6 +421,15 @@
           "items": {
             "type": "string"
           }
+        },
+        "kind": {
+          "enum": [
+            "status_quo",
+            "change",
+            "pivot",
+            "learn",
+            "stop"
+          ]
         }
       }
     }

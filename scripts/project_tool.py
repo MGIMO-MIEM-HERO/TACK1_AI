@@ -13,7 +13,7 @@ from pathlib import Path
 import sys
 
 from checkpoint import ROOT, fingerprint, impacted, write_state
-from validate_project import validate, FACT_TYPES
+from validate_project import validate, FACT_TYPES, warnings as review_warnings
 
 PRODUCT_FIELDS = ('audience', 'job', 'alternatives', 'direction', 'non_goals', 'economics')
 COMMUNICATION_FIELDS = ('audience', 'situation', 'barrier', 'message', 'proof', 'channels')
@@ -49,7 +49,7 @@ def source_health(project, path):
 
 def audit(project, path, ready=False):
     errors = []
-    warnings = []
+    warnings = review_warnings(project)
     health = source_health(project, path)
     if health['unverifiable_sources']:
         errors.append('Missing/untracked sources: ' + ', '.join(health['unverifiable_sources']))
@@ -97,7 +97,7 @@ def audit(project, path, ready=False):
         if not all(commitment.get(k) for k in ('owner', 'due', 'metric', 'review_trigger')):
             warnings.append('Commitment needs owner, due, metric and review_trigger')
     cost_path = path.parent / 'runs.jsonl'
-    if not cost_path.exists():
+    if not cost_path.exists() and not (path.parent / 'ledger.jsonl').exists():
         warnings.append('No measured run log (runs.jsonl); cost and time are unknown')
     if not project.get('checkpoints'):
         warnings.append('No saved checkpoint; resume is not demonstrated')
@@ -232,7 +232,7 @@ def main():
             return 0 if result['ready'] else 1
         if args.command == 'report':
             base = path.parent if project.get('path_base') == 'project' else ROOT
-            protected = {path, (path.parent / 'runs.jsonl').resolve()}
+            protected = {path, (path.parent / 'runs.jsonl').resolve(), (path.parent / 'ledger.jsonl').resolve()}
             for source in project['sources']:
                 for key in ('url_or_path', 'snapshot_path'):
                     location = source.get(key)
