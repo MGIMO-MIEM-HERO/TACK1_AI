@@ -1,5 +1,7 @@
 # Контур решения
 
+**Доработка после живых прогонов:** [что исправлено](docs/local-quality-upgrade.md), [содержательная проверка](workflows/decision-review.md), [сверка с конкурсом](docs/contest-fit.md). Новый строгий пример: `examples/review-contract-case`.
+
 Начните с [START_HERE.md](START_HERE.md). Единый запуск: `python scripts/start.py examples/campus-strategy/project.json`. [Улучшения после проверки в новом чате](docs/agent-v3.md).
 
 **Обновление 14 ноября.** Добавлен [быстрый запуск](docs/quickstart.md),

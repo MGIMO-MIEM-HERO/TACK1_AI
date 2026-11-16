@@ -1,0 +1,13 @@
+{
+  "task_path": "task.md",
+  "material_paths": ["material.md"],
+  "answer_path": "raw-answer.md",
+  "model": null,
+  "model_settings": {},
+  "tools": [],
+  "time_budget_seconds": null,
+  "session_mode": "fresh",
+  "mode": "agent",
+  "agent_revision": null,
+  "note": "Template only. Fill actual model, settings, tools, revision and preset time budget. Never invent unknown values."
+}

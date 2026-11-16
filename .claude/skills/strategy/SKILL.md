@@ -15,3 +15,5 @@ description: Write the recommended product strategy and the matching communicati
 6. Раздел «Стоимость»: `python3 scripts/ledger.py report <project.json> --out <case>/outputs/cost-report.md`; сравнение с `manual_baseline`.
 7. Перед показом — повторный проход `devils-advocate` по записке (одна итерация на версию).
 8. `ledger.py finish`, `checkpoint.py save --summary "Записка v<N>"`.
+
+Перед итогом: workflows/decision-review.md, validation_design, strategy_review, audit --ready --quality и report --final. Назначенные пороги не равны согласованным или выполненным. В elapsed begin/finish не включай утверждение об экономии времени.

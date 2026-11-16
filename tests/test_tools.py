@@ -47,12 +47,12 @@ class TempProject(unittest.TestCase):
 
 class ExamplesAreValid(unittest.TestCase):
     def test_examples_validate(self):
-        for case in ("activation-case", "operator-subscription-case"):
+        for case in ("activation-case", "operator-subscription-case", "review-contract-case"):
             result = run("scripts/validate_project.py", f"examples/{case}/project.json")
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
     def test_example_ledgers_intact(self):
-        for case in ("activation-case", "operator-subscription-case"):
+        for case in ("activation-case", "operator-subscription-case", "review-contract-case"):
             path = ROOT / "examples" / case / "ledger.jsonl"
             if path.exists():
                 result = run("scripts/ledger.py", "verify", f"examples/{case}/project.json")

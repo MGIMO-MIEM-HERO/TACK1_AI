@@ -28,7 +28,8 @@ def restore(path):
                               'Какое решение требуется принять и какие материалы доступны?'),
         'next_action': project['next_action'],
         'open_questions': project.get('unresolved_questions', []),
-        'audit': result, 'ledger': ledger_summary(path),
+        'audit': result, 'content_review': result['content_review'],
+        'experiment_status': result['content_review']['experiment_status'], 'ledger': ledger_summary(path),
         'workflow_files': sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / 'workflows').glob('*.md')),
         'instruction': 'Прочитай AGENTS.md. При ошибках сначала пересмотри основания. '
                        'Названия workflow бери из workflow_files. Не фиксируй выбор за человека.',
@@ -54,6 +55,8 @@ def main():
             print('Структурная готовность: ' + ('да' if state['audit']['ready'] else 'требуется проверка'))
             for message in state['audit']['errors'] + state['audit']['warnings']:
                 print('- ' + message)
+            print('Содержательная проверка: ' + state['content_review']['status'])
+            print('Эксперимент: ' + state['experiment_status'])
             print(state['decision_question'])
         # A blocked audit is visible to both humans and automation; nothing is saved.
         return 0 if not state['audit']['errors'] else 1

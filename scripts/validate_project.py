@@ -14,6 +14,8 @@ import sys
 from datetime import date
 from pathlib import Path
 
+from quality import validate_fields
+
 
 REQUIRED_PROJECT = ("project_id", "title", "updated_at", "objective", "stage", "sources", "evidence", "options", "next_action")
 REQUIRED_SOURCE = ("source_id", "kind", "title", "url_or_path", "accessed_at", "scope", "limitations")
@@ -158,6 +160,18 @@ def validate(project: dict[str, object]) -> list[str]:
         if not string_list(related) or any(ref not in evidence_ids for ref in related):
             errors.append(f"evidence {item.get('evidence_id')} has invalid related_evidence_ids")
 
+    # A closed chain of earlier conclusions cannot become its own evidence.
+    graph = {item['evidence_id']: set(item.get('related_evidence_ids', []))
+             for item in evidence if isinstance(item, dict) and isinstance(item.get('evidence_id'), str)
+             and string_list(item.get('related_evidence_ids', []))}
+    pending = dict(graph)
+    while pending:
+        roots = {key for key, refs in pending.items() if not refs.intersection(pending)}
+        if not roots:
+            errors.append('related_evidence_ids contains a circular justification')
+            break
+        pending = {key: refs for key, refs in pending.items() if key not in roots}
+
     option_ids: set[str] = set()
     for index, option in enumerate(options):
         if not isinstance(option, dict):
@@ -223,7 +237,7 @@ def validate(project: dict[str, object]) -> list[str]:
             for field in ("owner", "metric", "due", "review_trigger"):
                 if not isinstance(commitment.get(field), str) or not commitment[field].strip():
                     errors.append(f"commitments[{index}] is missing {field}")
-    return errors
+    return errors + validate_fields(project)
 
 
 def warnings(project: dict[str, object], today: date | None = None) -> list[str]:

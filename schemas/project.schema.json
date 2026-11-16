@@ -188,6 +188,216 @@
           "type": "boolean"
         }
       }
+    },
+    "research_requirements": {
+      "type": "object",
+      "required": [
+        "source_kinds",
+        "rationale"
+      ],
+      "properties": {
+        "source_kinds": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "document",
+              "table",
+              "website",
+              "interview",
+              "synthetic",
+              "tool_output",
+              "model_respondent",
+              "agent_note"
+            ]
+          }
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "validation_design": {
+      "type": "object",
+      "required": [
+        "status",
+        "purpose",
+        "data_origin",
+        "sample",
+        "thresholds"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "planned",
+            "running",
+            "completed"
+          ]
+        },
+        "purpose": {
+          "enum": [
+            "quality",
+            "demand",
+            "causal_effect",
+            "exploratory"
+          ]
+        },
+        "data_origin": {
+          "enum": [
+            "none",
+            "synthetic",
+            "real"
+          ]
+        },
+        "sample": {
+          "type": "object",
+          "required": [
+            "cases",
+            "variants",
+            "repeats",
+            "planned_outputs"
+          ],
+          "properties": {
+            "cases": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "variants": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "repeats": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "planned_outputs": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "thresholds": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "metric",
+              "value",
+              "rationale",
+              "basis"
+            ],
+            "properties": {
+              "metric": {
+                "type": "string",
+                "minLength": 1
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1
+              },
+              "rationale": {
+                "type": "string",
+                "minLength": 1
+              },
+              "agreement_reference": {
+                "type": "string",
+                "minLength": 1
+              },
+              "basis": {
+                "enum": [
+                  "proposed",
+                  "owner_agreed",
+                  "empirical"
+                ]
+              },
+              "evidence_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        },
+        "results": {
+          "type": "object",
+          "properties": {
+            "artifact_path": {
+              "type": "string",
+              "minLength": 1
+            },
+            "summary": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "unit_of_analysis": {
+          "type": "string",
+          "minLength": 1
+        },
+        "comparison": {
+          "type": "string",
+          "minLength": 1
+        },
+        "stop_rule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "inference_limits": {
+          "type": "string",
+          "minLength": 1
+        },
+        "assignment": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "strategy_review": {
+      "type": "object",
+      "required": [
+        "comparison",
+        "strongest_objection",
+        "reversal_condition",
+        "evidence_limits",
+        "state_hash",
+        "reviewer"
+      ],
+      "properties": {
+        "comparison": {
+          "type": "string",
+          "minLength": 1
+        },
+        "strongest_objection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reversal_condition": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_limits": {
+          "type": "string",
+          "minLength": 1
+        },
+        "state_hash": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reviewer": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
     }
   },
   "$defs": {
@@ -280,6 +490,42 @@
             "string",
             "null"
           ]
+        },
+        "content_kind": {
+          "enum": [
+            "page",
+            "excerpt",
+            "summary"
+          ]
+        },
+        "evidence_scope": {
+          "enum": [
+            "general_guidance",
+            "market_observation",
+            "project_observation",
+            "owner_input",
+            "simulation",
+            "description"
+          ]
+        },
+        "quote_checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "excerpt",
+              "found"
+            ],
+            "properties": {
+              "excerpt": {
+                "type": "string",
+                "minLength": 1
+              },
+              "found": {
+                "type": "boolean"
+              }
+            }
+          }
         }
       }
     },
@@ -381,6 +627,52 @@
         },
         "locator": {
           "type": "string"
+        },
+        "claim_scope": {
+          "enum": [
+            "source_description",
+            "owner_input",
+            "project_observation",
+            "market_demand",
+            "causal_effect"
+          ]
+        },
+        "support": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "source_id",
+              "locator",
+              "reason",
+              "relation"
+            ],
+            "properties": {
+              "source_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "locator": {
+                "type": "string",
+                "minLength": 1
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              },
+              "passage": {
+                "type": "string",
+                "minLength": 1
+              },
+              "relation": {
+                "enum": [
+                  "supports",
+                  "context",
+                  "contradicts"
+                ]
+              }
+            }
+          }
         }
       }
     },
