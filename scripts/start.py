@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+"""Read-only entry point: restore a case and show the decision required from its owner."""
+import argparse
+import json
+from pathlib import Path
+
+from checkpoint import ROOT, ledger_summary
+from project_tool import audit, load
+
+
+def restore(path):
+    path = path.resolve()
+    project = load(path)
+    result = audit(project, path, ready=True)
+    options = {item['option_id']: item['title'] for item in project['options']}
+    recommended = project.get('recommended_option_id')
+    chosen = project.get('chosen_option_id')
+    return {
+        'project': str(path), 'title': project['title'], 'stage': project['stage'],
+        'constraints': project.get('constraints', []),
+        'recommendation': {'id': recommended, 'title': options.get(recommended),
+                           'rationale': project.get('recommendation_rationale', '')},
+        'human_choice': chosen,
+        'decision_question': ('Сначала требуется пересмотр оснований; выбор решения пока не фиксируется.'
+                              if result['errors'] else 'Подтверждаете ли вы рекомендацию или выбираете другую альтернативу?'
+                              if recommended and not chosen else
+                              'Нужен ли пересмотр выбранного решения?' if chosen else
+                              'Какое решение требуется принять и какие материалы доступны?'),
+        'next_action': project['next_action'],
+        'open_questions': project.get('unresolved_questions', []),
+        'audit': result, 'ledger': ledger_summary(path),
+        'workflow_files': sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / 'workflows').glob('*.md')),
+        'instruction': 'Прочитай AGENTS.md. При ошибках сначала пересмотри основания. '
+                       'Названия workflow бери из workflow_files. Не фиксируй выбор за человека.',
+    }
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('project', type=Path, help='Exact project.json path; cases are never selected implicitly')
+    parser.add_argument('--json', action='store_true')
+    args = parser.parse_args()
+    try:
+        state = restore(args.project)
+        if args.json:
+            print(json.dumps(state, ensure_ascii=False, indent=2))
+        else:
+            print(state['title'])
+            print('Ограничения: ' + ('; '.join(state['constraints']) or 'ещё не заданы'))
+            print('Рекомендация: ' + str(state['recommendation']['title'] or 'ещё не сформирована'))
+            print(state['recommendation']['rationale'])
+            print('Выбор человека: ' + str(state['human_choice'] or 'не зафиксирован'))
+            print('Следующий шаг: ' + state['next_action'])
+            print('Структурная готовность: ' + ('да' if state['audit']['ready'] else 'требуется проверка'))
+            for message in state['audit']['errors'] + state['audit']['warnings']:
+                print('- ' + message)
+            print(state['decision_question'])
+        # A blocked audit is visible to both humans and automation; nothing is saved.
+        return 0 if not state['audit']['errors'] else 1
+    except (OSError, ValueError, TypeError, KeyError) as error:
+        parser.exit(1, f'Start: {error}\n')
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

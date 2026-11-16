@@ -12,8 +12,9 @@ import math
 from pathlib import Path
 import sys
 
-from checkpoint import ROOT, fingerprint, impacted, write_state
+from checkpoint import ROOT, fingerprint, impacted, write_state, ledger_summary
 from validate_project import validate, FACT_TYPES, warnings as review_warnings
+from output_guard import check_output
 
 PRODUCT_FIELDS = ('audience', 'job', 'alternatives', 'direction', 'non_goals', 'economics')
 COMMUNICATION_FIELDS = ('audience', 'situation', 'barrier', 'message', 'proof', 'channels')
@@ -85,14 +86,37 @@ def audit(project, path, ready=False):
         warnings.append('Recommendation needs an explicit rationale')
     if not recommendation:
         warnings.append('No recommendation; alternatives are not yet a strategy')
-    elif recommendation not in {o['option_id'] for o in project['options']}:
-        errors.append('Recommended option does not exist')
-    else:
-        option = next(o for o in project['options'] if o['option_id'] == recommendation)
-        evidence_by_id = {e['evidence_id']: e for e in project['evidence']}
-        for ref in option['evidence_ids']:
+    sources = {s['source_id']: s for s in project['sources']}
+    evidence_by_id = {e['evidence_id']: e for e in project['evidence']}
+    for label, option_id in (('Recommendation', recommendation), ('Human choice', project.get('chosen_option_id'))):
+        if not option_id:
+            continue
+        option = next((o for o in project['options'] if o['option_id'] == option_id), None)
+        if option is None:
+            errors.append(label + ' option does not exist')
+            continue
+        refs = set(option['evidence_ids'])
+        while True:
+            expanded = refs | {ref for eid in refs for ref in evidence_by_id[eid].get('related_evidence_ids', [])}
+            if expanded == refs:
+                break
+            refs = expanded
+        for ref in sorted(refs):
+            item = evidence_by_id[ref]
             if ref in unusable:
-                errors.append(f'Recommendation depends on unusable evidence {ref}')
+                errors.append(f'{label} depends on unusable evidence {ref}')
+            for sid in item['source_ids']:
+                source = sources[sid]
+                if item['claim_type'] in FACT_TYPES and source.get('verification') == 'search_snippet':
+                    errors.append(f'{label} uses search-only evidence {ref} / {sid}; read the primary source')
+                expiry = source.get('valid_until')
+                if expiry and date.fromisoformat(expiry) < datetime.now(timezone.utc).date():
+                    errors.append(f'{label} depends on expired source {sid}; recheck it')
+    ledger = ledger_summary(path)
+    if ledger.get('error') or ledger.get('chain_intact') is False:
+        errors.append('Action ledger is damaged; review it before relying on saved work')
+    if ledger.get('unfinished_actions'):
+        warnings.append('Unfinished actions: ' + ', '.join(ledger['unfinished_actions']))
     for commitment in project.get('commitments', []):
         if not all(commitment.get(k) for k in ('owner', 'due', 'metric', 'review_trigger')):
             warnings.append('Commitment needs owner, due, metric and review_trigger')
@@ -155,6 +179,9 @@ def report(project, path):
         raise ValueError('Cannot export with unresolved source/reference errors: ' + '; '.join(result['errors']))
     lines = [f"# {project['title']}", '', f"Статус: {project['stage']}. Выбор человека: {project.get('chosen_option_id') or 'не зафиксирован'}.",
              '', '## Цель', project['objective'], '', '## Рекомендация', project.get('recommendation_rationale', 'Ещё не сформирована.'),
+             '', '## Ограничения', *['- ' + item for item in project.get('constraints', [])],
+             '', '## Решение человека', 'Выбор: ' + str(project.get('chosen_option_id') or 'ожидается') +
+             '; владелец: ' + str(project.get('decision_owner') or 'не назначен'),
              '', '## Основания']
     for e in project['evidence']:
         lines.extend([f"- **{e['evidence_id']}** [{e['claim_type']}; {e['status']}]: {e['claim']}",
@@ -231,15 +258,7 @@ def main():
             print(json.dumps(result, ensure_ascii=False, indent=2))
             return 0 if result['ready'] else 1
         if args.command == 'report':
-            base = path.parent if project.get('path_base') == 'project' else ROOT
-            protected = {path, (path.parent / 'runs.jsonl').resolve(), (path.parent / 'ledger.jsonl').resolve()}
-            for source in project['sources']:
-                for key in ('url_or_path', 'snapshot_path'):
-                    location = source.get(key)
-                    if location and not location.startswith(('http://', 'https://')):
-                        protected.add((base / location).resolve())
-            if args.out.resolve() in protected:
-                raise ValueError('Report output must not overwrite project state, sources or run log')
+            check_output(project, path, args.out)
             text = report(project, path)
             args.out.parent.mkdir(parents=True, exist_ok=True)
             args.out.write_text(text, encoding='utf-8')
