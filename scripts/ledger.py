@@ -64,7 +64,20 @@ def read_entries(path: Path) -> list[dict]:
             if not line:
                 continue
             try:
-                entries.append(json.loads(line))
+                entry = json.loads(line)
+                if not isinstance(entry, dict):
+                    raise ValueError(f"{path}:{number} must be a ledger object")
+                for key in ("cost_usd", "duration_s", "human_minutes"):
+                    value = entry.get(key)
+                    if value is not None and (isinstance(value, bool) or not isinstance(value, (int, float))
+                                              or not math.isfinite(value) or value < 0):
+                        raise ValueError(f"{path}:{number} has invalid {key}")
+                tokens = entry.get("tokens")
+                if tokens is not None and (not isinstance(tokens, dict) or any(
+                    tokens.get(k) is not None and (isinstance(tokens[k], bool) or not isinstance(tokens[k], int) or tokens[k] < 0)
+                    for k in ("input", "output", "cache_read"))):
+                    raise ValueError(f"{path}:{number} has invalid token counts")
+                entries.append(entry)
             except json.JSONDecodeError as error:
                 raise ValueError(f"{path}:{number} is not valid JSON ({error}); the ledger was damaged") from error
     return entries

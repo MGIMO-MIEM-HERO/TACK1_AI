@@ -181,6 +181,10 @@ class EvidenceTests(unittest.TestCase):
         log.write_text(log.read_text(encoding='utf-8').replace('Read source', 'Forged source'), encoding='utf-8')
         with self.assertRaisesRegex(ValueError, 'ledger is damaged'):
             report(self.project, path)
+        for content in ('[]\n', '{"cost_usd":"unknown"}\n'):
+            log.write_text(content, encoding='utf-8')
+            with self.assertRaisesRegex(ValueError, 'ledger is damaged'):
+                report(self.project, path)
 
     def test_unknown_cost_time_and_tokens_are_not_zero_measurements(self):
         entries = [{'seq':1, 'status':'done', 'model':'unknown', 'action':'Analyze'}]
