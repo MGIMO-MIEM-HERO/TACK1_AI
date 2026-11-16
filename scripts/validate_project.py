@@ -87,11 +87,13 @@ def validate(project: dict[str, object]) -> list[str]:
             errors.append(f"evidence {evidence_id} of type {claim_type} needs at least one source")
         if isinstance(refs, list):
             for source_id in refs:
+                if not isinstance(source_id, str):
+                    continue
                 if source_id not in source_ids:
                     errors.append(f"evidence {evidence_id} references unknown source {source_id}")
                 elif claim_type == "qualitative_signal":
                     source = next((s for s in sources if isinstance(s, dict) and s.get("source_id") == source_id), {})
-                    if source.get("kind") == "synthetic":
+                    if source.get("kind") == "synthetic" or source.get("synthetic") is True:
                         errors.append(f"synthetic source cannot support qualitative_signal {evidence_id}; mark it hypothesis")
         if claim_type in ("hypothesis", "forecast") and not str(item.get("limitations", "")).strip():
             errors.append(f"{claim_type} {evidence_id} must state its assumptions/limitations")
@@ -117,6 +119,12 @@ def validate(project: dict[str, object]) -> list[str]:
         else:
             option_ids.add(option_id)
         refs = option.get("evidence_ids")
+        for field in ("title", "objection"):
+            if not isinstance(option.get(field), str) or not option[field].strip():
+                errors.append(f"option {option_id} needs nonempty {field}")
+        for field in ("benefits", "costs_and_risks"):
+            if not string_list(option.get(field)) or not option[field]:
+                errors.append(f"option {option_id} needs a nonempty {field} list")
         if not string_list(refs):
             errors.append(f"option {option_id} needs an evidence_ids array of strings")
             continue
@@ -127,6 +135,18 @@ def validate(project: dict[str, object]) -> list[str]:
     chosen = project.get("chosen_option_id")
     if chosen is not None and (not isinstance(chosen, str) or chosen not in option_ids):
         errors.append(f"chosen_option_id references unknown option {chosen}")
+    for field in ("product_strategy", "communication_strategy", "validation_plan"):
+        if field in project and (not isinstance(project[field], dict) or
+                                 any(not isinstance(k, str) or not isinstance(v, str) or not v.strip() for k, v in project[field].items())):
+            errors.append(f"{field} must be an object with nonempty text values")
+    if "commitments" in project:
+        if not isinstance(project["commitments"], list) or any(not isinstance(c, dict) for c in project["commitments"]):
+            errors.append("commitments must be an array of objects")
+    if "checkpoints" in project:
+        history = project["checkpoints"]
+        if not isinstance(history, list) or any(not isinstance(c, dict) or not isinstance(c.get("sources"), dict) or
+                any(k not in c for k in ("at", "summary", "stage", "next_action")) for c in history):
+            errors.append("checkpoints must contain valid checkpoint objects")
     return errors
 
 
