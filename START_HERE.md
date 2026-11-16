@@ -29,3 +29,10 @@ python scripts/start.py projects/my-case/project.json
 
 Подробнее: [быстрый запуск](docs/quickstart.md),
 [изменения версии](docs/agent-v3.md).
+
+
+После подготовки стратегии: `python scripts/project_tool.py audit <project.json>
+--ready --quality`. Заполните контракт по workflows/decision-review.md.
+Экспорт без --final — черновик; --final требует оба уровня проверки.
+Статус review_record_complete означает полноту записанной самопроверки,
+не проведённый эксперимент и не независимую истинность вывода.

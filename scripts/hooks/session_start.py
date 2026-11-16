@@ -14,7 +14,7 @@ def main() -> None:
     lines = []
     for path in all_projects():
         try:
-            project = json.loads(path.read_text(encoding="utf-8"))
+            project = json.loads(path.read_text(encoding="utf-8-sig"))
         except (OSError, json.JSONDecodeError):
             continue
         ledger = ledger_summary(path)
@@ -23,7 +23,7 @@ def main() -> None:
                      + (f"; UNFINISHED actions in ledger: {unfinished}" if unfinished else ""))
     if lines:
         text = ("Projects in this repository (state from files, not memory). To continue one, use the resume skill "
-                "or run `python3 scripts/checkpoint.py <project.json> resume`:\n" + "\n".join(lines))
+                "or run `python scripts/start.py <project.json> --json`:\n" + "\n".join(lines))
         print(json.dumps({"hookSpecificOutput": {"hookEventName": "SessionStart", "additionalContext": text}}, ensure_ascii=False))
 
 

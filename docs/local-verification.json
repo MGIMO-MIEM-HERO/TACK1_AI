@@ -1,0 +1,31 @@
+{
+  "scope": "Local working tree verification, not a live LLM benchmark or official contest submission",
+  "base_commit": "70bbe5ba786f21121a5950af230b6a0016c5d736",
+  "changes_committed": false,
+  "pushed": false,
+  "platform": "Windows",
+  "python": "3.14.6",
+  "unit_tests": {
+    "passed": 51,
+    "failed": 0,
+    "observed_seconds": 10.85
+  },
+  "checks": {
+    "source_change_block_and_recovery": "passed via scripts/verify_demo.py",
+    "new_document_only_case_strict_audit": "passed",
+    "local_exam_case_strict_audit": "passed; plan only; no experiment or demand observation",
+    "diff_check": "passed"
+  },
+  "not_run": [
+    "GitHub Actions on this local revision",
+    "independent new-chat model trial on this local revision",
+    "controlled old-versus-new LLM benchmark",
+    "contest submission/video"
+  ],
+  "contest_basis": {
+    "public_rules": "https://challenge.mgimo.ai/rules read 2026-11-17",
+    "nomination_brief": "Previously read 2026-11-14; 2026-11-17 recheck unavailable (connection closed)",
+    "additional_official_demo_case": "not reverified"
+  },
+  "phase": "pre-publication local verification; committed/pushed flags describe that phase, not current repository status"
+}

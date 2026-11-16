@@ -67,7 +67,7 @@ def read_entries(path: Path) -> list[dict]:
                 entry = json.loads(line)
                 if not isinstance(entry, dict):
                     raise ValueError(f"{path}:{number} must be a ledger object")
-                for key in ("cost_usd", "duration_s", "human_minutes"):
+                for key in ("cost_usd", "duration_s", "human_minutes", "elapsed_s"):
                     value = entry.get(key)
                     if value is not None and (isinstance(value, bool) or not isinstance(value, (int, float))
                                               or not math.isfinite(value) or value < 0):
@@ -171,7 +171,8 @@ def summarize(entries: list[dict]) -> dict:
     def bucket() -> dict:
         return {"actions": 0, "input_tokens": 0, "output_tokens": 0, "cost_usd": 0.0,
                 "cost_unknown_actions": 0, "duration_s": 0.0, "human_minutes": 0.0,
-                "unknown_duration_actions": 0, "unknown_human_time_actions": 0, "unknown_token_actions": 0}
+                "unknown_duration_actions": 0, "unknown_human_time_actions": 0, "unknown_token_actions": 0,
+                "measured_duration_s": 0.0, "estimated_duration_s": 0.0, "unspecified_duration_s": 0.0, "journal_elapsed_s": 0.0}
 
     totals = bucket()
     groups: dict[str, dict[str, dict]] = {"step": defaultdict(bucket), "tool": defaultdict(bucket), "model": defaultdict(bucket)}
@@ -195,7 +196,11 @@ def summarize(entries: list[dict]) -> dict:
                     target["cost_unknown_actions"] += 1
             else:
                 target["cost_usd"] += entry["cost_usd"]
-            target["duration_s"] += entry.get("duration_s") or 0
+            duration = entry.get("duration_s") or 0
+            target["duration_s"] += duration
+            duration_key = {"measured": "measured_duration_s", "estimated": "estimated_duration_s"}.get(entry.get("duration_basis"), "unspecified_duration_s")
+            target[duration_key] += duration
+            target["journal_elapsed_s"] += entry.get("elapsed_s") or 0
             target["human_minutes"] += entry.get("human_minutes") or 0
     return {"totals": totals, "by": {name: dict(value) for name, value in groups.items()}}
 
@@ -224,6 +229,8 @@ def render_report(project_path: Path, entries: list[dict]) -> str:
         f"- Известная часть стоимости: **${totals['cost_usd']:.4f}**; полная стоимость неизвестна при пропусках. Действий модели с неизвестной стоимостью: {totals['cost_unknown_actions']}",
         f"- Записей с оценёнными (не измеренными) токенами: {estimated}",
         f"- Учтённое время действий: {totals['duration_s'] / 60:.1f} мин; учтённое время человека: {totals['human_minutes']:.0f} мин",
+        f"- Измеренная длительность действий: {totals['measured_duration_s']:.3f} с; оценённая: {totals['estimated_duration_s']:.3f} с; без основания (старые записи): {totals['unspecified_duration_s']:.3f} с.",
+        f"- Интервалы между записями begin/finish: {totals['journal_elapsed_s']:.3f} с — не длительность исследования и не основание экономии.",
         f"- Неизвестно: длительность {totals['unknown_duration_actions']} действий; участие человека {totals['unknown_human_time_actions']} действий; токены {totals['unknown_token_actions']} вызовов модели.",
         "- Нулевые суммы означают только известную часть. Пропуски не равны нулю; длительности параллельных действий не равны времени по часам.",
         f"- Целостность журнала: {'цепочка хешей сходится' if not integrity else 'НАРУШЕНА: ' + '; '.join(integrity)}",
@@ -232,7 +239,7 @@ def render_report(project_path: Path, entries: list[dict]) -> str:
     ]
     baseline = project.get("manual_baseline")
     if isinstance(baseline, dict) and baseline.get("hours"):
-        incomplete_time = bool(totals["unknown_duration_actions"] or totals["unknown_human_time_actions"])
+        incomplete_time = bool(totals["unknown_duration_actions"] or totals["unknown_human_time_actions"] or totals["estimated_duration_s"] or totals["unspecified_duration_s"])
         spent_h = (totals["duration_s"] / 60 + totals["human_minutes"]) / 60
         lines += [
             "",
@@ -268,6 +275,8 @@ def fields_from_args(args: argparse.Namespace, status: str) -> dict:
         "source_ids": split(getattr(args, "sources", None)), "outputs": split(getattr(args, "outputs", None)),
         "tokens": tokens_from_args(args), "duration_s": getattr(args, "duration_s", None),
         "human_minutes": getattr(args, "human_minutes", None), "note": getattr(args, "note", None),
+        "retrospective": getattr(args, "retrospective", False),
+        "duration_basis": (getattr(args, "duration_basis", None) or "unspecified") if getattr(args, "duration_s", None) is not None else None,
         **({"cost_usd": args.cost_usd, "cost_basis": "entered manually"} if getattr(args, "cost_usd", None) is not None else {}),
     }
 
@@ -301,6 +310,8 @@ def add_common(parser: argparse.ArgumentParser, require_step: bool) -> None:
     parser.add_argument("--tokens-estimated", action="store_true", help="token numbers are an estimate, not reported by the provider")
     parser.add_argument("--estimate-chars", type=token_count, nargs=2, metavar=("IN_CHARS", "OUT_CHARS"), help="estimate tokens from characters (marked estimated)")
     parser.add_argument("--cost-usd", type=nonnegative, help="known cost from a provider bill (overrides the price table)")
+    parser.add_argument("--retrospective", action="store_true", help="Record past work; never derive its duration from the logging timestamp")
+    parser.add_argument("--duration-basis", choices=("measured", "estimated"), help="Required when duration-s is supplied")
     parser.add_argument("--duration-s", type=nonnegative)
     parser.add_argument("--human-minutes", type=nonnegative)
     parser.add_argument("--note")
@@ -330,6 +341,10 @@ def main() -> None:
     report.add_argument("project", type=Path)
     report.add_argument("--out", type=Path, help="write markdown here instead of stdout")
     args = parser.parse_args()
+    if hasattr(args, "duration_s") and args.duration_s is not None and not args.duration_basis:
+        parser.error("--duration-s requires --duration-basis measured or estimated")
+    if hasattr(args, "estimate_chars") and args.estimate_chars is not None and not args.note:
+        parser.error("--estimate-chars requires --note explaining measured character counts and coverage")
 
     try:
         path = ledger_path(args.project)
@@ -354,9 +369,12 @@ def main() -> None:
             fields = fields_from_args(args, args.status)
             fields["step"] = fields["step"] or state.get("step")
             fields["action"] = fields["action"] or state.get("action")
-            if state.get("at"):
+            if state.get("retrospective"):
+                fields["retrospective"] = True
+            elif state.get("at"):
                 started = datetime.fromisoformat(state["at"])
-                fields["duration_s"] = fields["duration_s"] or round((datetime.now(timezone.utc) - started).total_seconds(), 1)
+                # Time between journal events includes pauses and parallel work. It is not task duration.
+                fields["elapsed_s"] = max(0, round((datetime.now(timezone.utc) - started).total_seconds(), 3))
             entry = append(args.project, fields)
             print(f"ledger #{entry['seq']} {entry['status']}: {args.key}")
         elif args.command == "status":

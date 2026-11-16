@@ -32,7 +32,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
-from urllib.request import Request, urlopen
+from urllib.request import Request, HTTPRedirectHandler, build_opener
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from checkpoint import impacted, write_state  # noqa: E402
@@ -111,12 +111,22 @@ def check_public_url(url: str) -> None:
             raise ValueError(f"{parts.hostname} resolves to a non-public address; only open public sources are allowed")
 
 
+class CheckedRedirects(HTTPRedirectHandler):
+    def __init__(self, allow_private):
+        self.allow_private = allow_private
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        if not self.allow_private:
+            check_public_url(newurl)
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
 def fetch(url: str, allow_private: bool) -> tuple[bytes, str, int]:
     if not allow_private:
         check_public_url(url)
     request = Request(url, headers={"User-Agent": USER_AGENT, "Accept": "text/html,text/plain,application/pdf,*/*;q=0.5"})
     try:
-        with urlopen(request, timeout=20) as response:
+        with build_opener(CheckedRedirects(allow_private)).open(request, timeout=20) as response:
             raw = response.read(MAX_BYTES + 1)
             if len(raw) > MAX_BYTES:
                 raise ValueError("document exceeds 5 MiB; save it manually and use --file")
@@ -142,7 +152,7 @@ def to_text(raw: bytes, content_type: str, name: str = "") -> tuple[str, str]:
 
 
 def normalize(value: str) -> str:
-    return re.sub(r"\s+", " ", value).strip().lower().replace("ё", "е")
+    return re.sub(r"\s+", " ", value).strip()
 
 
 def find_excerpts(text: str, excerpts: list[str]) -> list[dict]:
@@ -172,6 +182,7 @@ def main() -> None:
     group.add_argument("--stdin", action="store_true", help="read text obtained by an IDE tool or search snippet from stdin")
     parser.add_argument("--via", choices=["http_snapshot", "agent_tool_snapshot", "search_snippet", "manual_file"],
                         help="how the content was obtained; inferred when omitted")
+    parser.add_argument("--content-kind", choices=("page", "excerpt", "summary"), help="Summary is not verbatim source text; provided text defaults to excerpt")
     parser.add_argument("--title")
     parser.add_argument("--publisher")
     parser.add_argument("--published-at")
@@ -184,25 +195,40 @@ def main() -> None:
     parser.add_argument("--allow-private", action="store_true", help="allow loopback/private hosts (tests only)")
     parser.add_argument("--model", help="model that produced --stdin text, for the ledger")
     args = parser.parse_args()
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,79}", args.source_id):
+        parser.error("source-id must be a safe identifier, not a filesystem path")
+    if (args.stdin or args.file) and args.via == "http_snapshot":
+        parser.error("http_snapshot requires a direct HTTP fetch, not provided text")
+    if not args.stdin and not args.file and args.via not in (None, "http_snapshot"):
+        parser.error("Direct fetch uses http_snapshot provenance")
+    if args.content_kind == "summary" and args.excerpt:
+        parser.error("A summary cannot verify verbatim quotations; pass original text")
 
     try:
         project_path = args.project.resolve()
-        project = json.loads(project_path.read_text(encoding="utf-8"))
+        project = json.loads(project_path.read_text(encoding="utf-8-sig"))
+        errors = validate(project) if isinstance(project, dict) else ["Project must be an object"]
+        if errors:
+            raise ValueError("Invalid project: " + "; ".join(errors))
         project_dir = project_path.parent
         if args.stdin:
-            raw = sys.stdin.buffer.read()
+            raw = sys.stdin.buffer.read(MAX_BYTES + 1)
             content_type, status = "text/plain; charset=utf-8", None
             via = args.via or "agent_tool_snapshot"
         elif args.file:
-            raw = args.file.read_bytes()
+            with args.file.open('rb') as handle:
+                raw = handle.read(MAX_BYTES + 1)
             content_type, status = "", None
             via = args.via or "manual_file"
         else:
             raw, content_type, status = fetch(args.url, args.allow_private)
             via = args.via or "http_snapshot"
+        if len(raw) > MAX_BYTES:
+            raise ValueError('Source exceeds 5 MiB; extract a relevant subset first')
         text, detected = to_text(raw, content_type, str(args.file or ""))
         now = datetime.now(timezone.utc)
-        stamp = now.strftime("%Y%m%dT%H%M%SZ")
+        stamp = now.strftime("%Y%m%dT%H%M%S%fZ")
+        content_kind = args.content_kind or ("excerpt" if args.stdin or args.file else "page")
         content_sha = hashlib.sha256(raw).hexdigest()
         flags = scan_injection(text)
         quotes = find_excerpts(text, args.excerpt)
@@ -216,14 +242,14 @@ def main() -> None:
         snap_path = snap_dir / f"{args.source_id}__{stamp}.md"
         header = {
             "source_id": args.source_id, "url": args.url, "accessed_at": now.isoformat(timespec="seconds"),
-            "verification": via, "http_status": status, "content_type": content_type or detected,
+            "verification": via, "content_kind": content_kind, "http_status": status, "content_type": content_type or detected,
             "content_sha256": content_sha, "text_chars": len(text), "injection_flags": flags,
         }
         body = [f"# Snapshot {args.source_id}", "", "```json", json.dumps(header, ensure_ascii=False, indent=2), "```", "", BANNER, ""]
         if via == "search_snippet":
             body += ["> Текст получен из поисковой выдачи, страница не открыта. Фрагменты — из сводки поиска и могут быть пересказом, а не дословным текстом страницы. Это указатель на источник, не проверенный факт.", ""]
         if quotes:
-            body.append("## Проверенные фрагменты")
+            body.append("## Совпадения с полученным текстом (не независимая проверка страницы)")
             for quote in quotes:
                 mark = "найден в тексте" if quote["found"] else "НЕ НАЙДЕН в тексте — не цитировать как дословный"
                 body += ["", f"- «{quote['excerpt']}» — {mark}"]
@@ -250,6 +276,8 @@ def main() -> None:
             "limitations": args.limitations or record.get("limitations") or "уточнить",
             "snapshot_path": relative.as_posix(),
             "verification": via,
+            "content_kind": content_kind,
+            "quote_checks": [{"excerpt": q["excerpt"], "found": q["found"]} for q in quotes],
             "content_sha256": content_sha,
             "injection_flags": flags,
             "valid_until": args.valid_until or record.get("valid_until"),

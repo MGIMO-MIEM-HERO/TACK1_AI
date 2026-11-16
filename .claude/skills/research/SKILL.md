@@ -20,3 +20,5 @@ description: Plan and collect evidence from open sources, provided files, data a
 7. **Журнал.** Каждый поиск или вызов модели — `python3 scripts/ledger.py log … --step research --tool WebSearch --model … --estimate-chars IN OUT`. Неудачный доступ — `--status failed` с причиной.
 8. **Точка решения человека:** перед платным или необратимым шагом (закупка отчёта, опрос, запуск теста).
 9. `python3 scripts/validate_project.py <project.json>`; `stage: synthesis`; `checkpoint.py save`.
+
+Для нового кейса определи research_requirements по вопросу, а не по обязательной тройке форматов. Для фактов сохрани claim_scope и support с фрагментом и пределами вывода. Пересказ передавай snapshot.py с --content-kind summary без --excerpt; quote found проверяет только входной текст, не независимую истинность.

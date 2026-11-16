@@ -18,7 +18,7 @@ def main() -> None:
     stale = []
     for path in all_projects():
         try:
-            project = json.loads(path.read_text(encoding="utf-8"))
+            project = json.loads(path.read_text(encoding="utf-8-sig"))
         except (OSError, json.JSONDecodeError):
             continue
         modified = datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc)

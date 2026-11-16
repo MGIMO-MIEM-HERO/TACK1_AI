@@ -28,3 +28,4 @@ jobs:
       - run: python scripts/project_tool.py audit examples/campus-strategy/project.json --ready
       - run: python scripts/validate_project.py examples/activation-case/project.json
       - run: python scripts/start.py examples/campus-strategy/project.json --json
+      - run: python scripts/project_tool.py audit examples/review-contract-case/project.json --ready --quality
