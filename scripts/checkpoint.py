@@ -29,7 +29,7 @@ def fingerprint(path: str, root: Path) -> str:
         return "missing"
     digest = hashlib.sha256()
     # Git can translate LF to CRLF at checkout. Compare text content, not OS line endings.
-    if candidate.suffix.lower() in {".txt", ".md", ".csv", ".tsv", ".json", ".jsonl", ".html", ".htm"}:
+    if candidate.suffix.lower() in {".txt", ".md", ".csv", ".tsv", ".json", ".jsonl", ".html", ".htm", ".py", ".yaml", ".yml", ".toml"}:
         with candidate.open(encoding="utf-8", newline=None) as source:
             for chunk in iter(lambda: source.read(65536), ""):
                 digest.update(chunk.encode("utf-8"))

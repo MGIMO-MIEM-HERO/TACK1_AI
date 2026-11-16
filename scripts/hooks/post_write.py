@@ -19,6 +19,7 @@ def main() -> None:
     path = Path(raw_path)
     if not path.is_absolute():
         path = ROOT / path
+    path = path.resolve()
     project = project_for(path)
     if project is None or path.name == "ledger.jsonl":
         return
@@ -31,7 +32,7 @@ def main() -> None:
     if path.name == "project.json":
         from validate_project import validate, warnings
         try:
-            data = json.loads(path.read_text(encoding="utf-8"))
+            data = json.loads(path.read_text(encoding="utf-8-sig"))
         except (OSError, json.JSONDecodeError) as error:
             print(f"project.json is not valid JSON: {error}. Fix it before continuing.", file=sys.stderr)
             raise SystemExit(2)

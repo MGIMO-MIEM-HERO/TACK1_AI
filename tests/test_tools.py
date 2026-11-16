@@ -206,8 +206,12 @@ class HookTests(TempProject):
         self.assertEqual(run("scripts/hooks/pre_write.py", stdin=json.dumps(ok), env=self.hook_env()).returncode, 0)
 
     def test_post_write_validates_and_logs(self):
-        event = {"tool_name": "Write", "tool_input": {"file_path": str(self.project)}}
-        self.assertEqual(run("scripts/hooks/post_write.py", stdin=json.dumps(event), env=self.hook_env()).returncode, 0)
+        (self.dir / "child").mkdir()
+        alias = self.dir / "child" / ".." / "project.json"
+        event = {"tool_name": "Write", "tool_input": {"file_path": str(alias)}}
+        result = run("scripts/hooks/post_write.py", stdin=json.dumps(event), env=self.hook_env())
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertNotIn("Ledger hook failed", result.stderr)
         broken = minimal_project()
         broken["stage"] = "unknown"
         self.project.write_text(json.dumps(broken), encoding="utf-8")
