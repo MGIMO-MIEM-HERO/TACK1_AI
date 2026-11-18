@@ -22,7 +22,7 @@ def restore(path):
                            'rationale': project.get('recommendation_rationale', '')},
         'human_choice': chosen,
         'decision_question': ('Сначала требуется пересмотр оснований; выбор решения пока не фиксируется.'
-                              if result['errors'] else 'Подтверждаете ли вы рекомендацию или выбираете другую альтернативу?'
+                              if result['errors'] or result['decision_stress_test']['blockers'] else 'Подтверждаете ли вы рекомендацию или выбираете другую альтернативу?'
                               if recommended and not chosen else
                               'Нужен ли пересмотр выбранного решения?' if chosen else
                               'Какое решение требуется принять и какие материалы доступны?'),
@@ -30,6 +30,7 @@ def restore(path):
         'open_questions': project.get('unresolved_questions', []),
         'audit': result, 'content_review': result['content_review'],
         'experiment_status': result['content_review']['experiment_status'], 'ledger': ledger_summary(path),
+        'decision_stress_test': result['decision_stress_test'],
         'workflow_files': sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / 'workflows').glob('*.md')),
         'instruction': 'Прочитай AGENTS.md. При ошибках сначала пересмотри основания. '
                        'Названия workflow бери из workflow_files. Не фиксируй выбор за человека.',
@@ -57,6 +58,8 @@ def main():
                 print('- ' + message)
             print('Содержательная проверка: ' + state['content_review']['status'])
             print('Эксперимент: ' + state['experiment_status'])
+            if state['decision_stress_test']['status'] != 'not_recorded':
+                print('Проверка решения на прочность: ' + state['decision_stress_test']['status'])
             print(state['decision_question'])
         # A blocked audit is visible to both humans and automation; nothing is saved.
         return 0 if not state['audit']['errors'] else 1

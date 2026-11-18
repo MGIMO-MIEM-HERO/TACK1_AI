@@ -137,6 +137,7 @@ def main() -> None:
                               "chosen_option_affected": project.get("chosen_option_id") in options_hit}, ensure_ascii=False, indent=2))
             return
         if args.command == "resume":
+            from stress_test import inspect as inspect_stress
             ledger_state = ledger_summary(path)
             print(json.dumps({
                 "stage": project["stage"],
@@ -149,6 +150,7 @@ def main() -> None:
                     key: item["fingerprint"] for key, item in fingerprints.items() if len(item["fingerprint"]) != 64
                 },
                 "review_warnings": warnings(project),
+                "decision_stress_test": inspect_stress(project, path, ROOT),
                 "ledger": ledger_state,
                 "reminder": "Earlier agent conclusions in this file are records to re-check, not facts. Trust only evidence with sources.",
             }, ensure_ascii=False, indent=2))

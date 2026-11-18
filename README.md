@@ -1,5 +1,10 @@
 # Контур решения
 
+**Проверка решения на прочность:** [инструкция](docs/decision-stress-test.md),
+[учебный пример](examples/decision-stress-case/README.md). Агент сравнивает
+неблагоприятные сценарии, показывает условия смены рекомендации и сохраняет
+версии разбора. Проверка: `python scripts/verify_stress_demo.py`.
+
 **Доработка после живых прогонов:** [что исправлено](docs/local-quality-upgrade.md), [содержательная проверка](workflows/decision-review.md), [сверка с конкурсом](docs/contest-fit.md). Новый строгий пример: `examples/review-contract-case`.
 
 Начните с [START_HERE.md](START_HERE.md). Единый запуск: `python scripts/start.py examples/campus-strategy/project.json`. [Улучшения после проверки в новом чате](docs/agent-v3.md).
