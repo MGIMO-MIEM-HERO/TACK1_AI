@@ -117,6 +117,8 @@ class EvidenceTests(unittest.TestCase):
         result = self.run_cli('project_tool.py', 'report', path, '--out', output)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertTrue(output.is_file())
+        self.assertTrue(output.with_suffix('.graph.html').is_file())
+        self.assertIn('report.graph.html', output.read_text(encoding='utf-8'))
 
     def test_fingerprint_ignores_checkout_line_endings(self):
         path = self.root / 'source.md'

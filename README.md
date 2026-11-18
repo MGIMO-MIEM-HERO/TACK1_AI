@@ -1,5 +1,10 @@
 # Контур решения
 
+**Карта работы:** [инструкция](docs/visualization.md). Интерактивный локальный
+граф связывает задачу, источники, основания, варианты и следующий шаг.
+Создаётся автоматически рядом с экспортируемой запиской или отдельно:
+`python scripts/visualize.py <project.json> --out work-graph.html`.
+
 **Доработка после живых прогонов:** [что исправлено](docs/local-quality-upgrade.md), [содержательная проверка](workflows/decision-review.md), [сверка с конкурсом](docs/contest-fit.md). Новый строгий пример: `examples/review-contract-case`.
 
 Начните с [START_HERE.md](START_HERE.md). Единый запуск: `python scripts/start.py examples/campus-strategy/project.json`. [Улучшения после проверки в новом чате](docs/agent-v3.md).

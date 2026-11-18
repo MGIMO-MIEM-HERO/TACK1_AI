@@ -280,8 +280,15 @@ def main():
             return 0 if result['ready'] else 1
         if args.command == 'report':
             check_output(project, path, args.out)
+            graph_path = args.out.with_suffix('.graph.html')
+            check_output(project, path, graph_path)
             text = report(project, path, args.final)
+            from visualize import render
+            from urllib.parse import quote
+            visual = render(project, audit(project, path, ready=True, quality=True), path.read_bytes())
+            text += '\n[Открыть интерактивную карту работы](' + quote(graph_path.name) + ')\n'
             args.out.parent.mkdir(parents=True, exist_ok=True)
+            graph_path.write_text(visual, encoding='utf-8')
             args.out.write_text(text, encoding='utf-8')
             print(args.out)
             return
