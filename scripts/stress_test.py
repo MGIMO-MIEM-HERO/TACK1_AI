@@ -2,7 +2,7 @@
 """Record and inspect conditional decision reviews; never choose for the owner."""
 import argparse
 import copy
-from datetime import date, datetime, timezone
+from datetime import datetime, timezone
 import json
 from pathlib import Path
 import sys
@@ -182,7 +182,7 @@ def baseline(project, path, root):
     from checkpoint import fingerprint
     # A review cannot invalidate its own baseline by being appended. Strategy review,
     # dates and checkpoints are already excluded by the existing hash mechanism.
-    state = {k: v for k, v in project.items() if k != 'decision_stress_tests'}
+    state = {k: v for k, v in project.items() if k not in ('decision_stress_tests', 'marketing_claims_audits')}
     return dict(project_id=project['project_id'], state_hash=state_hash(state, path, root),
                 recommended_option_id=project.get('recommended_option_id'),
                 option_ids=[o['option_id'] for o in project['options']],
@@ -212,8 +212,6 @@ def affected(project, scenario, review):
 
 
 def inspect(project, path, root):
-    from checkpoint import fingerprint
-    from quality import assess
     reviews = project.get('decision_stress_tests', [])
     if not reviews:
         return {'status': 'not_recorded', 'blockers': [], 'scenarios': []}
@@ -238,8 +236,6 @@ def inspect(project, path, root):
                 'scenarios': [], 'action': 'Prepare a new review; keep the historical record. Do not apply old conditional conclusions.'}
     blockers, results = [], []
     evidence = {e['evidence_id']: e for e in project['evidence']}
-    sources = {s['source_id']: s for s in project['sources']}
-    base = path.parent if project.get('path_base') == 'project' else root
     # Existing provenance checks are reused, not replaced with invented confidence scores.
     relevant_evidence = {eid for a in review['assumptions'] for eid in a['evidence_ids']}
     for s in review['scenarios']:
@@ -247,29 +243,8 @@ def inspect(project, path, root):
         relevant_evidence.update(s['recommendation']['evidence_ids'])
         for item in s['option_impacts']:
             relevant_evidence.update(item['evidence_ids'])
-    pending = list(relevant_evidence)
-    while pending:
-        for ref in evidence[pending.pop()].get('related_evidence_ids', []):
-            if ref not in relevant_evidence:
-                relevant_evidence.add(ref)
-                pending.append(ref)
-    sub = copy.deepcopy(project)
-    sub['evidence'] = [e for e in project['evidence'] if e['evidence_id'] in relevant_evidence]
-    for message in assess(sub, path, root)['blockers']:
-        if any(message.startswith(eid + ':') for eid in relevant_evidence):
-            blockers.append('Stress support: ' + message)
-    for eid in sorted(relevant_evidence):
-        item = evidence[eid]
-        if item['status'] in ('stale', 'withdrawn', 'contradicted'):
-            blockers.append('Stress support is unusable: ' + eid)
-        for sid in item['source_ids']:
-            source = sources[sid]
-            if len(fingerprint(source.get('snapshot_path') or source['url_or_path'], base)) != 64:
-                blockers.append('Stress support source is missing/untracked: ' + sid)
-            if source.get('valid_until') and date.fromisoformat(source['valid_until']) < datetime.now(timezone.utc).date():
-                blockers.append('Stress support source expired: ' + sid)
-            if source.get('verification') == 'search_snippet':
-                blockers.append('Stress support is search-only: ' + sid)
+    from quality import support_blockers
+    blockers.extend(support_blockers(project, path, root, relevant_evidence, 'Stress support'))
     for scenario in review['scenarios']:
         if scenario['premise_status'] == 'observed' and any(evidence[eid]['claim_type'] not in ('source_fact', 'measured_fact', 'association', 'qualitative_signal')
                                                           for eid in scenario['evidence_ids']):
@@ -355,16 +330,16 @@ def prepare(project, path, root, review_id):
                            'new_data_needed': '', 'review_trigger': ''} for i in (1, 2)]}
 
 
-def record(project, path, root, review):
+def record_review(project, path, root, review, *, field, inspector, action, tool):
     from checkpoint import write_state
     from validate_project import validate
     from ledger import append, read_entries, ledger_path, verify
     candidate = copy.deepcopy(project)
-    candidate.setdefault('decision_stress_tests', []).append(copy.deepcopy(review))
+    candidate.setdefault(field, []).append(copy.deepcopy(review))
     errors = validate(candidate)
     if errors:
         raise ValueError('; '.join(errors))
-    result = inspect(candidate, path, root)
+    result = inspector(candidate, path, root)
     if result['status'] != 'review_record_complete':
         raise ValueError('; '.join(result['blockers']))
     # Fail before changing state if the existing action log is damaged.
@@ -372,15 +347,20 @@ def record(project, path, root, review):
         raise ValueError('Damaged ledger; review it before saving')
     if json.loads(path.read_text(encoding='utf-8-sig')) != project:
         raise ValueError('Project changed during review; reload and reassess before recording')
-    candidate['decision_stress_tests'][-1]['recorded_at'] = datetime.now(timezone.utc).isoformat(timespec='seconds')
+    candidate[field][-1]['recorded_at'] = datetime.now(timezone.utc).isoformat(timespec='seconds')
     write_state(path, candidate)
     try:
-        append(path, {'step': project['stage'], 'action': 'decision stress review: ' + review['review_id'],
-                      'status': 'done', 'actor': 'script', 'tool': 'scripts/stress_test.py',
-                      'note': 'Recorded conditional analysis; no automatic recommendation or human choice. Time/cost unknown.'})
+        append(path, {'step': project['stage'], 'action': action + ': ' + review['review_id'],
+                      'status': 'done', 'actor': 'script', 'tool': tool,
+                      'note': 'Recorded review; no automatic strategy change or human choice. Time/cost unknown.'})
     except (OSError, ValueError) as error:
         raise ValueError('Review saved but ledger append failed; inspect state before retrying: ' + str(error)) from error
     return result
+
+
+def record(project, path, root, review):
+    return record_review(project, path, root, review, field='decision_stress_tests',
+                         inspector=inspect, action='decision stress review', tool='scripts/stress_test.py')
 
 
 def main():
