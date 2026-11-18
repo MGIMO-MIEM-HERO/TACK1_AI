@@ -28,6 +28,38 @@ def state_hash(project, path=None, root=None):
                                      separators=(',', ':'), allow_nan=False).encode('utf-8')).hexdigest()
 
 
+def support_blockers(project, path, root, evidence_ids, label='Evidence support'):
+    """Reuse provenance checks for a review's transitive set of evidence."""
+    from datetime import date, datetime, timezone
+    from checkpoint import fingerprint
+    by_id = {e['evidence_id']: e for e in project['evidence']}
+    sources = {s['source_id']: s for s in project['sources']}
+    refs, pending = set(evidence_ids), list(evidence_ids)
+    while pending:
+        for eid in by_id[pending.pop()].get('related_evidence_ids', []):
+            if eid not in refs:
+                refs.add(eid)
+                pending.append(eid)
+    # Keep the full namespace: experiment thresholds/results may refer to evidence
+    # outside this review. Filter returned claim errors, not the project itself.
+    blockers = [label + ': ' + message for message in assess(project, path, root)['blockers']
+                if any(message.startswith(eid + ':') for eid in refs)]
+    base = path.parent if project.get('path_base') == 'project' else root
+    for eid in sorted(refs):
+        item = by_id[eid]
+        if item['status'] in ('stale', 'withdrawn', 'contradicted'):
+            blockers.append(label + ' is unusable: ' + eid)
+        for sid in item['source_ids']:
+            source = sources[sid]
+            if len(fingerprint(source.get('snapshot_path') or source['url_or_path'], base)) != 64:
+                blockers.append(label + ' source is missing/untracked: ' + sid)
+            if source.get('valid_until') and date.fromisoformat(source['valid_until']) < datetime.now(timezone.utc).date():
+                blockers.append(label + ' source expired: ' + sid)
+            if source.get('verification') == 'search_snippet':
+                blockers.append(label + ' is search-only: ' + sid)
+    return sorted(set(blockers))
+
+
 def validate_fields(project):
     errors = []
     requirement = project.get('research_requirements')
