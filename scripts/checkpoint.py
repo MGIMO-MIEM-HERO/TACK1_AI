@@ -139,6 +139,7 @@ def main() -> None:
         if args.command == "resume":
             from stress_test import inspect as inspect_stress
             from claims_audit import inspect as inspect_claims
+            from research_selection import inspect as inspect_research
             ledger_state = ledger_summary(path)
             print(json.dumps({
                 "stage": project["stage"],
@@ -153,6 +154,7 @@ def main() -> None:
                 "review_warnings": warnings(project),
                 "decision_stress_test": inspect_stress(project, path, ROOT),
                 "marketing_claims_audit": inspect_claims(project, path, ROOT),
+                "research_selection": inspect_research(project, path, ROOT),
                 "ledger": ledger_state,
                 "reminder": "Earlier agent conclusions in this file are records to re-check, not facts. Trust only evidence with sources.",
             }, ensure_ascii=False, indent=2))

@@ -182,7 +182,8 @@ def baseline(project, path, root):
     from checkpoint import fingerprint
     # A review cannot invalidate its own baseline by being appended. Strategy review,
     # dates and checkpoints are already excluded by the existing hash mechanism.
-    state = {k: v for k, v in project.items() if k not in ('decision_stress_tests', 'marketing_claims_audits')}
+    state = {k: v for k, v in project.items() if k not in
+             ('decision_stress_tests', 'marketing_claims_audits', 'research_selection_reviews')}
     return dict(project_id=project['project_id'], state_hash=state_hash(state, path, root),
                 recommended_option_id=project.get('recommended_option_id'),
                 option_ids=[o['option_id'] for o in project['options']],

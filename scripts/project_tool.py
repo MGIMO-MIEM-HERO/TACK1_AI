@@ -141,10 +141,14 @@ def audit(project, path, ready=False, quality=False):
     from claims_audit import inspect as inspect_claims
     claims = inspect_claims(project, path, ROOT)
     warnings.extend(claims['blockers'] + claims['publication_blockers'])
+    from research_selection import inspect as inspect_research
+    research = inspect_research(project, path, ROOT)
+    warnings.extend(research['blockers'])
     structural_ready = not errors and (not ready or not warnings)
     result = {'ready': structural_ready and (not quality or not content['blockers']),
               'structural_ready': structural_ready, 'errors': errors, 'warnings': warnings, 'advisories': advisories,
-              'health': health, 'content_review': content, 'decision_stress_test': stress, 'marketing_claims_audit': claims,
+              'health': health, 'content_review': content, 'decision_stress_test': stress,
+              'marketing_claims_audit': claims, 'research_selection': research,
               'note': 'Structure and recorded review are separate. Neither proves claim truth or commercial effectiveness.'}
     return result
 
@@ -234,6 +238,9 @@ def report(project, path, final=False):
     if project.get('marketing_claims') or project.get('marketing_claims_audits'):
         from claims_audit import markdown as claims_markdown
         lines.extend(['', claims_markdown(project, result['marketing_claims_audit']).rstrip()])
+    if project.get('research_selection_reviews'):
+        from research_selection import markdown as research_markdown
+        lines.extend(['', research_markdown(project, result['research_selection']).rstrip()])
     return '\n'.join(lines) + '\n'
 
 
