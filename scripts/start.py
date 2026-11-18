@@ -15,6 +15,8 @@ def restore(path):
     options = {item['option_id']: item['title'] for item in project['options']}
     recommended = project.get('recommended_option_id')
     chosen = project.get('chosen_option_id')
+    review_blocked = (result['decision_stress_test']['blockers'] or result['marketing_claims_audit']['blockers']
+                      or result['marketing_claims_audit']['publication_blockers'] or result['research_selection']['blockers'])
     return {
         'project': str(path), 'title': project['title'], 'stage': project['stage'],
         'constraints': project.get('constraints', []),
@@ -22,7 +24,7 @@ def restore(path):
                            'rationale': project.get('recommendation_rationale', '')},
         'human_choice': chosen,
         'decision_question': ('Сначала требуется пересмотр оснований; выбор решения пока не фиксируется.'
-                              if result['errors'] or result['decision_stress_test']['blockers'] or result['marketing_claims_audit']['blockers'] or result['marketing_claims_audit']['publication_blockers'] else 'Подтверждаете ли вы рекомендацию или выбираете другую альтернативу?'
+                              if result['errors'] or review_blocked else 'Подтверждаете ли вы рекомендацию или выбираете другую альтернативу?'
                               if recommended and not chosen else
                               'Нужен ли пересмотр выбранного решения?' if chosen else
                               'Какое решение требуется принять и какие материалы доступны?'),
@@ -32,6 +34,7 @@ def restore(path):
         'experiment_status': result['content_review']['experiment_status'], 'ledger': ledger_summary(path),
         'decision_stress_test': result['decision_stress_test'],
         'marketing_claims_audit': result['marketing_claims_audit'],
+        'research_selection': result['research_selection'],
         'workflow_files': sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / 'workflows').glob('*.md')),
         'instruction': 'Прочитай AGENTS.md. При ошибках сначала пересмотри основания. '
                        'Названия workflow бери из workflow_files. Не фиксируй выбор за человека.',
@@ -63,6 +66,10 @@ def main():
                 print('Проверка решения на прочность: ' + state['decision_stress_test']['status'])
             if state['marketing_claims_audit']['status'] != 'not_recorded':
                 print('Проверка обещаний: ' + state['marketing_claims_audit']['status'])
+            if state['research_selection']['status'] != 'not_recorded':
+                print('Выбор исследования: ' + state['research_selection']['status'])
+                if state['research_selection']['recommendation']:
+                    print('Обоснование следующего исследования: ' + state['research_selection']['recommendation']['rationale'])
             print(state['decision_question'])
         # A blocked audit is visible to both humans and automation; nothing is saved.
         return 0 if not state['audit']['errors'] else 1
