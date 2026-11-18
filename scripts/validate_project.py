@@ -237,7 +237,8 @@ def validate(project: dict[str, object]) -> list[str]:
             for field in ("owner", "metric", "due", "review_trigger"):
                 if not isinstance(commitment.get(field), str) or not commitment[field].strip():
                     errors.append(f"commitments[{index}] is missing {field}")
-    return errors + validate_fields(project)
+    from stress_test import validate_fields as validate_stress_fields
+    return errors + validate_fields(project) + validate_stress_fields(project)
 
 
 def warnings(project: dict[str, object], today: date | None = None) -> list[str]:

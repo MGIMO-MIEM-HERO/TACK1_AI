@@ -135,10 +135,13 @@ def audit(project, path, ready=False, quality=False):
     if not project.get('checkpoints'):
         warnings.append('No saved checkpoint; resume is not demonstrated')
     content = assess(project, path, ROOT)
+    from stress_test import inspect as inspect_stress
+    stress = inspect_stress(project, path, ROOT)
+    warnings.extend(stress['blockers'])
     structural_ready = not errors and (not ready or not warnings)
     result = {'ready': structural_ready and (not quality or not content['blockers']),
               'structural_ready': structural_ready, 'errors': errors, 'warnings': warnings, 'advisories': advisories,
-              'health': health, 'content_review': content,
+              'health': health, 'content_review': content, 'decision_stress_test': stress,
               'note': 'Structure and recorded review are separate. Neither proves claim truth or commercial effectiveness.'}
     return result
 
@@ -222,6 +225,9 @@ def report(project, path, final=False):
                   *['- ' + message for message in result['content_review']['blockers'] + result['content_review']['notes']],
                   '', 'Статус эксперимента: ' + result['content_review']['experiment_status'],
                   '', 'Экспорт отображает сохранённое состояние; не является независимой проверкой выводов.'])
+    if project.get('decision_stress_tests'):
+        from stress_test import markdown as stress_markdown
+        lines.extend(['', stress_markdown(project, result['decision_stress_test']).rstrip()])
     return '\n'.join(lines) + '\n'
 
 
