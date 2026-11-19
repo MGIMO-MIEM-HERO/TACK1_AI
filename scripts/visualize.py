@@ -77,8 +77,10 @@ def graph(project, audit_result, state_hash):
     extend_graph(project, audit_result, nodes, edges)
     from visualize_paths import decision_paths
     paths = decision_paths(project, audit_result, {'nodes': nodes, 'edges': edges})
+    from visualize_scenarios import scenario_views
+    scenarios = scenario_views(project, audit_result, {'nodes': nodes, 'edges': edges})
     return dict(title=project['title'], updated_at=project.get('updated_at'),
-                state_sha256=state_hash, nodes=nodes, edges=edges, decision_paths=paths)
+                state_sha256=state_hash, nodes=nodes, edges=edges, decision_paths=paths, scenario_views=scenarios)
 
 
 def render(project, audit_result, state_bytes, project_path=None):
@@ -103,7 +105,8 @@ def render(project, audit_result, state_bytes, project_path=None):
 _TEMPLATES = Path(__file__).resolve().parents[1] / 'templates'
 HTML = (_TEMPLATES / 'work-graph.html').read_text(encoding='utf-8').replace(
     '__COMPARE_SCRIPT__', (_TEMPLATES / 'snapshot-compare.js').read_text(encoding='utf-8')).replace(
-    '__PATH_SCRIPT__', (_TEMPLATES / 'decision-path.js').read_text(encoding='utf-8'))
+    '__PATH_SCRIPT__', (_TEMPLATES / 'decision-path.js').read_text(encoding='utf-8')).replace(
+    '__SCENARIO_SCRIPT__', (_TEMPLATES / 'scenario-mode.js').read_text(encoding='utf-8'))
 
 
 def main():
