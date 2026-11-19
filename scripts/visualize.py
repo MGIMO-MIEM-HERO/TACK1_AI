@@ -72,6 +72,8 @@ def graph(project, audit_result, state_hash):
          {'Действие': project['next_action'], 'Обязательства': project.get('commitments', []),
           'Контрольные точки': project.get('checkpoints', [])})
     edge('review', 'next', 'продолжение; не факт выполнения')
+    from visualize_features import extend_graph
+    extend_graph(project, audit_result, nodes, edges)
     return dict(title=project['title'], updated_at=project.get('updated_at'),
                 state_sha256=state_hash, nodes=nodes, edges=edges)
 
