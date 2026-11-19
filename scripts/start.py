@@ -8,13 +8,15 @@ from checkpoint import ROOT, ledger_summary
 from project_tool import audit, load
 
 
-def restore(path):
+def restore(path, *, at=None):
     path = path.resolve()
     project = load(path)
     result = audit(project, path, ready=True)
     options = {item['option_id']: item['title'] for item in project['options']}
     recommended = project.get('recommended_option_id')
     chosen = project.get('chosen_option_id')
+    from follow_up import inspect as inspect_follow_up
+    follow_up = result['follow_up'] if at is None else inspect_follow_up(project, path, ROOT, at=at, health=result['health'])
     review_blocked = (result['decision_stress_test']['blockers'] or result['marketing_claims_audit']['blockers']
                       or result['marketing_claims_audit']['publication_blockers'] or result['research_selection']['blockers'])
     return {
@@ -35,6 +37,7 @@ def restore(path):
         'decision_stress_test': result['decision_stress_test'],
         'marketing_claims_audit': result['marketing_claims_audit'],
         'research_selection': result['research_selection'],
+        'follow_up': follow_up,
         'workflow_files': sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / 'workflows').glob('*.md')),
         'instruction': 'Прочитай AGENTS.md. При ошибках сначала пересмотри основания. '
                        'Названия workflow бери из workflow_files. Не фиксируй выбор за человека.',
@@ -45,9 +48,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('project', type=Path, help='Exact project.json path; cases are never selected implicitly')
     parser.add_argument('--json', action='store_true')
+    parser.add_argument('--as-of', help='Explicit offset-aware replay clock; read-only')
     args = parser.parse_args()
     try:
-        state = restore(args.project)
+        from follow_up import instant
+        state = restore(args.project, at=instant(args.as_of) if args.as_of else None)
         if args.json:
             print(json.dumps(state, ensure_ascii=False, indent=2))
         else:
@@ -71,9 +76,14 @@ def main():
                 if state['research_selection']['recommendation']:
                     print('Обоснование следующего исследования: ' + state['research_selection']['recommendation']['rationale'])
             print(state['decision_question'])
+            if state['follow_up']['human_questions'] or state['follow_up']['metric_results']:
+                print('Сопровождение: просрочено ' + str(len(state['follow_up']['overdue_commitments'])) +
+                      '; новых/изменённых результатов ' + str(len(state['follow_up']['new_results'])))
+                for question in state['follow_up']['human_questions']:
+                    print('- ' + question['object_ref'] + ': ' + question['reason'] + ' ' + question['action'])
         # A blocked audit is visible to both humans and automation; nothing is saved.
         return 0 if not state['audit']['errors'] else 1
-    except (OSError, ValueError, TypeError, KeyError) as error:
+    except (OSError, ValueError, TypeError, KeyError, OverflowError) as error:
         parser.exit(1, f'Start: {error}\n')
 
 

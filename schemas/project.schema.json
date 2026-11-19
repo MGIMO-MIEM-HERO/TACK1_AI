@@ -110,6 +110,31 @@
           },
           "stop_rule": {
             "type": "string"
+          },
+          "commitment_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "proposed",
+              "agreed",
+              "in_progress",
+              "blocked",
+              "completed",
+              "cancelled"
+            ]
+          },
+          "agreement_reference": {
+            "type": "string",
+            "minLength": 1
+          },
+          "timezone": {
+            "type": "string",
+            "minLength": 1
           }
         }
       }
@@ -428,6 +453,28 @@
       "type": "array",
       "items": {
         "$ref": "#/$defs/researchSelectionReview"
+      }
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1
+    },
+    "follow_up_context": {
+      "enum": [
+        "live_project",
+        "authored_example"
+      ]
+    },
+    "metric_results": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/metricResult"
+      }
+    },
+    "follow_up_reviews": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/followUpReview"
       }
     }
   },
@@ -1820,6 +1867,117 @@
         "recorded_at": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "metricResult": {
+      "type": "object",
+      "required": [
+        "result_id",
+        "commitment_id",
+        "metric",
+        "value",
+        "unit",
+        "observed_at",
+        "data_origin",
+        "evidence_ids",
+        "summary"
+      ],
+      "properties": {
+        "result_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "commitment_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "metric": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "data_origin": {
+          "enum": [
+            "real",
+            "synthetic"
+          ]
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "human_decision": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "required": [
+            "version_hash",
+            "reference"
+          ],
+          "properties": {
+            "version_hash": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "reference": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "followUpReview": {
+      "type": "object",
+      "required": [
+        "result_id",
+        "version_hash",
+        "reviewed_at",
+        "reviewer",
+        "note"
+      ],
+      "properties": {
+        "result_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version_hash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "reviewed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "reviewer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1
         }
       }
     }

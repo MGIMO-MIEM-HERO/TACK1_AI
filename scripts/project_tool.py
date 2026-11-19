@@ -53,8 +53,12 @@ def audit(project, path, ready=False, quality=False):
     errors = []
     advisories = []
     warnings = []
+    from follow_up import calendar_day
+    today=datetime.now(timezone.utc).date()
+    try: today=calendar_day(project)
+    except ValueError as error: warnings.append('Project timezone needs clarification: ' + str(error))
     selected = {project.get('recommended_option_id'), project.get('chosen_option_id')}
-    for message in review_warnings(project):
+    for message in review_warnings(project, today=today):
         if message.startswith('option ') and message.split(' ', 2)[1] not in selected:
             advisories.append(message)
         else:
@@ -119,7 +123,7 @@ def audit(project, path, ready=False, quality=False):
                 if item['claim_type'] in FACT_TYPES and source.get('verification') == 'search_snippet':
                     errors.append(f'{label} uses search-only evidence {ref} / {sid}; read the primary source')
                 expiry = source.get('valid_until')
-                if expiry and date.fromisoformat(expiry) < datetime.now(timezone.utc).date():
+                if expiry and date.fromisoformat(expiry) < today:
                     errors.append(f'{label} depends on expired source {sid}; recheck it')
     ledger = ledger_summary(path)
     if ledger.get('error') or ledger.get('chain_intact') is False:
@@ -144,11 +148,15 @@ def audit(project, path, ready=False, quality=False):
     from research_selection import inspect as inspect_research
     research = inspect_research(project, path, ROOT)
     warnings.extend(research['blockers'])
+    from follow_up import inspect as inspect_follow_up
+    follow_up = inspect_follow_up(project, path, ROOT, health=health)
+    for row in follow_up['metric_results']:
+        warnings.extend('Metric result ' + row['result_id'] + ': ' + message for message in row['support_problems'])
     structural_ready = not errors and (not ready or not warnings)
     result = {'ready': structural_ready and (not quality or not content['blockers']),
               'structural_ready': structural_ready, 'errors': errors, 'warnings': warnings, 'advisories': advisories,
               'health': health, 'content_review': content, 'decision_stress_test': stress,
-              'marketing_claims_audit': claims, 'research_selection': research,
+              'marketing_claims_audit': claims, 'research_selection': research, 'follow_up': follow_up,
               'note': 'Structure and recorded review are separate. Neither proves claim truth or commercial effectiveness.'}
     return result
 
@@ -241,6 +249,9 @@ def report(project, path, final=False):
     if project.get('research_selection_reviews'):
         from research_selection import markdown as research_markdown
         lines.extend(['', research_markdown(project, result['research_selection']).rstrip()])
+    if project.get('commitments') or project.get('metric_results') or project['stage'] in ('follow_up', 'complete'):
+        from follow_up import markdown as follow_up_markdown
+        lines.extend(['', follow_up_markdown(result['follow_up']).rstrip()])
     return '\n'.join(lines) + '\n'
 
 

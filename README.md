@@ -1,5 +1,10 @@
 # Контур решения
 
+**После решения:** [инструкция](docs/decision-follow-up.md),
+[вымышленный пример](examples/decision-follow-up-case/README.md). При открытии
+видны согласованные просрочки, новые результаты и вопросы для человека.
+Проверка: `python scripts/verify_follow_up_demo.py`.
+
 **Что исследовать дальше:** [инструкция](docs/next-research-selection.md),
 [учебный пример](examples/next-research-case/README.md). Агент сравнивает пробелы
 по влиянию на решение, объясняет следующий шаг и условие остановки исследования.

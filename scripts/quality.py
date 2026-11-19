@@ -16,8 +16,8 @@ def text(value):
 
 
 def state_hash(project, path=None, root=None):
-    # Checkpoints and dates are operational records, not a new strategy.
-    payload = {k: v for k, v in project.items() if k not in ('checkpoints', 'updated_at', 'strategy_review')}
+    # Checkpoints, dates and read receipts are operational, not a new strategy.
+    payload = {k: v for k, v in project.items() if k not in ('checkpoints', 'updated_at', 'strategy_review', 'follow_up_reviews')}
     if path is not None:
         from checkpoint import fingerprint
         base = path.parent if project.get('path_base') == 'project' else root
@@ -28,10 +28,14 @@ def state_hash(project, path=None, root=None):
                                      separators=(',', ':'), allow_nan=False).encode('utf-8')).hexdigest()
 
 
-def support_blockers(project, path, root, evidence_ids, label='Evidence support'):
+def support_blockers(project, path, root, evidence_ids, label='Evidence support', *, today=None):
     """Reuse provenance checks for a review's transitive set of evidence."""
-    from datetime import date, datetime, timezone
+    from datetime import date
     from checkpoint import fingerprint
+    if today is None:
+        from follow_up import calendar_day
+        try: today=calendar_day(project)
+        except ValueError as error: return [label + ': unresolved project timezone: ' + str(error)]
     by_id = {e['evidence_id']: e for e in project['evidence']}
     sources = {s['source_id']: s for s in project['sources']}
     refs, pending = set(evidence_ids), list(evidence_ids)
@@ -53,7 +57,7 @@ def support_blockers(project, path, root, evidence_ids, label='Evidence support'
             source = sources[sid]
             if len(fingerprint(source.get('snapshot_path') or source['url_or_path'], base)) != 64:
                 blockers.append(label + ' source is missing/untracked: ' + sid)
-            if source.get('valid_until') and date.fromisoformat(source['valid_until']) < datetime.now(timezone.utc).date():
+            if source.get('valid_until') and date.fromisoformat(source['valid_until']) < today:
                 blockers.append(label + ' source expired: ' + sid)
             if source.get('verification') == 'search_snippet':
                 blockers.append(label + ' is search-only: ' + sid)
