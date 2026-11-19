@@ -26,7 +26,7 @@ function pathSection(title,ids,empty){
   }
 }
 function selectDecisionPath(oid){
-  clearStatusFocus();clearScenarioMode();clearDecisionPath();
+  clearHistoryFocus();clearStatusFocus();clearScenarioMode();clearDecisionPath();
   const path=(data.decision_paths||[]).find(p=>p.option_id===oid);if(!path){highlight();return}
   currentDecisionPath=path;pathNodes=new Set(path.nodes);
   pathEdges=new Set(path.edge_indexes.map(i=>data.edges[i]));pathOnly=true;pathSelect.value=oid;

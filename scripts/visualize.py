@@ -81,8 +81,10 @@ def graph(project, audit_result, state_hash):
     scenarios = scenario_views(project, audit_result, {'nodes': nodes, 'edges': edges})
     from visualize_status import status_panel
     status = status_panel(project, audit_result, {'nodes': nodes, 'edges': edges})
+    from visualize_history import decision_history
+    history = decision_history(project, audit_result, {'nodes': nodes, 'edges': edges})
     return dict(title=project['title'], updated_at=project.get('updated_at'),
-                state_sha256=state_hash, nodes=nodes, edges=edges, decision_paths=paths, scenario_views=scenarios, status_panel=status)
+                state_sha256=state_hash, nodes=nodes, edges=edges, decision_paths=paths, scenario_views=scenarios, status_panel=status, decision_history=history)
 
 
 def render(project, audit_result, state_bytes, project_path=None):
@@ -109,7 +111,8 @@ HTML = (_TEMPLATES / 'work-graph.html').read_text(encoding='utf-8').replace(
     '__COMPARE_SCRIPT__', (_TEMPLATES / 'snapshot-compare.js').read_text(encoding='utf-8')).replace(
     '__PATH_SCRIPT__', (_TEMPLATES / 'decision-path.js').read_text(encoding='utf-8')).replace(
     '__SCENARIO_SCRIPT__', (_TEMPLATES / 'scenario-mode.js').read_text(encoding='utf-8')).replace(
-    '__STATUS_SCRIPT__', (_TEMPLATES / 'status-panel.js').read_text(encoding='utf-8'))
+    '__STATUS_SCRIPT__', (_TEMPLATES / 'status-panel.js').read_text(encoding='utf-8')).replace(
+    '__HISTORY_SCRIPT__', (_TEMPLATES / 'decision-history.js').read_text(encoding='utf-8'))
 
 
 def main():
