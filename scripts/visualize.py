@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Offline project graph. Edges describe recorded dependencies, not causality."""
 import argparse
+import copy
 import hashlib
 import json
 from pathlib import Path
@@ -13,7 +14,7 @@ def graph(project, audit_result, state_hash):
     nodes, edges = [], []
 
     def node(key, column, title, status, details):
-        nodes.append(dict(id=key, column=column, title=title, status=status, details=details))
+        nodes.append(dict(id=key, column=column, title=title, status=status, details=copy.deepcopy(details)))
 
     def edge(source, target, label):
         edges.append(dict(source=source, target=target, label=label))
@@ -90,12 +91,16 @@ def render(project, audit_result, state_bytes, project_path=None):
         audit_result = {**audit_result, 'visual_views': {
             'summary': summary, 'passport': passport_build(path, state=state)}}
     data = graph(project, audit_result, hashlib.sha256(state_bytes).hexdigest())
+    from visualize_snapshot import comparison_snapshot
+    data['comparison_snapshot'] = comparison_snapshot(project, data, project_path)
     # JSON is embedded as inert text. Escape HTML delimiters, including </script>.
     payload = json.dumps(data, ensure_ascii=False).replace('&', '\\u0026').replace('<', '\\u003c').replace('>', '\\u003e')
     return HTML.replace('__GRAPH_DATA__', payload)
 
 
-HTML = (Path(__file__).resolve().parents[1] / 'templates/work-graph.html').read_text(encoding='utf-8')
+_TEMPLATES = Path(__file__).resolve().parents[1] / 'templates'
+HTML = (_TEMPLATES / 'work-graph.html').read_text(encoding='utf-8').replace(
+    '__COMPARE_SCRIPT__', (_TEMPLATES / 'snapshot-compare.js').read_text(encoding='utf-8'))
 
 
 def main():
