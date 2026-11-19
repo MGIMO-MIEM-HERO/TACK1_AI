@@ -163,6 +163,9 @@ def next_step(project, audit, follow_up, ledger, questions, responses=()):
         return 'Проверить последствия незавершённых действий перед повтором: ' + ', '.join(ledger['unfinished_actions']), ['ledger']
     if audit['material_changes']['needs_assessment'] or audit['health']['changed_sources']:
         return 'Разобрать изменения источников и затронутых оснований; затем повторить осуществимость и развилки, если их условия изменились.', ['/sources', '/evidence', '/checkpoints']
+    if audit['errors'] and audit.get('review_draft_only'):
+        return ('Показать владельцу причины пересмотра прежнего выбора ' + str(project.get('chosen_option_id')) +
+                '; новая рекомендация требует отдельного решения и проверки неизвестного ресурса.', ['/chosen_option_id', '/recommended_option_id', '/feasibility_reviews'])
     if audit['errors']: return 'Исправить ошибки состояния: ' + audit['errors'][0], ['/']
     answer = next((r for r in reversed(responses) if r['kind'] == 'recommendation' and r['status'] == 'current'), None)
     if answer and answer['outcome'] != 'approved':

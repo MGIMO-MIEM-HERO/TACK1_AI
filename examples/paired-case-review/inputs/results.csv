@@ -1,0 +1,3 @@
+result_id,metric,value,unit,observed_at,data_origin
+R1,scenarios_prepared,1,сценарии,2026-11-18T09:00:00+03:00,synthetic
+R2,scenarios_prepared,2,сценарии,2026-11-18T12:00:00+03:00,synthetic

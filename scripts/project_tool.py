@@ -51,6 +51,7 @@ def source_health(project, path):
 
 def audit(project, path, ready=False, quality=False):
     errors = []
+    historical_choice_errors = []
     advisories = []
     warnings = []
     from follow_up import calendar_day
@@ -117,7 +118,9 @@ def audit(project, path, ready=False, quality=False):
         for ref in sorted(refs):
             item = evidence_by_id[ref]
             if ref in unusable:
-                errors.append(f'{label} depends on unusable evidence {ref}')
+                message = f'{label} depends on unusable evidence {ref}'
+                errors.append(message)
+                if label == 'Human choice': historical_choice_errors.append(message)
             for sid in item['source_ids']:
                 source = sources[sid]
                 if item['claim_type'] in FACT_TYPES and source.get('verification') == 'search_snippet':
@@ -169,6 +172,10 @@ def audit(project, path, ready=False, quality=False):
               'marketing_claims_audit': claims, 'research_selection': research, 'follow_up': follow_up,
               'feasibility': feasibility,
               'material_changes': changes,
+              'review_draft_only': bool(historical_choice_errors and
+                  set(errors) == set(historical_choice_errors) and recommendation and
+                  recommendation != project.get('chosen_option_id')),
+              'historical_choice_errors': historical_choice_errors,
               'note': 'Structure and recorded review are separate. Neither proves claim truth or commercial effectiveness.'}
     return result
 
@@ -218,11 +225,18 @@ def inspect_file(path):
 
 def report(project, path, final=False):
     result = audit(project, path, ready=final, quality=final)
-    if result['errors']:
+    review_draft = not final and result['review_draft_only']
+    if result['errors'] and not review_draft:
         raise ValueError('Cannot export with unresolved source/reference errors: ' + '; '.join(result['errors']))
     if final and not result['ready']:
         raise ValueError('Final report requires resolving warnings and content review: ' + '; '.join(result['warnings'] + result['content_review']['blockers']))
     label = 'Записка для решения; независимая проверка истинности не выполнена' if final else 'ЧЕРНОВИК — структурная проверка не подтверждает качество выводов'
+    if review_draft:
+        label = ('ЧЕРНОВИК ДЛЯ ПЕРЕСМОТРА — НЕ ГОТОВ К ИСПОЛНЕНИЮ\n\n'
+                 'Прежний выбор ' + str(project['chosen_option_id']) + ' сохранён, но его основания устарели. '
+                 'Новая рекомендация ' + str(project['recommended_option_id']) + ' не является новым решением владельца. '
+                 'Требуется явный ответ; выбор, обязательства и сроки автоматически не меняются.\n\n'
+                 'Блокеры сохранены:\n' + '\n'.join('- ' + message for message in result['errors']))
     lines = [label, '', f"# {project['title']}", '', f"Статус: {project['stage']}. Выбор человека: {project.get('chosen_option_id') or 'не зафиксирован'}.",
              '', '## Цель', project['objective'], '', '## Рекомендация', project.get('recommendation_rationale', 'Ещё не сформирована.'),
              '', '## Ограничения', *['- ' + item for item in project.get('constraints', [])],

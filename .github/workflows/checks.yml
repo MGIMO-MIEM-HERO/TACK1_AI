@@ -34,6 +34,7 @@ jobs:
       - run: python scripts/verify_material_changes_demo.py
       - run: python scripts/verify_resume_summary_demo.py
       - run: python scripts/verify_passport_demo.py
+      - run: python scripts/verify_case_review_demo.py
       - run: python scripts/project_tool.py audit examples/decision-passport-case/project.json --ready --quality
       - run: python scripts/project_tool.py audit examples/research-branches-case/project.json --ready --quality
       - run: python scripts/project_tool.py audit examples/feasibility-case/project.json --ready --quality
