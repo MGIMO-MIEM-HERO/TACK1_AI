@@ -179,7 +179,7 @@ def validate_fields(project):
 
 def baseline(project, path, root, *, include_feasibility=True):
     from quality import state_hash
-    from checkpoint import fingerprint
+    from material_changes import source_version
     # A review cannot invalidate its own baseline by being appended. Strategy review,
     # dates and checkpoints are already excluded by the existing hash mechanism.
     state = {k: v for k, v in project.items() if k not in
@@ -194,7 +194,7 @@ def baseline(project, path, root, *, include_feasibility=True):
                 option_ids=[o['option_id'] for o in project['options']],
                 evidence_ids=[e['evidence_id'] for e in project['evidence']],
                 source_ids=[s['source_id'] for s in project['sources']],
-                source_content={s['source_id']: fingerprint(s.get('snapshot_path') or s['url_or_path'],
+                source_content={s['source_id']: source_version(project, s,
                                 path.parent if project.get('path_base') == 'project' else root)
                                 for s in project['sources']},
                 snapshot={'objective': project['objective'], 'constraints': copy.deepcopy(project.get('constraints', []))})

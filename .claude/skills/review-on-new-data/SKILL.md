@@ -7,6 +7,12 @@ description: Re-assess conclusions, options and an already chosen decision when 
 
 Методика: `knowledge/memory-and-revision.md`.
 
+При включённом `change_tracking` следуйте `workflows/material-change-review.md`.
+Он уточняет шаги 6–7: сначала оценка существенности, затем один запрос владельцу,
+если вывод изменился или влияние на выбранные основания остаётся неизвестным.
+Косметическое событие сохраняется без повторного согласования. Флаг
+`--reviewed-changes` сам по себе не заменяет разбор влияния.
+
 1. Зафиксируйте новое: `snapshot.py` для страниц (сообщит `content_changed_since_last_snapshot` и затронутые доказательства) или регистрация файла как источника.
 2. `python3 scripts/checkpoint.py <project.json> resume` → `changed_source_ids`, `evidence_to_reassess`, `options_to_reassess`.
 3. Для отозванного или опровергнутого вывода: `python3 scripts/checkpoint.py <project.json> impact --evidence-ids E-…` → зависимые выводы, варианты и `chosen_option_affected`.
