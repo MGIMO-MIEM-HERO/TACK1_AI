@@ -44,7 +44,7 @@ class ResumeTests(unittest.TestCase):
         lines = [line for line in out.stdout.splitlines() if line[:2] in ('1.', '2.', '3.', '4.')]
         self.assertEqual(len(lines), 4)
         self.assertTrue(all(len(line) < 230 for line in lines))
-        self.assertIn(self.path.as_posix(), out.stdout)
+        self.assertIn(self.path.resolve().as_posix(), out.stdout)
         self.assertNotIn('Структурная готовность:', out.stdout)
         detailed = self.run_cli('start.py', self.path, '--details')
         self.assertIn('Структурная готовность:', detailed.stdout)
