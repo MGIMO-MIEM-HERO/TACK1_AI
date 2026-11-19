@@ -35,6 +35,7 @@ def restore(path, *, at=None):
         'human_choice': chosen,
         'decision_question': ('Сначала требуется пересмотр оснований; выбор решения пока не фиксируется.'
                               if result['errors'] or review_blocked else
+                              summary['owner']['text'] if summary['owner']['status'] == 'responded' else
                               summary['owner']['text'] if summary['owner']['status'] == 'awaiting_decision' else
                               result['material_changes']['human_questions'][0]['action']
                               if result['material_changes']['human_questions'] else
@@ -64,6 +65,7 @@ def main():
     parser.add_argument('project', type=Path, help='Exact project.json path; cases are never selected implicitly')
     parser.add_argument('--json', action='store_true')
     parser.add_argument('--details', action='store_true', help='Show the existing full human-readable report')
+    parser.add_argument('--passport', action='store_true', help='Show the derived decision passport after the continuation summary')
     parser.add_argument('--acknowledge-summary', metavar='VERSION', help='Explicitly record viewing this summary version, never approval')
     parser.add_argument('--reviewer')
     parser.add_argument('--note')
@@ -72,12 +74,18 @@ def main():
     try:
         from follow_up import instant
         if args.acknowledge_summary:
-            if args.as_of or args.details or args.json: raise ValueError('View receipts use the current clock and reject report flags')
+            if args.as_of or args.details or args.json or args.passport: raise ValueError('View receipts use the current clock and reject report flags')
             from resume_summary import acknowledge
             print(json.dumps(acknowledge(args.project, args.acknowledge_summary, args.reviewer, args.note), ensure_ascii=False, indent=2))
             return 0
         if args.reviewer or args.note: raise ValueError('Reviewer/note require --acknowledge-summary VERSION')
         state = restore(args.project, at=instant(args.as_of) if args.as_of else None)
+        if args.passport:
+            if args.details or args.as_of: raise ValueError('Passport uses the current state; reject details/replay flags')
+            from decision_passport import build, markdown
+            card = build(args.project, state=state)
+            print(json.dumps(card, ensure_ascii=False, indent=2) if args.json else markdown(card))
+            return 0
         if args.json:
             print(json.dumps(state, ensure_ascii=False, indent=2))
         else:

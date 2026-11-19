@@ -13,5 +13,8 @@ def check_output(project, project_path, output):
             location = source.get(key)
             if location and not location.startswith(('http://', 'https://')):
                 protected.add((base / location).resolve())
+    for cp in project.get('checkpoints', []):
+        location = cp.get('human_confirmation', {}).get('reference', {}).get('file')
+        if isinstance(location, str): protected.add((base / location).resolve())
     if Path(output).resolve() in protected:
         raise ValueError('Report output must not overwrite project state, sources or run log')

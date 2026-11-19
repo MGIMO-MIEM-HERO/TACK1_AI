@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "project_id": "decision-passport-case",
+  "kind": "permission",
+  "subject_ref": "option:O1",
+  "decision_version": "5911217725e6bf4dbabd9a7eaff4ce11e425df10640ca196c6c2c2f166920aea",
+  "subject_version": "44cb50c338da24ccf926fea795fc68a17b77e720a2bd44733f422684f0a1032d",
+  "context": "authored_example",
+  "confirmation_id": "DEMO-P1",
+  "outcome": "approved",
+  "confirmed_by": "Вымышленный владелец учебного кейса",
+  "confirmed_at": "2026-11-19T08:29:48.244999+00:00",
+  "statement": "Авторский вымышленный ответ: подтверждаю только предмет permission option:O1 для явно указанной версии; это не реальное согласие участника команды."
+}

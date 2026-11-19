@@ -176,7 +176,8 @@
         ],
         "properties": {
           "change_snapshot": {"$ref": "#/$defs/materialChangeSnapshot"},
-          "change_review": {"$ref": "#/$defs/materialChangeReview"}
+          "change_review": {"$ref": "#/$defs/materialChangeReview"},
+          "human_confirmation": {"$ref": "#/$defs/humanConfirmation"}
         },
         "dependentRequired": {
           "change_snapshot": ["change_review"],
@@ -505,6 +506,30 @@
     }
   },
   "$defs": {
+    "humanConfirmation": {
+      "type": "object",
+      "required": ["schema_version", "confirmation_id", "project_id", "kind", "subject_ref", "subject_version", "decision_version", "outcome", "statement", "confirmed_at", "context", "reference"],
+      "properties": {
+        "schema_version": {"const": 1},
+        "confirmation_id": {"type": "string", "minLength": 1},
+        "project_id": {"type": "string", "minLength": 1},
+        "kind": {"enum": ["permission", "data", "recommendation"]},
+        "subject_ref": {"type": "string", "minLength": 1},
+        "subject_version": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "decision_version": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "outcome": {"enum": ["approved", "rejected", "needs_changes"]},
+        "statement": {"type": "string", "minLength": 1},
+        "confirmed_at": {"type": "string", "format": "date-time"},
+        "confirmed_by": {"type": "string", "minLength": 1},
+        "context": {"enum": ["live_project", "authored_example"]},
+        "reference": {
+          "type": "object", "required": ["file", "sha256"],
+          "properties": {"file": {"type": "string", "minLength": 1}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
     "resumeViewReceipt": {
       "type": "object",
       "required": ["kind", "version_hash", "observations", "reviewed_at", "reviewer", "note"],
@@ -837,6 +862,15 @@
         "evidence_ids"
       ],
       "properties": {
+        "selection_assessment": {
+          "type": "object", "required": ["status", "reason", "evidence_ids"],
+          "properties": {
+            "status": {"enum": ["open", "not_selected", "rejected"]},
+            "reason": {"type": "string", "minLength": 1},
+            "evidence_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string"}}
+          },
+          "additionalProperties": false
+        },
         "option_id": {
           "type": "string"
         },
