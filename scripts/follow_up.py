@@ -132,7 +132,7 @@ def validate_fields(project):
     return errors
 
 
-def result_version(project, path, root, result):
+def result_content_hash(project, path, root, result):
     from quality import state_hash
     evidence = {e['evidence_id']:e for e in project['evidence']}
     refs, pending = set(result['evidence_ids']), list(result['evidence_ids'])
@@ -141,11 +141,21 @@ def result_version(project, path, root, result):
             if eid not in refs: refs.add(eid);pending.append(eid)
     source_ids = {s for eid in refs for s in evidence[eid]['source_ids']}
     commitment=next(c for c in project['commitments'] if c.get('commitment_id')==result['commitment_id'])
-    return state_hash({'result':{k:v for k,v in result.items() if k!='human_decision'},
+    payload = {'result':{k:v for k,v in result.items() if k!='human_decision'},
                        'review_context':{k:commitment.get(k) for k in ('metric','review_trigger')},
                        'evidence':[e for e in project['evidence'] if e['evidence_id'] in refs],
                        'sources':[s for s in project['sources'] if s['source_id'] in source_ids],
-                       'path_base':project.get('path_base')}, path, root)
+                       'path_base':project.get('path_base')}
+    from material_changes import enabled
+    if enabled(project):
+        payload['change_tracking'] = project['change_tracking']; payload['project_id'] = project['project_id']
+    return state_hash(payload, path, root)
+
+
+def result_version(project, path, root, result):
+    content = result_content_hash(project, path, root, result)
+    from material_changes import enabled, result_lineage
+    return result_lineage(project, result['result_id'], content) if enabled(project) else content
 
 
 def inspect(project, path, root, *, at=None, health=None):
@@ -159,6 +169,9 @@ def inspect(project, path, root, *, at=None, health=None):
     questions = {}
     def ask(key, ref, reason, action):
         questions[key]={'question_id':key,'object_ref':ref,'reason':reason,'action':action}
+    from material_changes import inspect as inspect_changes
+    changes = inspect_changes(project, path, root)
+    for q in changes['human_questions']: questions[q['question_id']] = q
     if timezone_error: ask('timezone','/timezone',timezone_error,'Уточнить часовой пояс проекта; локальные сроки не угадываются.')
     rows=[]
     for i,c in enumerate(project.get('commitments',[])):
@@ -201,7 +214,10 @@ def inspect(project, path, root, *, at=None, health=None):
             hit=dependency_impact(project,[sid],[])
             source_alerts.append({'source_id':sid,'object_ref':'/sources/'+str(i),'reasons':reasons,'impact':hit,
                                   'chosen_option_affected':project.get('chosen_option_id') in hit['option_ids']})
-            ask('source:'+sid,'/sources/'+str(i),'; '.join(reasons),'Проверить источник и пересмотреть перечисленные основания/варианты; не обновлять checkpoint вслепую.')
+            # Tracked version changes first need an agent impact assessment, not a
+            # second owner request for the same source event. Expiry/missing data remain actionable.
+            if not changes['enabled'] or sid in unavailable or any(r.startswith('Истёк') for r in reasons):
+                ask('source:'+sid,'/sources/'+str(i),'; '.join(reasons),'Проверить источник и пересмотреть перечисленные основания/варианты; не обновлять checkpoint вслепую.')
     for sid in sorted(changed-{s['source_id'] for s in project['sources']}):
         ref='/checkpoints/'+str(len(project.get('checkpoints',[]))-1)+'/sources/'+sid.replace('~','~0').replace('/','~1')
         reason='Источник удалён из реестра после контрольной точки.'
@@ -217,7 +233,9 @@ def inspect(project, path, root, *, at=None, health=None):
         hit=dependency_impact(project,[],[e['evidence_id']])
         evidence_alerts.append({'evidence_id':e['evidence_id'],'object_ref':'/evidence/'+str(i),'reason':reason,'impact':hit,
                                 'chosen_option_affected':project.get('chosen_option_id') in hit['option_ids']})
-        ask('evidence:'+e['evidence_id'],'/evidence/'+str(i),reason,'Перечитать основания и пересмотреть вывод; не восстанавливать статус без проверки.')
+        if not changes['enabled'] or (not changes['human_questions'] and
+                {project.get('recommended_option_id'),project.get('chosen_option_id')}.intersection(hit['option_ids'])):
+            ask('evidence:'+e['evidence_id'],'/evidence/'+str(i),reason,'Перечитать основания и пересмотреть вывод; не восстанавливать статус без проверки.')
     by_eid={e['evidence_id']:e for e in project['evidence']}
     by_source={s['source_id']:s for s in project['sources']}
     receipt_rows=project.get('follow_up_reviews',[])

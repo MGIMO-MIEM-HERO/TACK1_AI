@@ -154,6 +154,15 @@
         "repository"
       ]
     },
+    "change_tracking": {
+      "type": "object",
+      "required": ["schema_version", "hash_mode"],
+      "properties": {
+        "schema_version": {"const": 1},
+        "hash_mode": {"const": "material-v1"}
+      },
+      "additionalProperties": false
+    },
     "checkpoints": {
       "type": "array",
       "items": {
@@ -164,7 +173,15 @@
           "summary",
           "next_action",
           "sources"
-        ]
+        ],
+        "properties": {
+          "change_snapshot": {"$ref": "#/$defs/materialChangeSnapshot"},
+          "change_review": {"$ref": "#/$defs/materialChangeReview"}
+        },
+        "dependentRequired": {
+          "change_snapshot": ["change_review"],
+          "change_review": ["change_snapshot"]
+        }
       }
     },
     "product_strategy": {
@@ -485,6 +502,39 @@
     }
   },
   "$defs": {
+    "materialChangeSnapshot": {
+      "type": "object",
+      "required": ["schema_version", "project_id", "project_title", "sources", "evidence", "decision", "business", "input_digest", "decision_version", "recommendation_hash", "result_versions"],
+      "properties": {
+        "schema_version": {"const": 1},
+        "project_id": {"type": "string", "minLength": 1},
+        "project_title": {"type": "string"},
+        "sources": {"type": "object"},
+        "evidence": {"type": "object"},
+        "decision": {"type": "object"},
+        "business": {"type": "object"},
+        "result_versions": {"type": "object"},
+        "input_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "decision_version": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "recommendation_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "additionalProperties": false
+    },
+    "materialChangeReview": {
+      "type": "object",
+      "required": ["kind", "events", "owner_question", "after_version", "note"],
+      "properties": {
+        "kind": {"enum": ["initialisation", "assessment", "cosmetic_or_progress"]},
+        "events": {"type": "array", "items": {"type": "object"}},
+        "owner_question": {"type": ["object", "null"]},
+        "after_version": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "before_version": {"type": ["string", "null"]},
+        "event_set_hash": {"type": ["string", "null"]},
+        "assessment": {"type": ["object", "null"]},
+        "note": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
     "source": {
       "type": "object",
       "required": [

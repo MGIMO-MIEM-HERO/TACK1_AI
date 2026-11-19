@@ -31,6 +31,7 @@ jobs:
       - run: python scripts/verify_follow_up_demo.py
       - run: python scripts/verify_feasibility_demo.py
       - run: python scripts/verify_branch_demo.py
+      - run: python scripts/verify_material_changes_demo.py
       - run: python scripts/project_tool.py audit examples/research-branches-case/project.json --ready --quality
       - run: python scripts/project_tool.py audit examples/feasibility-case/project.json --ready --quality
       - run: python scripts/project_tool.py audit examples/decision-follow-up-case/project.json --ready --quality

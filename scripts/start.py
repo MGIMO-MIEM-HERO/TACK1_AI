@@ -31,6 +31,8 @@ def restore(path, *, at=None):
         'human_choice': chosen,
         'decision_question': ('Сначала требуется пересмотр оснований; выбор решения пока не фиксируется.'
                               if result['errors'] or review_blocked else
+                              result['material_changes']['human_questions'][0]['action']
+                              if result['material_changes']['human_questions'] else
                               'Сначала нужно уточнить условие решения: ' + unresolved_branches[0]['next_step']
                               if unresolved_branches else 'Подтверждаете ли вы рекомендацию или выбираете другую альтернативу?'
                               if recommended and not chosen else
@@ -45,6 +47,7 @@ def restore(path, *, at=None):
         'research_selection': result['research_selection'],
         'follow_up': follow_up,
         'feasibility': result['feasibility'],
+        'material_changes': result['material_changes'],
         'workflow_files': sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / 'workflows').glob('*.md')),
         'instruction': 'Прочитай AGENTS.md. При ошибках сначала пересмотри основания. '
                        'Названия workflow бери из workflow_files. Не фиксируй выбор за человека.',

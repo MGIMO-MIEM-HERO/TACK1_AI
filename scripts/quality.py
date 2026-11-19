@@ -18,11 +18,12 @@ def text(value):
 def state_hash(project, path=None, root=None):
     # Checkpoints, dates and read receipts are operational, not a new strategy.
     payload = {k: v for k, v in project.items() if k not in ('checkpoints', 'updated_at', 'strategy_review', 'follow_up_reviews')}
+    from material_changes import enabled, meaningful_payload, source_version
+    if enabled(project): payload = meaningful_payload(project)
     if path is not None:
-        from checkpoint import fingerprint
         base = path.parent if project.get('path_base') == 'project' else root
         payload = {**payload, '_source_content': {
-            source['source_id']: fingerprint(source.get('snapshot_path') or source['url_or_path'], base)
+            source['source_id']: source_version(project, source, base)
             for source in project['sources']}}
     return hashlib.sha256(json.dumps(payload, ensure_ascii=False, sort_keys=True,
                                      separators=(',', ':'), allow_nan=False).encode('utf-8')).hexdigest()
