@@ -29,6 +29,14 @@ jobs:
       - run: python scripts/verify_claims_demo.py
       - run: python scripts/verify_research_demo.py
       - run: python scripts/verify_follow_up_demo.py
+      - run: python scripts/verify_feasibility_demo.py
+      - run: python scripts/verify_branch_demo.py
+      - run: python scripts/verify_material_changes_demo.py
+      - run: python scripts/verify_resume_summary_demo.py
+      - run: python scripts/verify_passport_demo.py
+      - run: python scripts/project_tool.py audit examples/decision-passport-case/project.json --ready --quality
+      - run: python scripts/project_tool.py audit examples/research-branches-case/project.json --ready --quality
+      - run: python scripts/project_tool.py audit examples/feasibility-case/project.json --ready --quality
       - run: python scripts/project_tool.py audit examples/decision-follow-up-case/project.json --ready --quality
       - run: python scripts/project_tool.py audit examples/next-research-case/project.json --ready --quality
       - run: python scripts/project_tool.py audit examples/marketing-claims-case/project.json --ready --quality

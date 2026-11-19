@@ -40,8 +40,10 @@ def validate_fields(project):
         if not nonempty(rid) or rid in review_ids:
             errors.append('Research review_id must be unique text')
         if nonempty(rid): review_ids.add(rid)
-        if type(review.get('schema_version')) is not int or review['schema_version'] != 1:
-            errors.append('Research schema_version must be 1')
+        if type(review.get('schema_version')) is not int or review['schema_version'] not in (1, 2):
+            errors.append('Research schema_version must be 1 or 2')
+        if review.get('schema_version') == 2 and review.get('context') not in ('live_project', 'authored_example'):
+            errors.append('Concrete research branches need live_project/authored_example context')
         for key in ('reviewer', 'limitations', 'comparison_rationale'):
             if not nonempty(review.get(key)): errors.append('Research review needs ' + key)
         base = review.get('baseline')
@@ -92,7 +94,8 @@ def validate_fields(project):
                     errors.append('Answer branch needs answer/consequence');continue
                 if branch['answer'] in answers: errors.append('Answer branches must be distinct')
                 answers.add(branch['answer'])
-                refs(branch, 'option_ids', namespaces['option_ids'], bool(namespaces['option_ids']))
+                fallback = review.get('schema_version') == 2 and isinstance(branch.get('condition'), dict) and branch['condition'].get('kind') == 'insufficient_data'
+                refs(branch, 'option_ids', namespaces['option_ids'], bool(namespaces['option_ids']) and not fallback)
             if gap.get('impact') != 'context' and len({b['consequence'] for b in branches if isinstance(b,dict) and nonempty(b.get('consequence'))}) < 2:
                 errors.append('A decision-changing question needs distinct consequences, not duplicate answer branches')
             methods = gap.get('methods')
@@ -121,6 +124,9 @@ def validate_fields(project):
                     refs(cost, 'evidence_ids', namespaces['evidence_ids'], cost.get('status') == 'observed')
             selected = gap.get('selected_method_id')
             if selected is not None and (not nonempty(selected) or selected not in mids): errors.append('selected_method_id must reference a method or be null')
+            if review.get('schema_version') == 2:
+                from research_branches import validate_gap
+                errors.extend(validate_gap(gap, {k: list(namespaces[k]) for k in ('option_ids', 'evidence_ids')}))
         if seen != set(qs) or not qs: errors.append('Research review must cover all existing questions exactly once')
         choice, stop = review.get('recommendation'), review.get('stop_rule')
         if not isinstance(choice, dict) or not isinstance(stop, dict): errors.append('Research review needs recommendation and stop_rule');continue
@@ -187,17 +193,25 @@ def inspect(project, path, root):
             for cost in method['effort'].values():
                 if cost['status']=='observed' and not any(by_eid[e]['claim_type'] in FACTS for e in cost['evidence_ids']):
                     blockers.append(gap['question_id']+': observed effort needs factual grounds')
+    resolutions = []
+    if review['schema_version'] == 2:
+        from research_branches import resolve
+        resolutions, branch_blockers = resolve(project, path, root, review)
+        blockers.extend(branch_blockers)
     return {'status':'blocked' if blockers else 'review_record_complete','review_id':review['review_id'],
             'blockers':sorted(set(blockers)), 'recommendation':choice, 'stop_rule':stop, 'gaps':review['gaps'],
+            'branch_resolutions': resolutions, 'schema_version': review['schema_version'],
+            'context': review.get('context'),
             'note':'Qualitative recorded reasoning, not an optimiser or monetary value-of-information estimate. No research, human decision or next_action is executed automatically.'}
 
 
-def prepare(project,path,root,review_id):
+def prepare(project,path,root,review_id, *, schema_version=2):
     qs=project.get('research_questions',[])
     if not qs or any(not isinstance(q,dict) or not all(nonempty(q.get(k)) for k in ('question_id','question','could_change')) for q in qs):
         raise ValueError('First give existing research_questions stable question_id/question/could_change fields')
     unknown=lambda: {'status':'unknown','value':None,'basis':None,'evidence_ids':[]}
-    return {'schema_version':1,'review_id':review_id,'baseline':baseline(project,path,root),'reviewer':'','limitations':'','comparison_rationale':'',
+    if type(schema_version) is not int or schema_version not in (1, 2): raise ValueError('Research schema_version must be 1 or 2')
+    result = {'schema_version':schema_version,'review_id':review_id,'baseline':baseline(project,path,root),'reviewer':'','limitations':'','comparison_rationale':'',
             'gaps':[{'question_id':q['question_id'],'decision_dependency':q['could_change'],'why_changes_decision':'',
                 'option_ids':[o['option_id'] for o in project['options']],'status':'open','answer':None,
                 'impact':'preference','priority':'undetermined','priority_rationale':'','evidence_ids':[],
@@ -206,6 +220,20 @@ def prepare(project,path,root,review_id):
                 'selected_method_id':None,'method_choice_rationale':''} for q in qs],
             'recommendation':{'action':'clarify','question_id':qs[0]['question_id'],'method_id':None,'rationale':''},
             'stop_rule':{'status':'uncertain','condition':'','rationale':'','evidence_ids':[],'remaining_limits':''}}
+    if schema_version == 2:
+        result['context'] = 'live_project'
+        for gap in result['gaps']:
+            gap['answer_branches'] = [
+                {'branch_id': 'B1', 'answer': '', 'consequence': '', 'option_ids': [], 'next_step': '',
+                 'condition': {'kind': 'observation', 'indicator': '', 'criterion': '', 'method_id': 'M1',
+                               'assessment': 'unknown', 'rationale': '', 'evidence_ids': [], 'thresholds': []}},
+                {'branch_id': 'B2', 'answer': '', 'consequence': '', 'option_ids': [], 'next_step': '',
+                 'condition': {'kind': 'observation', 'indicator': '', 'criterion': '', 'method_id': 'M1',
+                               'assessment': 'unknown', 'rationale': '', 'evidence_ids': [], 'thresholds': []}},
+                {'branch_id': 'UNKNOWN', 'answer': 'Данных недостаточно или условия противоречат друг другу',
+                 'consequence': 'Не выбирать альтернативу по этой развилке до уточнения', 'option_ids': [],
+                 'next_step': '', 'condition': {'kind': 'insufficient_data'}}]
+    return result
 
 
 def markdown(project,result):
@@ -217,6 +245,9 @@ def markdown(project,result):
             'Хеш контекста: '+r['baseline']['state_hash']]
     if result['blockers']: lines+=['Требуется пересмотр:',*['- '+b for b in result['blockers']]]
     lines+=['При stale/blocked сохранённые приоритеты ниже нельзя применять как актуальные.']
+    if r['schema_version'] == 1:
+        lines+=['Исторический формат v1: текстовые ветки сохранены, проверяемые условия и автоматическое сопоставление не записаны. Для нового исследования подготовь v2.']
+    if r.get('context') == 'authored_example': lines+=['Авторский вымышленный пример: это не реальное наблюдение и не согласование владельца.']
     qs={q['question_id']:q for q in r['baseline']['questions']}
     for g in r['gaps']:
         lines+=['','### '+g['question_id']+': '+qs[g['question_id']]['question'],
@@ -225,6 +256,16 @@ def markdown(project,result):
                 'Почему ответ меняет действие: '+g['why_changes_decision'],'Ответ: '+str(g['answer']),
                 'Основания: '+(', '.join(g['evidence_ids']) or 'не указаны')]
         for b in g['answer_branches']: lines+=['- Если '+b['answer']+' → '+b['consequence']+'; варианты: '+', '.join(b['option_ids'])]
+        if r['schema_version'] == 2:
+            for b in g['answer_branches']:
+                c = b['condition']
+                lines+=['  Ветка '+b['branch_id']+'; условие: '+json.dumps(c,ensure_ascii=False), '  Следующий шаг: '+b['next_step']]
+            resolution = next((x for x in result.get('branch_resolutions', []) if x['question_id']==g['question_id']), None)
+            if resolution:
+                lines+=['Сопоставление: '+resolution['status']+'; ветка: '+str(resolution['branch_id']),
+                        resolution.get('reason',''), 'Следующий шаг по развилке: '+resolution['next_step']]
+                for c in resolution['conditions']: lines+=['- '+c['branch_id']+': '+c['state']+' — '+c['reason']]
+                lines+=['Допущение осуществимости: '+a for a in resolution.get('assumptions', [])]
         for m in g['methods']:
             lines+=['Способ '+m['method_id']+': '+m['description']+' ['+m['access']+'; '+m['adequacy']+']',
                     'Достаточность: '+m['adequacy_rationale']]

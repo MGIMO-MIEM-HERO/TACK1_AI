@@ -39,8 +39,8 @@ def load(path):
 
 def source_health(project, path):
     base = path.parent if project.get('path_base') == 'project' else ROOT
-    current = {s['source_id']: {'location': s['url_or_path'],
-               'fingerprint': fingerprint(s.get('snapshot_path') or s['url_or_path'], base)} for s in project['sources']}
+    from material_changes import source_versions
+    current = source_versions(project, base)
     history = project.get('checkpoints') or []
     previous = history[-1]['sources'] if history else {}
     changed = {key for key in previous.keys() | current.keys() if previous.get(key) != current.get(key)} if history else set()
@@ -148,6 +148,16 @@ def audit(project, path, ready=False, quality=False):
     from research_selection import inspect as inspect_research
     research = inspect_research(project, path, ROOT)
     warnings.extend(research['blockers'])
+    from feasibility import inspect as inspect_feasibility
+    feasibility = inspect_feasibility(project, path, ROOT)
+    warnings.extend(feasibility['blockers'] + feasibility['decision_blockers'])
+    for row in feasibility['assessments']:
+        if row['outcome'] == 'unknown':
+            advisories.append('Feasibility unknown for ' + row['option_id'] + ': clarify scope, capacity and calendar fit; do not infer infeasibility')
+    from material_changes import inspect as inspect_changes
+    changes = inspect_changes(project, path, ROOT)
+    if changes['needs_assessment']:
+        warnings.append('Changes need an explicit impact assessment; uncertainty is not proof that the recommendation changed')
     from follow_up import inspect as inspect_follow_up
     follow_up = inspect_follow_up(project, path, ROOT, health=health)
     for row in follow_up['metric_results']:
@@ -157,6 +167,8 @@ def audit(project, path, ready=False, quality=False):
               'structural_ready': structural_ready, 'errors': errors, 'warnings': warnings, 'advisories': advisories,
               'health': health, 'content_review': content, 'decision_stress_test': stress,
               'marketing_claims_audit': claims, 'research_selection': research, 'follow_up': follow_up,
+              'feasibility': feasibility,
+              'material_changes': changes,
               'note': 'Structure and recorded review are separate. Neither proves claim truth or commercial effectiveness.'}
     return result
 
@@ -249,6 +261,12 @@ def report(project, path, final=False):
     if project.get('research_selection_reviews'):
         from research_selection import markdown as research_markdown
         lines.extend(['', research_markdown(project, result['research_selection']).rstrip()])
+    if project.get('feasibility_reviews'):
+        from feasibility import markdown as feasibility_markdown
+        lines.extend(['', feasibility_markdown(project, result['feasibility']).rstrip()])
+    if result['material_changes']['enabled']:
+        from material_changes import markdown as changes_markdown
+        lines.extend(['', changes_markdown(result['material_changes']).rstrip()])
     if project.get('commitments') or project.get('metric_results') or project['stage'] in ('follow_up', 'complete'):
         from follow_up import markdown as follow_up_markdown
         lines.extend(['', follow_up_markdown(result['follow_up']).rstrip()])

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "project_id": "decision-passport-case",
+  "kind": "recommendation",
+  "subject_ref": "/recommended_option_id",
+  "decision_version": "5911217725e6bf4dbabd9a7eaff4ce11e425df10640ca196c6c2c2f166920aea",
+  "subject_version": "f329000a3302dc6c10d696943c17e80f25c17f19c1a14fe6bd1f8dd35ba7d6e1",
+  "context": "authored_example",
+  "confirmation_id": "DEMO-R1",
+  "outcome": "approved",
+  "confirmed_by": "Вымышленный владелец учебного кейса",
+  "confirmed_at": "2026-11-19T08:29:48.423616+00:00",
+  "statement": "Авторский вымышленный ответ: подтверждаю только предмет recommendation /recommended_option_id для явно указанной версии; это не реальное согласие участника команды."
+}

@@ -5,9 +5,9 @@ description: Continue a project after a break or in a new chat from files only -
 
 # Resume: продолжение после перерыва
 
-1. `python3 scripts/checkpoint.py <project.json> resume`. Прочитайте `stage`, `next_action`, `changed_source_ids`, `evidence_to_reassess`, `review_warnings`, `ledger.unfinished_actions`.
+1. `python3 scripts/start.py <project.json> --json`. Первым покажите четыре пункта `resume_summary`: изменения, решение, запрос владельцу, следующий шаг. Подробности — по ссылкам и `--details`; см. `workflows/project-resume-summary.md`. `checkpoint.py resume` возвращает ту же сводку.
 2. `python3 scripts/ledger.py verify <project.json>`. Если цепочка нарушена, сообщите человеку и не доверяйте истории без проверки.
 3. **Незавершённые действия** (`unfinished_actions`): проверьте, что они успели изменить (файлы из `outputs`). Скажите человеку. Повторяйте только через `ledger.py begin … --retry`, а не молча.
 4. **Изменились источники** → скилл `review-on-new-data` до любой новой работы.
-5. Прочитайте только файлы, нужные `next_action`. Выводы прошлых сессий в `project.json` — записи для проверки, а не факты (`knowledge/memory-and-revision.md`). Пересказ из памяти чата не используется.
-6. Сообщите человеку в 3–5 строк: где остановились, что изменилось, сколько потрачено (`ledger.cost_usd_known`), что делаете дальше.
+5. Прочитайте только файлы, нужные `resume_summary.next_step`. При изменении оснований или ресурсов прежний `next_action` может быть неактуален. Выводы прошлых сессий — записи для проверки, а не факты (`knowledge/memory-and-revision.md`).
+6. Открытие ничего не сохраняет. Только после фактического рассмотрения явно отметьте просмотр точной версии по workflow. Укажите реального рассмотревшего; самопроверка агента не означает, что владелец увидел или согласовал решение. Уже рассмотренные вопросы остаются ожиданием ответа, а не новым запросом. Расходы и детали доступны в полном отчёте.

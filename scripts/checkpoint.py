@@ -89,6 +89,47 @@ def write_state(path: Path, project: dict) -> None:
             temporary.unlink(missing_ok=True)
 
 
+def save_checkpoint(project, path, summary, *, reviewed_changes=False, change_review=None,
+                    initial_tracking=False, expected=None, human_confirmation=None):
+    """Shared checkpoint writer. A change assessment is not a human decision."""
+    import copy
+    from material_changes import enabled, source_versions, checkpoint_fields, snapshot as capture_snapshot
+    from ledger import append, read_entries, ledger_path, verify
+    base = path.parent if project.get('path_base') == 'project' else ROOT
+    versions = source_versions(project, base)
+    history = project.get('checkpoints', [])
+    previous = history[-1]['sources'] if history else {}
+    changed = {sid for sid in set(previous) | set(versions) if previous.get(sid) != versions.get(sid)} if history else set()
+    if changed and not reviewed_changes and not initial_tracking:
+        raise ValueError('Sources changed. Run resume, reassess affected evidence and options, then save with --reviewed-changes.')
+    if verify(read_entries(ledger_path(path))): raise ValueError('Damaged ledger; inspect it before saving a checkpoint')
+    if json.loads(path.read_text(encoding='utf-8-sig')) != (project if expected is None else expected):
+        raise ValueError('Project changed; reload before checkpoint save')
+    fields = checkpoint_fields(project, path, ROOT, change_review, initial=initial_tracking) if enabled(project) else {}
+    if human_confirmation is not None:
+        from decision_passport import pending_errors
+        problems = pending_errors(project, path, ROOT, human_confirmation)
+        if problems: raise ValueError('; '.join(problems))
+        fields['human_confirmation'] = copy.deepcopy(human_confirmation)
+    if enabled(project) and (fields['change_snapshot'] != capture_snapshot(project, path, ROOT)
+                             or versions != source_versions(project, base)):
+        raise ValueError('Sources changed while assessing; read and prepare again')
+    now = datetime.now(timezone.utc); candidate = copy.deepcopy(project)
+    candidate.setdefault('checkpoints', []).append({'at': now.isoformat(timespec='seconds'), 'stage': project['stage'],
+        'summary': summary, 'next_action': project['next_action'], 'sources': versions, **fields})
+    candidate['updated_at'] = now.date().isoformat()
+    errors = validate(candidate)
+    if errors: raise ValueError('; '.join(errors))
+    write_state(path, candidate)
+    try:
+        append(path, {'step': project['stage'], 'action': 'checkpoint: ' + summary, 'status': 'done',
+                      'actor': 'script', 'tool': 'scripts/checkpoint.py', 'source_ids': sorted(changed),
+                      'note': 'Impact assessment only, no human approval.' if fields else 'reviewed source changes' if reviewed_changes else None})
+    except (OSError, ValueError) as error:
+        raise ValueError('Checkpoint saved but ledger append failed; inspect before retrying: ' + str(error)) from error
+    return candidate
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("project", type=Path)
@@ -112,13 +153,8 @@ def main() -> None:
         if errors:
             raise ValueError("\n".join(errors))
         base = path.parent if project.get("path_base") == "project" else ROOT
-        fingerprints = {
-            source["source_id"]: {
-                "location": source["url_or_path"],
-                "fingerprint": fingerprint(source.get("snapshot_path") or source["url_or_path"], base),
-            }
-            for source in project["sources"]
-        }
+        from material_changes import source_versions, inspect as inspect_changes
+        fingerprints = source_versions(project, base)
         history = project.get("checkpoints", [])
         previous = history[-1]["sources"] if history else {}
         changed = {key for key in previous.keys() | fingerprints.keys() if previous.get(key) != fingerprints.get(key)} if history else set()
@@ -138,12 +174,15 @@ def main() -> None:
                               "chosen_option_affected": project.get("chosen_option_id") in options_hit}, ensure_ascii=False, indent=2))
             return
         if args.command == "resume":
+            from start import restore
             from stress_test import inspect as inspect_stress
             from claims_audit import inspect as inspect_claims
             from research_selection import inspect as inspect_research
             from follow_up import inspect as inspect_follow_up, instant
+            from feasibility import inspect as inspect_feasibility
             ledger_state = ledger_summary(path)
             print(json.dumps({
+                "resume_summary": restore(path, at=instant(args.as_of) if args.as_of else None)['resume_summary'],
                 "stage": project["stage"],
                 "last_checkpoint": {key: history[-1][key] for key in ("at", "summary")} if history else None,
                 "next_action": project["next_action"],
@@ -157,33 +196,15 @@ def main() -> None:
                 "decision_stress_test": inspect_stress(project, path, ROOT),
                 "marketing_claims_audit": inspect_claims(project, path, ROOT),
                 "research_selection": inspect_research(project, path, ROOT),
+                "feasibility": inspect_feasibility(project, path, ROOT),
+                "material_changes": inspect_changes(project, path, ROOT),
                 "follow_up": inspect_follow_up(project, path, ROOT,
                                                at=instant(args.as_of) if args.as_of else None),
                 "ledger": ledger_state,
                 "reminder": "Earlier agent conclusions in this file are records to re-check, not facts. Trust only evidence with sources.",
             }, ensure_ascii=False, indent=2))
             return
-        if changed and not args.reviewed_changes:
-            raise ValueError("Sources changed. Run resume, reassess affected evidence and options, then save with --reviewed-changes.")
-        now = datetime.now(timezone.utc)
-        history.append({
-            "at": now.isoformat(timespec="seconds"),
-            "stage": project["stage"],
-            "summary": args.summary,
-            "next_action": project["next_action"],
-            "sources": fingerprints,
-        })
-        project["checkpoints"] = history
-        project["updated_at"] = now.date().isoformat()
-        write_state(path, project)
-        try:
-            from ledger import append as ledger_append
-            ledger_append(path, {"step": project["stage"], "action": f"checkpoint: {args.summary}", "status": "done",
-                                 "actor": "script", "tool": "scripts/checkpoint.py",
-                                 "source_ids": sorted(changed) if changed else [],
-                                 "note": "reviewed source changes" if args.reviewed_changes else None})
-        except (OSError, ValueError) as error:  # the checkpoint itself is saved; report the ledger issue
-            print(f"Checkpoint saved, but ledger entry failed: {error}")
+        save_checkpoint(project, path, args.summary, reviewed_changes=args.reviewed_changes)
         print(f"Saved checkpoint for {project['stage']}")
     except (OSError, ValueError, TypeError, KeyError, OverflowError) as error:
         parser.exit(1, f"Checkpoint: {error}\n")
