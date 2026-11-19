@@ -69,6 +69,10 @@ critical/high/undetermined вопросах, меняющих решение, и
 
 ## Демонстрация
 
+Новый формат v2 использует существующие answer_branches, а не отдельный реестр
+решений. Подробности и пример — [конкретные развилки](research-decision-branches.md).
+Старые v1 и их история не переписываются; новые шаблоны по умолчанию — v2.
+
 ```sh
 python scripts/start.py examples/next-research-case/project.json --json
 python scripts/verify_research_demo.py

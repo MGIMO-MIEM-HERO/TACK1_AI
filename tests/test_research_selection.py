@@ -24,7 +24,7 @@ class ResearchTests(unittest.TestCase):
         self.complete_record()
         self.project['research_questions']=[{'question_id':q,'question':text,'could_change':'Which option to use'}
             for q,text in [('Q1','Is integration possible?'),('Q2','Which delivery method?'),('Q3','Competitor colours?')]]
-        r=prepare(self.project,self.path,ROOT,'R1')
+        r=prepare(self.project,self.path,ROOT,'R1',schema_version=1)
         r.update(reviewer='Agent self-review',limitations='Unit fixture, not measured savings',
                  comparison_rationale='Resolve feasibility first; compare delivery later; colours do not distinguish current options')
         for i,g in enumerate(r['gaps']):
