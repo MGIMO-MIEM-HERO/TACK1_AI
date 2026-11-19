@@ -104,6 +104,8 @@ def extend_graph(project, audit, nodes, edges):
                   row['data_origin'] + ' · ' + status, {**row, 'Проверка результата': checked}, f'/metric_results/{i}')
         refs(key, row)
     for i, row in enumerate(project.get('follow_up_reviews', [])):
+        if row.get('kind') == 'resume':
+            continue
         checked = results.get(row['result_id'], {})
         current = row['version_hash'] == checked.get('version_hash') and checked.get('reviewed', False)
         key = add('receipt:' + str(i), 9, 'Рассмотрение ' + row['result_id'],
@@ -121,6 +123,9 @@ def extend_graph(project, audit, nodes, edges):
         if row['object_ref'] in registry:
             edges.append(dict(source=registry[row['object_ref']], target=key, label='причина вопроса'))
 
+    from visualize_decision import extend_decision
+    extend_decision(project, audit, nodes, edges, add, refs, registry)
+
     prefixes = {'source_id': 's', 'evidence_id': 'e', 'option_id': 'o', 'capability_id': 'cap',
                 'claim_id': 'claim', 'question_id': 'question', 'commitment_id': 'commitment', 'result_id': 'result'}
     ids = {n['id'] for n in nodes}
@@ -129,11 +134,11 @@ def extend_graph(project, audit, nodes, edges):
     def walk(value):
         if isinstance(value, dict):
             for field, item in value.items():
-                if field in ('baseline', 'methods'):
+                if field in ('baseline', 'methods', 'answer_branches', 'before', 'after'):
                     continue
                 singular = field[:-1] if field.endswith('_ids') else field
                 singular = singular.removeprefix('changed_').removeprefix('selected_')
-                if singular in prefixes or singular == 'assumption_id':
+                if singular in prefixes or singular in ('assumption_id', 'work_id', 'resource_id', 'method_id'):
                     for ref in item if isinstance(item, list) else [item]:
                         if isinstance(ref, str):
                             yield singular, ref

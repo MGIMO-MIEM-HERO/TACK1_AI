@@ -78,7 +78,17 @@ def graph(project, audit_result, state_hash):
                 state_sha256=state_hash, nodes=nodes, edges=edges)
 
 
-def render(project, audit_result, state_bytes):
+def render(project, audit_result, state_bytes, project_path=None):
+    if project_path is not None:
+        from checkpoint import ROOT, ledger_summary
+        from resume_summary import build as summary_build
+        from decision_passport import build as passport_build
+        path = Path(project_path).resolve()
+        summary = summary_build(project, path, ROOT, audit_result,
+                                audit_result['follow_up'], ledger_summary(path))
+        state = {**audit_result, 'audit': audit_result, 'resume_summary': summary}
+        audit_result = {**audit_result, 'visual_views': {
+            'summary': summary, 'passport': passport_build(path, state=state)}}
     data = graph(project, audit_result, hashlib.sha256(state_bytes).hexdigest())
     # JSON is embedded as inert text. Escape HTML delimiters, including </script>.
     payload = json.dumps(data, ensure_ascii=False).replace('&', '\\u0026').replace('<', '\\u003c').replace('>', '\\u003e')
@@ -100,7 +110,7 @@ def main():
         check_output(project, path, args.out)
         result = audit(project, path, ready=True, quality=True)
         args.out.parent.mkdir(parents=True, exist_ok=True)
-        args.out.write_text(render(project, result, path.read_bytes()), encoding='utf-8')
+        args.out.write_text(render(project, result, path.read_bytes(), path), encoding='utf-8')
         print(args.out)
     except (ValueError, OSError, KeyError, TypeError) as error:
         parser.exit(1, f'Visualization: {error}\n')

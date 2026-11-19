@@ -333,7 +333,7 @@ def main():
             text = report(project, path, args.final)
             from visualize import render
             from urllib.parse import quote
-            visual = render(project, audit(project, path, ready=True, quality=True), path.read_bytes())
+            visual = render(project, audit(project, path, ready=True, quality=True), path.read_bytes(), path)
             text += '\n[Открыть интерактивную карту работы](' + quote(graph_path.name) + ')\n'
             args.out.parent.mkdir(parents=True, exist_ok=True)
             graph_path.write_text(visual, encoding='utf-8')
