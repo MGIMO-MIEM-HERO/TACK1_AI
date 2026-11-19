@@ -25,6 +25,14 @@ jobs:
           python-version: ${{ matrix.python }}
       - run: python -m unittest discover -s tests -v
       - run: python scripts/verify_demo.py
+      - run: python scripts/verify_stress_demo.py
+      - run: python scripts/verify_claims_demo.py
+      - run: python scripts/verify_research_demo.py
+      - run: python scripts/verify_follow_up_demo.py
+      - run: python scripts/project_tool.py audit examples/decision-follow-up-case/project.json --ready --quality
+      - run: python scripts/project_tool.py audit examples/next-research-case/project.json --ready --quality
+      - run: python scripts/project_tool.py audit examples/marketing-claims-case/project.json --ready --quality
+      - run: python scripts/project_tool.py audit examples/decision-stress-case/project.json --ready --quality
       - run: python scripts/project_tool.py audit examples/campus-strategy/project.json --ready
       - run: python scripts/validate_project.py examples/activation-case/project.json
       - run: python scripts/start.py examples/campus-strategy/project.json --json

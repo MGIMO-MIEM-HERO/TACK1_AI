@@ -1,0 +1,248 @@
+{
+  "schema_version": 1,
+  "review_id": "R1",
+  "baseline": {
+    "project_id": "decision-stress-case",
+    "state_hash": "30a56b84dea3eecc1f0c6d9ba8019d83b1f753eb9443f39310e34598d51bb571",
+    "recommended_option_id": "O1",
+    "option_ids": [
+      "O0",
+      "O1",
+      "O2",
+      "O3"
+    ],
+    "evidence_ids": [
+      "E1",
+      "E2",
+      "H1"
+    ],
+    "source_ids": [
+      "BRIEF"
+    ],
+    "source_content": {
+      "BRIEF": "686b653addcf18cb34d955375c1f674246d1957ac8764cd22ebb44c666828379"
+    },
+    "snapshot": {
+      "objective": "Выбрать способ подготовки учебного сценария заявки; проверить устойчивость рекомендации",
+      "constraints": [
+        "Разработчик доступен",
+        "Срок подготовки — три дня",
+        "Только условные материалы; спрос и эффект неизвестны"
+      ]
+    }
+  },
+  "reviewer": "Самопроверка агента на авторском учебном кейсе",
+  "strongest_objection": "Срок прототипа неизвестен; бумажный сценарий может быть достаточным.",
+  "reversal_condition": "Если разработчик недоступен, предпочесть бумажную проверку; если её выполнение тоже не подтверждено, запросить данные.",
+  "limitations": "Все три сценария гипотетические; вероятности, сроки разработки, спрос и эффект не измерены.",
+  "assumptions": [
+    {
+      "assumption_id": "A1",
+      "statement": "Разработчик остаётся доступен для локального прототипа",
+      "basis": "hypothesis",
+      "evidence_ids": [
+        "E1"
+      ],
+      "option_ids": [
+        "O1",
+        "O2"
+      ],
+      "verification_needed": "Получить подтверждение ресурса и оценку осуществимости от владельца"
+    },
+    {
+      "assumption_id": "A2",
+      "statement": "Локальный сценарий можно отделить от интеграции",
+      "basis": "recorded_evidence",
+      "evidence_ids": [
+        "E2"
+      ],
+      "option_ids": [
+        "O1"
+      ],
+      "verification_needed": "Проверить применимость учебного условия к реальному проекту"
+    }
+  ],
+  "scenarios": [
+    {
+      "scenario_id": "SC1",
+      "title": "Разработчик недоступен",
+      "premise": "Предположим, разработчик недоступен все три дня.",
+      "premise_status": "hypothetical",
+      "assumption_ids": [
+        "A1"
+      ],
+      "evidence_ids": [],
+      "changed_source_ids": [],
+      "changed_evidence_ids": [],
+      "constraint_changes": [
+        {
+          "before": "Разработчик доступен",
+          "after": "Разработчик недоступен"
+        }
+      ],
+      "option_impacts": [
+        {
+          "option_id": "O0",
+          "feasibility": "feasible",
+          "preference": "not_preferred",
+          "reason": "Выполнимо, но не позволяет получить новую проверку.",
+          "evidence_ids": [
+            "E1"
+          ]
+        },
+        {
+          "option_id": "O1",
+          "feasibility": "infeasible",
+          "preference": "not_preferred",
+          "reason": "Локальный прототип требует отсутствующего ресурса; заготовку нельзя считать готовым результатом.",
+          "evidence_ids": [
+            "E1"
+          ]
+        },
+        {
+          "option_id": "O2",
+          "feasibility": "feasible",
+          "preference": "preferred",
+          "reason": "По E1 бумажная проверка не требует кода; при этой предпосылке она сохраняет возможность проверки.",
+          "evidence_ids": [
+            "E1"
+          ]
+        },
+        {
+          "option_id": "O3",
+          "feasibility": "feasible",
+          "preference": "not_preferred",
+          "reason": "Остановка осуществима, но доступен более информативный обратимый шаг O2.",
+          "evidence_ids": [
+            "E1"
+          ]
+        }
+      ],
+      "recommendation": {
+        "outcome": "switch",
+        "option_id": "O2",
+        "rationale": "По E1 бумажная проверка не требует кода; при этой предпосылке она сохраняет возможность проверки.",
+        "evidence_ids": [
+          "E1"
+        ]
+      },
+      "new_data_needed": "Подтверждение доступности ресурсов и применимости условий учебного брифа",
+      "review_trigger": "При подтверждении предпосылки владельцем или изменении поддерживающих источников повторить сравнение; не менять выбор человека автоматически."
+    },
+    {
+      "scenario_id": "SC2",
+      "title": "Интеграция задерживается",
+      "premise": "Предположим, интеграция задерживается, но разработчик доступен и нужен только локальный сценарий.",
+      "premise_status": "hypothetical",
+      "assumption_ids": [
+        "A2"
+      ],
+      "evidence_ids": [],
+      "changed_source_ids": [],
+      "changed_evidence_ids": [],
+      "constraint_changes": [],
+      "option_impacts": [
+        {
+          "option_id": "O0",
+          "feasibility": "feasible",
+          "preference": "not_preferred",
+          "reason": "Нет новых работ, но нет новой проверки.",
+          "evidence_ids": [
+            "E2"
+          ]
+        },
+        {
+          "option_id": "O1",
+          "feasibility": "feasible",
+          "preference": "preferred",
+          "reason": "По E2 локальный прототип отделён от интеграции; сама задержка не меняет исходный выбор. Допущение о сроке разработки всё ещё требует проверки.",
+          "evidence_ids": [
+            "E2"
+          ]
+        },
+        {
+          "option_id": "O2",
+          "feasibility": "feasible",
+          "preference": "not_preferred",
+          "reason": "Осуществима и остаётся запасным вариантом, но сама задержка интеграции не делает прототип невозможным.",
+          "evidence_ids": [
+            "E2"
+          ]
+        },
+        {
+          "option_id": "O3",
+          "feasibility": "feasible",
+          "preference": "not_preferred",
+          "reason": "Остановка не следует из задержки компонента, не нужного для локальной проверки.",
+          "evidence_ids": [
+            "E2"
+          ]
+        }
+      ],
+      "recommendation": {
+        "outcome": "keep",
+        "option_id": "O1",
+        "rationale": "По E2 локальный прототип отделён от интеграции; сама задержка не меняет исходный выбор. Допущение о сроке разработки всё ещё требует проверки.",
+        "evidence_ids": [
+          "E2"
+        ]
+      },
+      "new_data_needed": "Подтверждение доступности ресурсов и применимости условий учебного брифа",
+      "review_trigger": "При подтверждении предпосылки владельцем или изменении поддерживающих источников повторить сравнение; не менять выбор человека автоматически."
+    },
+    {
+      "scenario_id": "SC3",
+      "title": "Ключевое условие оспорено",
+      "premise": "Предположим, условие E1 оказалось неприменимо, а новые требования пока не получены.",
+      "premise_status": "hypothetical",
+      "assumption_ids": [
+        "A1",
+        "A2"
+      ],
+      "evidence_ids": [],
+      "changed_source_ids": [],
+      "changed_evidence_ids": [
+        "E1"
+      ],
+      "constraint_changes": [],
+      "option_impacts": [
+        {
+          "option_id": "O0",
+          "feasibility": "uncertain",
+          "preference": "undetermined",
+          "reason": "Можно сохранить текущее состояние, но полезность этого решения неизвестна.",
+          "evidence_ids": []
+        },
+        {
+          "option_id": "O1",
+          "feasibility": "uncertain",
+          "preference": "undetermined",
+          "reason": "Неясны реальные требования и доступность требуемых ресурсов.",
+          "evidence_ids": []
+        },
+        {
+          "option_id": "O2",
+          "feasibility": "uncertain",
+          "preference": "undetermined",
+          "reason": "После опровержения E1 неизвестно, достаточна ли бумажная проверка.",
+          "evidence_ids": []
+        },
+        {
+          "option_id": "O3",
+          "feasibility": "uncertain",
+          "preference": "undetermined",
+          "reason": "Неясно, требуется ли остановка или достаточно другого способа проверки.",
+          "evidence_ids": []
+        }
+      ],
+      "recommendation": {
+        "outcome": "insufficient_evidence",
+        "option_id": null,
+        "rationale": "Без подтверждения свойств способов проверки нельзя обоснованно выбрать победителя.",
+        "evidence_ids": []
+      },
+      "new_data_needed": "Подтверждение доступности ресурсов и применимости условий учебного брифа",
+      "review_trigger": "При подтверждении предпосылки владельцем или изменении поддерживающих источников повторить сравнение; не менять выбор человека автоматически."
+    }
+  ]
+}

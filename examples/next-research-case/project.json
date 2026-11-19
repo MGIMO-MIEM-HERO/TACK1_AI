@@ -1,0 +1,549 @@
+{
+  "project_id": "next-research-case",
+  "title": "Что выяснить перед подготовкой сценария заявки?",
+  "updated_at": "2026-11-18",
+  "objective": "Выбрать способ подготовки учебного сценария; не оценивать спрос или запуск продукта",
+  "stage": "validation",
+  "next_action": "Сначала прочитать предоставленное техническое условие о доступе к интеграции.",
+  "path_base": "project",
+  "sources": [
+    {
+      "source_id": "BRIEF",
+      "kind": "document",
+      "title": "Авторский бриф",
+      "url_or_path": "inputs/brief.md",
+      "accessed_at": "2026-11-19",
+      "scope": "Авторское учебное условие",
+      "limitations": "Не реальные данные продукта и не доказательство спроса",
+      "evidence_scope": "simulation"
+    },
+    {
+      "source_id": "POLICY",
+      "kind": "document",
+      "title": "Авторское техническое условие",
+      "url_or_path": "inputs/policy.md",
+      "accessed_at": "2026-11-19",
+      "scope": "Авторское учебное условие",
+      "limitations": "Не реальные данные продукта и не доказательство спроса",
+      "evidence_scope": "simulation"
+    },
+    {
+      "source_id": "FORM",
+      "kind": "document",
+      "title": "Авторский шаблон",
+      "url_or_path": "inputs/form.md",
+      "accessed_at": "2026-11-19",
+      "scope": "Авторское учебное условие",
+      "limitations": "Не реальные данные продукта и не доказательство спроса",
+      "evidence_scope": "simulation"
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "E1",
+      "claim": "Учебное решение касается способа подготовки сценария, а не спроса или коммерческого эффекта.",
+      "claim_type": "source_fact",
+      "source_ids": [
+        "BRIEF"
+      ],
+      "method": "Чтение рамки задания",
+      "status": "provisional",
+      "claim_scope": "source_description",
+      "locator": "inputs/brief.md, строка 3",
+      "limitations": "Факт о вымышленном задании",
+      "support": [
+        {
+          "source_id": "BRIEF",
+          "relation": "supports",
+          "locator": "строка 3",
+          "passage": "Нужно выбрать способ подготовки сценария заявки, не доказать спрос или коммерческий эффект.",
+          "reason": "Ограничивает текущий выбор, для которого сравнивается полезность исследования."
+        }
+      ]
+    }
+  ],
+  "options": [
+    {
+      "option_id": "O0",
+      "kind": "status_quo",
+      "title": "Оставить текущий сценарий",
+      "benefits": [
+        "Не требует новых работ"
+      ],
+      "costs_and_risks": [
+        "Не даёт новой проверки"
+      ],
+      "objection": "При доступных материалах можно подготовить ограниченную проверку",
+      "evidence_ids": [
+        "E1"
+      ]
+    },
+    {
+      "option_id": "O1",
+      "kind": "change",
+      "title": "Подготовить прототип с интеграцией",
+      "benefits": [
+        "Работающий сценарий, если допустим"
+      ],
+      "costs_and_risks": [
+        "Требует разрешённой интеграции и разработчика; сроки неизвестны"
+      ],
+      "objection": "Бумажная проверка может быть достаточной для текущей рамки",
+      "evidence_ids": [
+        "E1"
+      ]
+    },
+    {
+      "option_id": "O2",
+      "kind": "learn",
+      "title": "Подготовить бумажную проверку",
+      "benefits": [
+        "Не требует интеграции при достаточном шаблоне"
+      ],
+      "costs_and_risks": [
+        "Не проверяет реальную систему или спрос"
+      ],
+      "objection": "Нужно проверить достаточность материалов",
+      "evidence_ids": [
+        "E1"
+      ]
+    },
+    {
+      "option_id": "O3",
+      "kind": "stop",
+      "title": "Заморозить направление",
+      "benefits": [
+        "Не расходует новые ресурсы"
+      ],
+      "costs_and_risks": [
+        "Не даёт нового знания"
+      ],
+      "objection": "Полная остановка может быть преждевременной при доступной бумажной проверке",
+      "evidence_ids": [
+        "E1"
+      ]
+    }
+  ],
+  "checkpoints": [
+    {
+      "at": "2026-11-18T21:48:48+00:00",
+      "stage": "validation",
+      "summary": "Учебное сравнение пробелов: сначала техническое условие, затем достаточность шаблона; затраты неизвестны",
+      "next_action": "Сначала прочитать предоставленное техническое условие о доступе к интеграции.",
+      "sources": {
+        "BRIEF": {
+          "location": "inputs/brief.md",
+          "fingerprint": "59b350952aa857eaa07527601604415585d168220ad728f7084b1cd3ee6fcc65"
+        },
+        "POLICY": {
+          "location": "inputs/policy.md",
+          "fingerprint": "fbfdb4536e591c3367234a0ac6b7d126c3b5cfd50159fefa1359a17a418038cf"
+        },
+        "FORM": {
+          "location": "inputs/form.md",
+          "fingerprint": "dfa679bd78d0b8849276685c2ab5d13decad36ed308e5e32a736f2d3f5ca0af7"
+        }
+      }
+    }
+  ],
+  "research_requirements": {
+    "source_kinds": [
+      "document"
+    ],
+    "rationale": "Решаем вопрос о ближайшем шаге по заданному учебному брифу. Спрос и причинный эффект не оцениваются; таблица и сайт для этой рамки не требуются."
+  },
+  "recommended_option_id": "O1",
+  "recommendation_rationale": "Предварительно рассматриваем прототип; выбор зависит от технического условия и достаточности шаблона.",
+  "product_strategy": {
+    "audience": "Доброволец, пытающийся понять состояние учебной заявки",
+    "job": "Назвать статус и следующий шаг без подсказки",
+    "alternatives": "Текущая версия, бумажная проверка, разработка позже, заморозка",
+    "direction": "Сначала выяснить допустимость прототипа и бумажной альтернативы",
+    "non_goals": "Не доказывать спрос, удобство или эффект на этом этапе",
+    "economics": "Затраты и эффект неизвестны"
+  },
+  "communication_strategy": {
+    "audience": "Потенциальные добровольцы; их наличие не подтверждено",
+    "situation": "После попытки пройти учебный сценарий",
+    "barrier": "Непонятный результат отправки",
+    "message": "Подготовка учебного сценария; результат ещё не проверен на людях",
+    "proof": "Проверяются только условия задания",
+    "channels": "Приглашение только после решения владельца; агент ничего не отправляет"
+  },
+  "validation_plan": {
+    "hypothesis": "Понятны ли статусы без объяснений ведущего",
+    "primary_metric": "Число попыток с верным пониманием / число завершённых попыток; пока неизвестно",
+    "comparison": "Два варианта формулировок с одинаковым заданием и чередованием порядка",
+    "window": "План на три дня, начало не назначено",
+    "guardrails": "Вымышленные данные, добровольность, запрет подсказок в исходном ответе",
+    "decision_rule": "Критическая ошибка требует переработки; переход к разработке решает человек"
+  },
+  "validation_design": {
+    "status": "planned",
+    "purpose": "quality",
+    "data_origin": "none",
+    "sample": {
+      "cases": 12,
+      "variants": 2,
+      "repeats": 1,
+      "planned_outputs": 24
+    },
+    "thresholds": [
+      {
+        "metric": "Критические ошибки понимания",
+        "value": "0 для допуска рассматриваемой версии",
+        "basis": "proposed",
+        "rationale": "Предлагаемый критерий качества перед показом, не рыночный эффект и не согласованное обязательство"
+      }
+    ],
+    "unit_of_analysis": "Одна исходная попытка по одному из 12 сценариев",
+    "comparison": "Два варианта формулировок; 12 × 2 × 1 = 24 плановые попытки, не 12",
+    "stop_rule": "Остановить выдачу версии при критической ошибке понимания",
+    "inference_limits": "План проверки контента; не причинный эффект и не подтверждение спроса"
+  },
+  "strategy_review": {
+    "reviewer": "Авторская самопроверка",
+    "comparison": "Осуществимость, достаточность материалов и обратимость вариантов",
+    "strongest_objection": "Прототип может быть недопустим; шаблон ещё не проверен",
+    "reversal_condition": "После чтения технического условия и шаблона пересмотреть способ подготовки",
+    "evidence_limits": "Только авторские условия, не реальные пользователи или экономика",
+    "state_hash": "27126541eb7bb30aa3006655fdac288e26e5e51a13ff040c5b98b85dfeb63a26"
+  },
+  "constraints": [
+    "Только авторские учебные материалы",
+    "Сначала подтвердить осуществимость вариантов"
+  ],
+  "unresolved_questions": [
+    "Есть ли добровольцы?",
+    "Какой критерий владелец готов согласовать?"
+  ],
+  "chosen_option_id": null,
+  "commitments": [],
+  "research_questions": [
+    {
+      "question_id": "Q1",
+      "question": "Разрешена ли интеграция в учебном сценарии?",
+      "could_change": "Осуществимость O1 и переход к O2",
+      "source_ids": [
+        "POLICY"
+      ]
+    },
+    {
+      "question_id": "Q2",
+      "question": "Достаточно ли шаблона для бумажной проверки?",
+      "could_change": "Подготовка O2 или отказ от неё",
+      "source_ids": [
+        "FORM"
+      ]
+    },
+    {
+      "question_id": "Q3",
+      "question": "Какие цвета используют конкуренты?",
+      "could_change": "Не различает способы подготовки в текущей рамке",
+      "source_ids": [
+        "BRIEF"
+      ]
+    }
+  ],
+  "research_selection_reviews": [
+    {
+      "schema_version": 1,
+      "review_id": "R1",
+      "baseline": {
+        "project_id": "next-research-case",
+        "state_hash": "40677182381ffc89acbaa97e513cd71b297a0684caedd95611c7de481a450104",
+        "recommended_option_id": "O1",
+        "option_ids": [
+          "O0",
+          "O1",
+          "O2",
+          "O3"
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "source_ids": [
+          "BRIEF",
+          "POLICY",
+          "FORM"
+        ],
+        "source_content": {
+          "BRIEF": "59b350952aa857eaa07527601604415585d168220ad728f7084b1cd3ee6fcc65",
+          "POLICY": "fbfdb4536e591c3367234a0ac6b7d126c3b5cfd50159fefa1359a17a418038cf",
+          "FORM": "dfa679bd78d0b8849276685c2ab5d13decad36ed308e5e32a736f2d3f5ca0af7"
+        },
+        "snapshot": {
+          "objective": "Выбрать способ подготовки учебного сценария; не оценивать спрос или запуск продукта",
+          "constraints": [
+            "Только авторские учебные материалы",
+            "Сначала подтвердить осуществимость вариантов"
+          ]
+        },
+        "questions": [
+          {
+            "question_id": "Q1",
+            "question": "Разрешена ли интеграция в учебном сценарии?",
+            "could_change": "Осуществимость O1 и переход к O2",
+            "source_ids": [
+              "POLICY"
+            ]
+          },
+          {
+            "question_id": "Q2",
+            "question": "Достаточно ли шаблона для бумажной проверки?",
+            "could_change": "Подготовка O2 или отказ от неё",
+            "source_ids": [
+              "FORM"
+            ]
+          },
+          {
+            "question_id": "Q3",
+            "question": "Какие цвета используют конкуренты?",
+            "could_change": "Не различает способы подготовки в текущей рамке",
+            "source_ids": [
+              "BRIEF"
+            ]
+          }
+        ]
+      },
+      "reviewer": "Самопроверка агента на авторском кейсе",
+      "limitations": "Качественное сравнение в границах учебного задания. Время, ресурсы и эффект не измерены.",
+      "comparison_rationale": "Сначала ограничение осуществимости Q1; затем достаточность материалов Q2. Цвета конкурентов Q3 не различают варианты текущего решения.",
+      "gaps": [
+        {
+          "question_id": "Q1",
+          "decision_dependency": "Осуществимость O1 и переход к O2",
+          "why_changes_decision": "Запрет интеграции исключает O1; разрешение оставляет его для дальнейшей оценки.",
+          "option_ids": [
+            "O0",
+            "O1",
+            "O2",
+            "O3"
+          ],
+          "status": "open",
+          "answer": null,
+          "impact": "feasibility",
+          "priority": "critical",
+          "priority_rationale": "Сначала проверить условие, способное исключить исходный вариант.",
+          "evidence_ids": [
+            "E1"
+          ],
+          "answer_branches": [
+            {
+              "answer": "Да",
+              "consequence": "Вариант остаётся осуществимым в учебной рамке",
+              "option_ids": [
+                "O1"
+              ]
+            },
+            {
+              "answer": "Нет",
+              "consequence": "Отказаться от этого способа и рассмотреть оставшиеся",
+              "option_ids": [
+                "O2"
+              ]
+            }
+          ],
+          "methods": [
+            {
+              "method_id": "M1",
+              "description": "Прочитать предоставленное техническое условие",
+              "access": "available",
+              "adequacy": "sufficient",
+              "adequacy_rationale": "Источник достаточен только для вопроса о содержании учебного условия; реальный доступ или UX он не доказывает.",
+              "source_ids": [
+                "POLICY"
+              ],
+              "effort": {
+                "time": {
+                  "status": "unknown",
+                  "value": null,
+                  "basis": null,
+                  "evidence_ids": []
+                },
+                "resources": {
+                  "status": "unknown",
+                  "value": null,
+                  "basis": null,
+                  "evidence_ids": []
+                }
+              }
+            },
+            {
+              "method_id": "M2",
+              "description": "Проводить интервью о потребностях вместо чтения условия",
+              "access": "unknown",
+              "adequacy": "insufficient",
+              "adequacy_rationale": "Интервью о потребностях не заменяет заданное техническое ограничение или обязательные поля.",
+              "source_ids": [],
+              "effort": {
+                "time": {
+                  "status": "unknown",
+                  "value": null,
+                  "basis": null,
+                  "evidence_ids": []
+                },
+                "resources": {
+                  "status": "unknown",
+                  "value": null,
+                  "basis": null,
+                  "evidence_ids": []
+                }
+              }
+            }
+          ],
+          "selected_method_id": "M1",
+          "method_choice_rationale": "Локальный предоставленный документ доступен и достаточен для вопроса об условии. Время и ресурсы неизвестны; не утверждаем численную экономию."
+        },
+        {
+          "question_id": "Q2",
+          "decision_dependency": "Подготовка O2 или отказ от неё",
+          "why_changes_decision": "Недостаточный шаблон не позволяет подготовить O2; достаточный позволяет начать подготовку без утверждения спроса.",
+          "option_ids": [
+            "O0",
+            "O1",
+            "O2",
+            "O3"
+          ],
+          "status": "open",
+          "answer": null,
+          "impact": "feasibility",
+          "priority": "high",
+          "priority_rationale": "Проверять после ограничения интеграции, чтобы не готовить неподходящий способ.",
+          "evidence_ids": [
+            "E1"
+          ],
+          "answer_branches": [
+            {
+              "answer": "Да",
+              "consequence": "Вариант остаётся осуществимым в учебной рамке",
+              "option_ids": [
+                "O2"
+              ]
+            },
+            {
+              "answer": "Нет",
+              "consequence": "Отказаться от этого способа и рассмотреть оставшиеся",
+              "option_ids": [
+                "O0",
+                "O3"
+              ]
+            }
+          ],
+          "methods": [
+            {
+              "method_id": "M1",
+              "description": "Сопоставить предоставленный шаблон с обязательными полями",
+              "access": "available",
+              "adequacy": "sufficient",
+              "adequacy_rationale": "Источник достаточен только для вопроса о содержании учебного условия; реальный доступ или UX он не доказывает.",
+              "source_ids": [
+                "FORM"
+              ],
+              "effort": {
+                "time": {
+                  "status": "unknown",
+                  "value": null,
+                  "basis": null,
+                  "evidence_ids": []
+                },
+                "resources": {
+                  "status": "unknown",
+                  "value": null,
+                  "basis": null,
+                  "evidence_ids": []
+                }
+              }
+            },
+            {
+              "method_id": "M2",
+              "description": "Проводить интервью о потребностях вместо чтения условия",
+              "access": "unknown",
+              "adequacy": "insufficient",
+              "adequacy_rationale": "Интервью о потребностях не заменяет заданное техническое ограничение или обязательные поля.",
+              "source_ids": [],
+              "effort": {
+                "time": {
+                  "status": "unknown",
+                  "value": null,
+                  "basis": null,
+                  "evidence_ids": []
+                },
+                "resources": {
+                  "status": "unknown",
+                  "value": null,
+                  "basis": null,
+                  "evidence_ids": []
+                }
+              }
+            }
+          ],
+          "selected_method_id": "M1",
+          "method_choice_rationale": "Локальный предоставленный документ доступен и достаточен для вопроса об условии. Время и ресурсы неизвестны; не утверждаем численную экономию."
+        },
+        {
+          "question_id": "Q3",
+          "decision_dependency": "Не различает способы подготовки в текущей рамке",
+          "why_changes_decision": "В этой рамке цвета не влияют на техническую допустимость или достаточность шаблона.",
+          "option_ids": [
+            "O0",
+            "O1",
+            "O2",
+            "O3"
+          ],
+          "status": "open",
+          "answer": null,
+          "impact": "context",
+          "priority": "defer",
+          "priority_rationale": "Отложить: ответ не изменит текущий выбор способа подготовки.",
+          "evidence_ids": [
+            "E1"
+          ],
+          "answer_branches": [],
+          "methods": [
+            {
+              "method_id": "M1",
+              "description": "Собрать обзор цветов конкурентов",
+              "access": "unknown",
+              "adequacy": "unknown",
+              "adequacy_rationale": "Неизвестно, как это различит текущие варианты.",
+              "source_ids": [
+                "BRIEF"
+              ],
+              "effort": {
+                "time": {
+                  "status": "unknown",
+                  "value": null,
+                  "basis": null,
+                  "evidence_ids": []
+                },
+                "resources": {
+                  "status": "unknown",
+                  "value": null,
+                  "basis": null,
+                  "evidence_ids": []
+                }
+              }
+            }
+          ],
+          "selected_method_id": null,
+          "method_choice_rationale": "Новый сбор материалов не нужен для текущего решения; цену и время не выдумываем."
+        }
+      ],
+      "recommendation": {
+        "action": "investigate",
+        "question_id": "Q1",
+        "method_id": "M1",
+        "rationale": "Сначала Q1: техническое условие может исключить O1. Доступный локальный источник достаточен; интервью и обзор конкурентов этот пробел не закрывают. Стоимость и длительность неизвестны."
+      },
+      "stop_rule": {
+        "status": "continue",
+        "condition": "Закончить исследование для выбора способа подготовки, когда Q1 и Q2 имеют проверенные ответы и оставшиеся вопросы не различают варианты в этой рамке.",
+        "rationale": "Сейчас Q1 и Q2 ещё не разобраны, поэтому остановка преждевременна.",
+        "evidence_ids": [],
+        "remaining_limits": "Даже после выбора способа подготовки спрос, UX, время и эффект остаются неизвестны."
+      },
+      "recorded_at": "2026-11-18T21:48:48+00:00"
+    }
+  ]
+}

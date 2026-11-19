@@ -110,6 +110,31 @@
           },
           "stop_rule": {
             "type": "string"
+          },
+          "commitment_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "proposed",
+              "agreed",
+              "in_progress",
+              "blocked",
+              "completed",
+              "cancelled"
+            ]
+          },
+          "agreement_reference": {
+            "type": "string",
+            "minLength": 1
+          },
+          "timezone": {
+            "type": "string",
+            "minLength": 1
           }
         }
       }
@@ -397,6 +422,59 @@
           "type": "string",
           "minLength": 1
         }
+      }
+    },
+    "decision_stress_tests": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/decisionStressReview"
+      },
+      "description": "Append-only conditional review versions. Cross-reference and freshness checks run in scripts/stress_test.py."
+    },
+    "product_capabilities": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/productCapability"
+      }
+    },
+    "marketing_claims": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/marketingClaim"
+      }
+    },
+    "marketing_claims_audits": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/marketingClaimsAudit"
+      }
+    },
+    "research_selection_reviews": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/researchSelectionReview"
+      }
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1
+    },
+    "follow_up_context": {
+      "enum": [
+        "live_project",
+        "authored_example"
+      ]
+    },
+    "metric_results": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/metricResult"
+      }
+    },
+    "follow_up_reviews": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/followUpReview"
       }
     }
   },
@@ -722,6 +800,1184 @@
             "learn",
             "stop"
           ]
+        }
+      }
+    },
+    "decisionStressReview": {
+      "title": "Conditional decision stress review, not an automatic decision",
+      "type": "object",
+      "required": [
+        "schema_version",
+        "review_id",
+        "baseline",
+        "reviewer",
+        "strongest_objection",
+        "reversal_condition",
+        "limitations",
+        "assumptions",
+        "scenarios"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "review_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "baseline": {
+          "type": "object",
+          "required": [
+            "project_id",
+            "state_hash",
+            "recommended_option_id",
+            "option_ids",
+            "evidence_ids",
+            "source_ids",
+            "source_content",
+            "snapshot"
+          ],
+          "properties": {
+            "project_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "state_hash": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "recommended_option_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "option_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            },
+            "evidence_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            },
+            "source_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            },
+            "source_content": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "snapshot": {
+              "type": "object",
+              "required": [
+                "objective",
+                "constraints"
+              ],
+              "properties": {
+                "objective": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "constraints": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "uniqueItems": true
+                }
+              }
+            }
+          }
+        },
+        "reviewer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "strongest_objection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reversal_condition": {
+          "type": "string",
+          "minLength": 1
+        },
+        "limitations": {
+          "type": "string",
+          "minLength": 1
+        },
+        "assumptions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "assumption_id",
+              "statement",
+              "basis",
+              "evidence_ids",
+              "option_ids",
+              "verification_needed"
+            ],
+            "properties": {
+              "assumption_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "statement": {
+                "type": "string",
+                "minLength": 1
+              },
+              "basis": {
+                "enum": [
+                  "hypothesis",
+                  "recorded_evidence",
+                  "unknown"
+                ]
+              },
+              "evidence_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "option_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true,
+                "minItems": 1
+              },
+              "verification_needed": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "scenarios": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "required": [
+              "scenario_id",
+              "title",
+              "premise",
+              "premise_status",
+              "assumption_ids",
+              "evidence_ids",
+              "changed_source_ids",
+              "changed_evidence_ids",
+              "constraint_changes",
+              "option_impacts",
+              "recommendation",
+              "new_data_needed",
+              "review_trigger"
+            ],
+            "properties": {
+              "scenario_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1
+              },
+              "premise": {
+                "type": "string",
+                "minLength": 1
+              },
+              "premise_status": {
+                "enum": [
+                  "hypothetical",
+                  "observed"
+                ]
+              },
+              "assumption_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true,
+                "minItems": 1
+              },
+              "evidence_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "changed_source_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "changed_evidence_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "constraint_changes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "before",
+                    "after"
+                  ],
+                  "properties": {
+                    "before": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "after": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              },
+              "option_impacts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "option_id",
+                    "feasibility",
+                    "preference",
+                    "reason",
+                    "evidence_ids"
+                  ],
+                  "properties": {
+                    "option_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "feasibility": {
+                      "enum": [
+                        "feasible",
+                        "infeasible",
+                        "uncertain"
+                      ]
+                    },
+                    "preference": {
+                      "enum": [
+                        "preferred",
+                        "not_preferred",
+                        "undetermined"
+                      ]
+                    },
+                    "reason": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "evidence_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "uniqueItems": true
+                    }
+                  }
+                }
+              },
+              "recommendation": {
+                "type": "object",
+                "required": [
+                  "outcome",
+                  "option_id",
+                  "rationale",
+                  "evidence_ids"
+                ],
+                "properties": {
+                  "outcome": {
+                    "enum": [
+                      "keep",
+                      "switch",
+                      "insufficient_evidence"
+                    ]
+                  },
+                  "option_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "rationale": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "evidence_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "uniqueItems": true
+                  }
+                }
+              },
+              "new_data_needed": {
+                "type": "string",
+                "minLength": 1
+              },
+              "review_trigger": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "recorded_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "productCapability": {
+      "type": "object",
+      "required": [
+        "capability_id",
+        "description",
+        "availability",
+        "evidence_ids"
+      ],
+      "properties": {
+        "capability_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "availability": {
+          "enum": [
+            "implemented",
+            "planned",
+            "unknown"
+          ]
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "marketingClaim": {
+      "type": "object",
+      "required": [
+        "claim_id",
+        "text",
+        "kind",
+        "requires_causal_evidence",
+        "capability_ids"
+      ],
+      "properties": {
+        "claim_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": [
+            "quantitative",
+            "qualitative"
+          ]
+        },
+        "requires_causal_evidence": {
+          "type": "boolean"
+        },
+        "capability_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        }
+      }
+    },
+    "marketingClaimsAudit": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "review_id",
+        "baseline",
+        "reviewer",
+        "limitations",
+        "assessments"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "review_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "baseline": {
+          "type": "object",
+          "required": [
+            "project_id",
+            "state_hash",
+            "evidence_ids",
+            "claims",
+            "capabilities",
+            "evidence_catalog",
+            "source_catalog"
+          ],
+          "properties": {
+            "project_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "state_hash": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "evidence_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            },
+            "claims": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/marketingClaim"
+              }
+            },
+            "capabilities": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/productCapability"
+              }
+            },
+            "evidence_catalog": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "source_catalog": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "reviewer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "limitations": {
+          "type": "string",
+          "minLength": 1
+        },
+        "assessments": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "claim_id",
+              "original_claim",
+              "capability_ids",
+              "status",
+              "evidence_links",
+              "scope_match",
+              "rationale",
+              "accepted_wording",
+              "validation_method"
+            ],
+            "properties": {
+              "claim_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "original_claim": {
+                "type": "string",
+                "minLength": 1
+              },
+              "capability_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true,
+                "minItems": 1
+              },
+              "status": {
+                "enum": [
+                  "supported",
+                  "partially_supported",
+                  "unsupported",
+                  "contradicted"
+                ]
+              },
+              "evidence_links": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "evidence_id",
+                    "relation",
+                    "coverage",
+                    "reason"
+                  ],
+                  "properties": {
+                    "evidence_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "relation": {
+                      "enum": [
+                        "supports",
+                        "context",
+                        "contradicts"
+                      ]
+                    },
+                    "coverage": {
+                      "enum": [
+                        "full",
+                        "partial"
+                      ]
+                    },
+                    "reason": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              },
+              "scope_match": {
+                "type": "string",
+                "minLength": 1
+              },
+              "rationale": {
+                "type": "string",
+                "minLength": 1
+              },
+              "accepted_wording": {
+                "type": "string",
+                "minLength": 1
+              },
+              "validation_method": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "recorded_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "researchSelectionReview": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "review_id",
+        "baseline",
+        "reviewer",
+        "limitations",
+        "comparison_rationale",
+        "gaps",
+        "recommendation",
+        "stop_rule"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "review_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "baseline": {
+          "type": "object",
+          "required": [
+            "project_id",
+            "state_hash",
+            "option_ids",
+            "evidence_ids",
+            "source_ids",
+            "source_content",
+            "questions"
+          ],
+          "properties": {
+            "project_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "state_hash": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "option_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            },
+            "evidence_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            },
+            "source_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            },
+            "source_content": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "questions": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": [
+                  "question_id",
+                  "question",
+                  "could_change"
+                ],
+                "properties": {
+                  "question_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "question": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "could_change": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "reviewer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "limitations": {
+          "type": "string",
+          "minLength": 1
+        },
+        "comparison_rationale": {
+          "type": "string",
+          "minLength": 1
+        },
+        "gaps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "question_id",
+              "decision_dependency",
+              "why_changes_decision",
+              "option_ids",
+              "status",
+              "answer",
+              "impact",
+              "priority",
+              "priority_rationale",
+              "evidence_ids",
+              "answer_branches",
+              "methods",
+              "selected_method_id",
+              "method_choice_rationale"
+            ],
+            "properties": {
+              "question_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "decision_dependency": {
+                "type": "string",
+                "minLength": 1
+              },
+              "why_changes_decision": {
+                "type": "string",
+                "minLength": 1
+              },
+              "option_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "status": {
+                "enum": [
+                  "open",
+                  "answered"
+                ]
+              },
+              "answer": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "impact": {
+                "enum": [
+                  "feasibility",
+                  "preference",
+                  "context"
+                ]
+              },
+              "priority": {
+                "enum": [
+                  "critical",
+                  "high",
+                  "defer",
+                  "undetermined"
+                ]
+              },
+              "priority_rationale": {
+                "type": "string",
+                "minLength": 1
+              },
+              "evidence_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "answer_branches": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "answer",
+                    "consequence",
+                    "option_ids"
+                  ],
+                  "properties": {
+                    "answer": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "consequence": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "option_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "uniqueItems": true
+                    }
+                  }
+                }
+              },
+              "methods": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "method_id",
+                    "description",
+                    "access",
+                    "adequacy",
+                    "adequacy_rationale",
+                    "source_ids",
+                    "effort"
+                  ],
+                  "properties": {
+                    "method_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "access": {
+                      "enum": [
+                        "available",
+                        "unavailable",
+                        "unknown"
+                      ]
+                    },
+                    "adequacy": {
+                      "enum": [
+                        "sufficient",
+                        "insufficient",
+                        "unknown"
+                      ]
+                    },
+                    "adequacy_rationale": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "source_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "uniqueItems": true
+                    },
+                    "effort": {
+                      "type": "object",
+                      "required": [
+                        "time",
+                        "resources"
+                      ],
+                      "properties": {
+                        "time": {
+                          "type": "object",
+                          "required": [
+                            "status",
+                            "value",
+                            "basis",
+                            "evidence_ids"
+                          ],
+                          "properties": {
+                            "status": {
+                              "enum": [
+                                "unknown",
+                                "estimated",
+                                "observed"
+                              ]
+                            },
+                            "value": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "basis": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "evidence_ids": {
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "uniqueItems": true
+                            }
+                          }
+                        },
+                        "resources": {
+                          "type": "object",
+                          "required": [
+                            "status",
+                            "value",
+                            "basis",
+                            "evidence_ids"
+                          ],
+                          "properties": {
+                            "status": {
+                              "enum": [
+                                "unknown",
+                                "estimated",
+                                "observed"
+                              ]
+                            },
+                            "value": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "basis": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "evidence_ids": {
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "uniqueItems": true
+                            }
+                          }
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  }
+                }
+              },
+              "selected_method_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "method_choice_rationale": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "recommendation": {
+          "type": "object",
+          "required": [
+            "action",
+            "question_id",
+            "method_id",
+            "rationale"
+          ],
+          "properties": {
+            "action": {
+              "enum": [
+                "investigate",
+                "clarify",
+                "stop"
+              ]
+            },
+            "question_id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "method_id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "rationale": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "stop_rule": {
+          "type": "object",
+          "required": [
+            "status",
+            "condition",
+            "rationale",
+            "evidence_ids",
+            "remaining_limits"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "continue",
+                "stop",
+                "uncertain"
+              ]
+            },
+            "condition": {
+              "type": "string",
+              "minLength": 1
+            },
+            "rationale": {
+              "type": "string",
+              "minLength": 1
+            },
+            "evidence_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            },
+            "remaining_limits": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "recorded_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "metricResult": {
+      "type": "object",
+      "required": [
+        "result_id",
+        "commitment_id",
+        "metric",
+        "value",
+        "unit",
+        "observed_at",
+        "data_origin",
+        "evidence_ids",
+        "summary"
+      ],
+      "properties": {
+        "result_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "commitment_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "metric": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "data_origin": {
+          "enum": [
+            "real",
+            "synthetic"
+          ]
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "human_decision": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "required": [
+            "version_hash",
+            "reference"
+          ],
+          "properties": {
+            "version_hash": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "reference": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "followUpReview": {
+      "type": "object",
+      "required": [
+        "result_id",
+        "version_hash",
+        "reviewed_at",
+        "reviewer",
+        "note"
+      ],
+      "properties": {
+        "result_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version_hash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "reviewed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "reviewer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1
         }
       }
     }

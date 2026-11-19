@@ -93,7 +93,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("project", type=Path)
     commands = parser.add_subparsers(dest="command", required=True)
-    commands.add_parser("resume")
+    resume = commands.add_parser("resume")
+    resume.add_argument('--as-of', help='Offset-aware replay clock; read-only')
     impact = commands.add_parser("impact", help="list evidence/options that depend on given sources or evidence")
     impact.add_argument("--source-ids", default="")
     impact.add_argument("--evidence-ids", default="")
@@ -137,6 +138,10 @@ def main() -> None:
                               "chosen_option_affected": project.get("chosen_option_id") in options_hit}, ensure_ascii=False, indent=2))
             return
         if args.command == "resume":
+            from stress_test import inspect as inspect_stress
+            from claims_audit import inspect as inspect_claims
+            from research_selection import inspect as inspect_research
+            from follow_up import inspect as inspect_follow_up, instant
             ledger_state = ledger_summary(path)
             print(json.dumps({
                 "stage": project["stage"],
@@ -149,6 +154,11 @@ def main() -> None:
                     key: item["fingerprint"] for key, item in fingerprints.items() if len(item["fingerprint"]) != 64
                 },
                 "review_warnings": warnings(project),
+                "decision_stress_test": inspect_stress(project, path, ROOT),
+                "marketing_claims_audit": inspect_claims(project, path, ROOT),
+                "research_selection": inspect_research(project, path, ROOT),
+                "follow_up": inspect_follow_up(project, path, ROOT,
+                                               at=instant(args.as_of) if args.as_of else None),
                 "ledger": ledger_state,
                 "reminder": "Earlier agent conclusions in this file are records to re-check, not facts. Trust only evidence with sources.",
             }, ensure_ascii=False, indent=2))
@@ -175,7 +185,7 @@ def main() -> None:
         except (OSError, ValueError) as error:  # the checkpoint itself is saved; report the ledger issue
             print(f"Checkpoint saved, but ledger entry failed: {error}")
         print(f"Saved checkpoint for {project['stage']}")
-    except (OSError, ValueError, TypeError, KeyError) as error:
+    except (OSError, ValueError, TypeError, KeyError, OverflowError) as error:
         parser.exit(1, f"Checkpoint: {error}\n")
 
 
