@@ -20,6 +20,9 @@ def restore(path, *, at=None):
     review_blocked = (result['decision_stress_test']['blockers'] or result['marketing_claims_audit']['blockers']
                       or result['marketing_claims_audit']['publication_blockers'] or result['research_selection']['blockers']
                       or result['feasibility']['blockers'] or result['feasibility']['decision_blockers'])
+    priorities = {g['question_id']: g['priority'] for g in result['research_selection'].get('gaps', [])}
+    unresolved_branches = [r for r in result['research_selection'].get('branch_resolutions', [])
+                           if r['status'] == 'insufficient_data' and priorities.get(r['question_id']) != 'defer']
     return {
         'project': str(path), 'title': project['title'], 'stage': project['stage'],
         'constraints': project.get('constraints', []),
@@ -27,7 +30,9 @@ def restore(path, *, at=None):
                            'rationale': project.get('recommendation_rationale', '')},
         'human_choice': chosen,
         'decision_question': ('Сначала требуется пересмотр оснований; выбор решения пока не фиксируется.'
-                              if result['errors'] or review_blocked else 'Подтверждаете ли вы рекомендацию или выбираете другую альтернативу?'
+                              if result['errors'] or review_blocked else
+                              'Сначала нужно уточнить условие решения: ' + unresolved_branches[0]['next_step']
+                              if unresolved_branches else 'Подтверждаете ли вы рекомендацию или выбираете другую альтернативу?'
                               if recommended and not chosen else
                               'Нужен ли пересмотр выбранного решения?' if chosen else
                               'Какое решение требуется принять и какие материалы доступны?'),
@@ -80,6 +85,9 @@ def main():
                 print('Выбор исследования: ' + state['research_selection']['status'])
                 if state['research_selection']['recommendation']:
                     print('Обоснование следующего исследования: ' + state['research_selection']['recommendation']['rationale'])
+                for row in state['research_selection'].get('branch_resolutions', []):
+                    print('Развилка ' + row['question_id'] + ': ' + row['status'] + '; ветка ' + str(row['branch_id']))
+                    print('Следующий шаг по развилке: ' + row['next_step'])
             print(state['decision_question'])
             if state['follow_up']['human_questions'] or state['follow_up']['metric_results']:
                 print('Сопровождение: просрочено ' + str(len(state['follow_up']['overdue_commitments'])) +

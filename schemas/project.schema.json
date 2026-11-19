@@ -1439,7 +1439,10 @@
       ],
       "properties": {
         "schema_version": {
-          "const": 1
+          "enum": [
+            1,
+            2
+          ]
         },
         "review_id": {
           "type": "string",
@@ -1874,7 +1877,45 @@
           "type": "string",
           "format": "date-time"
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "schema_version": {
+                "const": 2
+              }
+            },
+            "required": [
+              "schema_version"
+            ]
+          },
+          "then": {
+            "required": [
+              "context"
+            ],
+            "properties": {
+              "gaps": {
+                "items": {
+                  "properties": {
+                    "answer_branches": {
+                      "items": {
+                        "$ref": "#/$defs/concreteResearchBranch"
+                      }
+                    }
+                  }
+                }
+              },
+              "context": {
+                "enum": [
+                  "live_project",
+                  "authored_example"
+                ]
+              }
+            }
+          }
+        }
+      ]
     },
     "metricResult": {
       "type": "object",
@@ -2505,6 +2546,250 @@
           "format": "date-time"
         }
       }
+    },
+    "researchBranchThreshold": {
+      "type": "object",
+      "required": [
+        "metric",
+        "value",
+        "unit",
+        "basis",
+        "rationale",
+        "evidence_ids"
+      ],
+      "properties": {
+        "metric": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "basis": {
+          "enum": [
+            "owner_agreed",
+            "empirical",
+            "derived"
+          ]
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        "agreement_reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "basis": {
+                "const": "owner_agreed"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "agreement_reference"
+            ]
+          }
+        }
+      ]
+    },
+    "concreteResearchBranch": {
+      "type": "object",
+      "required": [
+        "branch_id",
+        "answer",
+        "consequence",
+        "option_ids",
+        "next_step",
+        "condition"
+      ],
+      "properties": {
+        "branch_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "answer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "consequence": {
+          "type": "string",
+          "minLength": 1
+        },
+        "option_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "next_step": {
+          "type": "string",
+          "minLength": 1
+        },
+        "condition": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": [
+                "kind",
+                "indicator",
+                "criterion",
+                "method_id",
+                "requirements"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "feasibility"
+                },
+                "indicator": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "criterion": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "method_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "requirements": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "option_id",
+                      "outcome"
+                    ],
+                    "properties": {
+                      "option_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "outcome": {
+                        "enum": [
+                          "feasible",
+                          "infeasible"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": [
+                "kind",
+                "indicator",
+                "criterion",
+                "method_id",
+                "assessment",
+                "rationale",
+                "evidence_ids",
+                "thresholds"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "observation"
+                },
+                "indicator": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "criterion": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "method_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "assessment": {
+                  "enum": [
+                    "met",
+                    "not_met",
+                    "unknown"
+                  ]
+                },
+                "rationale": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "evidence_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "uniqueItems": true
+                },
+                "thresholds": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/researchBranchThreshold"
+                  }
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "insufficient_data"
+                }
+              },
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "condition": {
+                "properties": {
+                  "kind": {
+                    "const": "insufficient_data"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "option_ids": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      ]
     }
   }
 }
