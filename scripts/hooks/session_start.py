@@ -23,7 +23,8 @@ def main() -> None:
                      + (f"; UNFINISHED actions in ledger: {unfinished}" if unfinished else ""))
     if lines:
         text = ("Projects in this repository (state from files, not memory). To continue one, use the resume skill "
-                "or run `python scripts/start.py <project.json> --json`:\n" + "\n".join(lines))
+                "or run `python scripts/start.py <project.json> --json`. Show resume_summary's four points first; "
+                "details are available with --details. Opening is read-only, never owner approval:\n" + "\n".join(lines))
         print(json.dumps({"hookSpecificOutput": {"hookEventName": "SessionStart", "additionalContext": text}}, ensure_ascii=False))
 
 
