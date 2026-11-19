@@ -18,7 +18,8 @@ def restore(path, *, at=None):
     from follow_up import inspect as inspect_follow_up
     follow_up = result['follow_up'] if at is None else inspect_follow_up(project, path, ROOT, at=at, health=result['health'])
     review_blocked = (result['decision_stress_test']['blockers'] or result['marketing_claims_audit']['blockers']
-                      or result['marketing_claims_audit']['publication_blockers'] or result['research_selection']['blockers'])
+                      or result['marketing_claims_audit']['publication_blockers'] or result['research_selection']['blockers']
+                      or result['feasibility']['blockers'] or result['feasibility']['decision_blockers'])
     return {
         'project': str(path), 'title': project['title'], 'stage': project['stage'],
         'constraints': project.get('constraints', []),
@@ -38,6 +39,7 @@ def restore(path, *, at=None):
         'marketing_claims_audit': result['marketing_claims_audit'],
         'research_selection': result['research_selection'],
         'follow_up': follow_up,
+        'feasibility': result['feasibility'],
         'workflow_files': sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / 'workflows').glob('*.md')),
         'instruction': 'Прочитай AGENTS.md. При ошибках сначала пересмотри основания. '
                        'Названия workflow бери из workflow_files. Не фиксируй выбор за человека.',
@@ -67,6 +69,9 @@ def main():
                 print('- ' + message)
             print('Содержательная проверка: ' + state['content_review']['status'])
             print('Эксперимент: ' + state['experiment_status'])
+            print('Осуществимость (отдельно от разрешения): ' + state['feasibility']['status'])
+            for row in state['feasibility']['assessments']:
+                print('- ' + row['option_id'] + ': ' + row['outcome'] + '; ' + row['next_check'])
             if state['decision_stress_test']['status'] != 'not_recorded':
                 print('Проверка решения на прочность: ' + state['decision_stress_test']['status'])
             if state['marketing_claims_audit']['status'] != 'not_recorded':

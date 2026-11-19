@@ -177,13 +177,18 @@ def validate_fields(project):
     return errors
 
 
-def baseline(project, path, root):
+def baseline(project, path, root, *, include_feasibility=True):
     from quality import state_hash
     from checkpoint import fingerprint
     # A review cannot invalidate its own baseline by being appended. Strategy review,
     # dates and checkpoints are already excluded by the existing hash mechanism.
     state = {k: v for k, v in project.items() if k not in
-             ('decision_stress_tests', 'marketing_claims_audits', 'research_selection_reviews')}
+             ('decision_stress_tests', 'marketing_claims_audits', 'research_selection_reviews', 'feasibility_reviews')}
+    if include_feasibility and project.get('feasibility_reviews'):
+        # Work/capacity/calendar inputs can change without editing a source file.
+        # Other reviews depend on these inputs, not on review IDs or timestamps.
+        latest = project['feasibility_reviews'][-1]
+        state['feasibility_reviews'] = [{k: latest[k] for k in ('context', 'assessments', 'limitations')}]
     return dict(project_id=project['project_id'], state_hash=state_hash(state, path, root),
                 recommended_option_id=project.get('recommended_option_id'),
                 option_ids=[o['option_id'] for o in project['options']],
