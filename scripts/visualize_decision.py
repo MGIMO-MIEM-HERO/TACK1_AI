@@ -76,10 +76,22 @@ def extend_decision(project, audit, nodes, edges, add, refs, registry):
                     for requirement in branch.get('condition', {}).get('requirements', []):
                         link(current_plans.get(requirement['option_id']), key, 'условие осуществимости; не разрешение')
             if result:
-                key = add(parent + ':resolution', 8, gap['question_id'] + ' · Текущая развилка',
+                branch_id = result['branch_id']
+                contextual = (result['status'] == 'not_applicable' and
+                              gap.get('impact') == 'context' and not gap.get('answer_branches'))
+                if branch_id is None:
+                    if not contextual:
+                        raise ValueError(gap['question_id'] + ': null branch requires an unbranched context question')
+                    branch = None
+                else:
+                    if not isinstance(branch_id, str) or not any(
+                            n['id'] == parent + ':branch:' + branch_id for n in nodes):
+                        raise ValueError(gap['question_id'] + ': unknown branch in resolution')
+                    branch = parent + ':branch:' + branch_id
+                title = ' · Контекстный вопрос · без выбора ветки' if branch is None else ' · Текущая развилка'
+                key = add(parent + ':resolution', 8, gap['question_id'] + title,
                           result['status'], result, f'/audit/research_selection/branch_resolutions/{gap["question_id"]}', parent)
-                branch = parent + ':branch:' + result['branch_id']
-                if any(n['id'] == branch for n in nodes):
+                if branch is not None:
                     link(branch, key, 'сопоставленный исход; не решение человека')
                 refs(key, result)
 

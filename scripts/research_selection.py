@@ -262,7 +262,8 @@ def markdown(project,result):
                 lines+=['  Ветка '+b['branch_id']+'; условие: '+json.dumps(c,ensure_ascii=False), '  Следующий шаг: '+b['next_step']]
             resolution = next((x for x in result.get('branch_resolutions', []) if x['question_id']==g['question_id']), None)
             if resolution:
-                lines+=['Сопоставление: '+resolution['status']+'; ветка: '+str(resolution['branch_id']),
+                branch_label = 'не применяется — контекстный вопрос без выбора альтернативы' if resolution['branch_id'] is None else resolution['branch_id']
+                lines+=['Сопоставление: '+resolution['status']+'; ветка: '+branch_label,
                         resolution.get('reason',''), 'Следующий шаг по развилке: '+resolution['next_step']]
                 for c in resolution['conditions']: lines+=['- '+c['branch_id']+': '+c['state']+' — '+c['reason']]
                 lines+=['Допущение осуществимости: '+a for a in resolution.get('assumptions', [])]
