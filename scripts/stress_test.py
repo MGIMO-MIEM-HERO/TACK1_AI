@@ -49,8 +49,8 @@ def validate_fields(project):
         if not isinstance(digest, str) or len(digest) != 64 or any(c not in '0123456789abcdef' for c in digest):
             error('baseline state_hash must be SHA-256')
         original = baseline.get('recommended_option_id')
-        if not nonempty(original):
-            error('baseline needs an original recommendation')
+        if 'recommended_option_id' not in baseline:
+            error('baseline must explicitly record recommended_option_id, including null when absent')
         snapshot = baseline.get('snapshot')
         if not isinstance(snapshot, dict) or not strings(snapshot.get('constraints')) or not nonempty(snapshot.get('objective')):
             error('baseline snapshot needs objective and constraints')
@@ -63,7 +63,7 @@ def validate_fields(project):
         old_options = set(baseline['option_ids']) if strings(baseline.get('option_ids')) else set()
         old_evidence = set(baseline['evidence_ids']) if strings(baseline.get('evidence_ids')) else set()
         old_sources = set(baseline['source_ids']) if strings(baseline.get('source_ids')) else set()
-        if not nonempty(original) or original not in old_options:
+        if original is not None and (not nonempty(original) or original not in old_options):
             error('original recommendation must exist in baseline options')
         # Refer to the historical namespace, so retiring an object does not destroy history.
         def refs(obj, key, allowed, required=False):
@@ -158,11 +158,15 @@ def validate_fields(project):
             if not isinstance(decision, dict):
                 error('scenario needs recommendation')
                 continue
-            if decision.get('outcome') not in ('keep', 'switch', 'insufficient_evidence'):
-                error('outcome must be keep/switch/insufficient_evidence')
+            if decision.get('outcome') not in ('keep', 'switch', 'conditional_option', 'insufficient_evidence'):
+                error('outcome must be keep/switch/conditional_option/insufficient_evidence')
+            if original is None and decision.get('outcome') in ('keep', 'switch'):
+                error('keep/switch requires a baseline recommendation')
+            if original is not None and decision.get('outcome') == 'conditional_option':
+                error('conditional_option requires no baseline recommendation; use keep/switch for comparison')
             if not nonempty(decision.get('rationale')):
                 error('recommendation needs rationale, including for keep')
-            refs(decision, 'evidence_ids', old_evidence, decision.get('outcome') in ('keep', 'switch'))
+            refs(decision, 'evidence_ids', old_evidence, decision.get('outcome') in ('keep', 'switch', 'conditional_option'))
             oid = decision.get('option_id')
             if decision.get('outcome') == 'insufficient_evidence':
                 if oid is not None or preferred:
@@ -222,6 +226,7 @@ def inspect(project, path, root):
     if not reviews:
         return {'status': 'not_recorded', 'blockers': [], 'scenarios': []}
     review = reviews[-1]
+    comparison = comparison_context(review)
     current = baseline(project, path, root)
     if review['baseline'] != current:
         old = review['baseline']
@@ -234,6 +239,7 @@ def inspect(project, path, root):
         eids = {eid for a in review['assumptions'] for eid in a['evidence_ids']} if constraints_changed else set()
         oids = {oid for a in review['assumptions'] for oid in a['option_ids']} if constraints_changed else set()
         return {'status': 'stale', 'review_id': review['review_id'],
+                'comparison': comparison,
                 'blockers': ['Decision stress review is stale: constraints, recommendation, strategy or source/evidence content changed'],
                 'changed_source_ids': changed_sources,
                 'impact': dependency_impact(project, changed_sources, eids, oids),
@@ -264,16 +270,27 @@ def inspect(project, path, root):
                 if ref not in decision_support:
                     decision_support.add(ref)
                     pending.append(ref)
-        if decision['outcome'] in ('keep', 'switch') and decision_support.intersection(impact['evidence_ids']):
+        if decision['outcome'] in ('keep', 'switch', 'conditional_option') and decision_support.intersection(impact['evidence_ids']):
             blockers.append('Scenario preference relies on an invalidated premise; obtain alternative support: ' + scenario['scenario_id'])
-        if decision['outcome'] in ('keep', 'switch') and not any(evidence[eid]['claim_type'] in ('source_fact', 'measured_fact', 'association', 'qualitative_signal')
+        if decision['outcome'] in ('keep', 'switch', 'conditional_option') and not any(evidence[eid]['claim_type'] in ('source_fact', 'measured_fact', 'association', 'qualitative_signal')
                                                                for eid in decision['evidence_ids']):
             blockers.append('Conditional preference needs more than hypotheses: ' + scenario['scenario_id'])
         results.append({'scenario_id': scenario['scenario_id'], 'premise_status': scenario['premise_status'],
                         'impact': impact, 'conditional_recommendation': decision})
     return {'status': 'blocked' if blockers else 'review_record_complete', 'review_id': review['review_id'],
+            'comparison': comparison,
             'blockers': sorted(set(blockers)), 'scenarios': results,
             'note': 'Conditional model review, not a prediction, semantic truth check or human choice. Project recommendation is never changed by this tool.'}
+
+
+def comparison_context(review):
+    original = review['baseline']['recommended_option_id']
+    return {'status': 'no_baseline_recommendation' if original is None else 'baseline_recommendation_recorded',
+            'recommended_option_id': original,
+            'note': ('Базовая рекомендация отсутствует: сценарии сравнивают доступные варианты и ограничения; '
+                     'сравнение с базовой рекомендацией невозможно. Условный вариант не создаёт рекомендацию проекта.'
+                     if original is None else
+                     'Сценарии условно сравниваются с исходной рекомендацией ' + original + '; это не выбор человека.')}
 
 
 def markdown(project, status):
@@ -281,7 +298,8 @@ def markdown(project, status):
     if not project.get('decision_stress_tests'):
         return '\n'.join(lines + ['Разбор не записан.']) + '\n'
     review = project['decision_stress_tests'][-1]
-    lines += ['Версия: ' + review['review_id'], 'Исходная рекомендация: ' + str(review['baseline']['recommended_option_id']),
+    comparison = comparison_context(review)
+    lines += ['Версия: ' + review['review_id'], comparison['note'],
               'Основание версии: ' + review['baseline']['state_hash'], 'Проверил: ' + review['reviewer'],
               '', 'Условный разбор; сценарии не являются прогнозами. Выбор человека не меняется.',
               'Ограничения: ' + review['limitations'], 'Сильнейшее возражение: ' + review['strongest_objection'],
@@ -317,8 +335,8 @@ def markdown(project, status):
 
 
 def prepare(project, path, root, review_id):
-    if not project.get('recommended_option_id') or not nonempty(project.get('recommendation_rationale')):
-        raise ValueError('First record an original recommendation and its rationale')
+    if project.get('recommended_option_id') is not None and not nonempty(project.get('recommendation_rationale')):
+        raise ValueError('An existing recommendation requires its rationale')
     strategy = project.get('strategy_review', {})
     return {'schema_version': 1, 'review_id': review_id, 'baseline': baseline(project, path, root),
             'reviewer': '', 'strongest_objection': strategy.get('strongest_objection', ''),

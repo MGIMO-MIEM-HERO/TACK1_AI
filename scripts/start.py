@@ -108,6 +108,8 @@ def main():
                 print('- ' + row['option_id'] + ': ' + row['outcome'] + '; ' + row['next_check'])
             if state['decision_stress_test']['status'] != 'not_recorded':
                 print('Проверка решения на прочность: ' + state['decision_stress_test']['status'])
+                if state['decision_stress_test'].get('comparison'):
+                    print(state['decision_stress_test']['comparison']['note'])
             if state['marketing_claims_audit']['status'] != 'not_recorded':
                 print('Проверка обещаний: ' + state['marketing_claims_audit']['status'])
             if state['research_selection']['status'] != 'not_recorded':

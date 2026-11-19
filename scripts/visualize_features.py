@@ -39,9 +39,13 @@ def extend_graph(project, audit, nodes, edges):
             status = state.get('status', 'статус не проверен') if current else 'историческая версия'
             root = prefix + ':' + review['review_id']
             path = f'/{field}/{i}'
+            comparison = {}
+            if prefix == 'stress':
+                from stress_test import comparison_context
+                comparison = {'Сравнение': comparison_context(review)['note']}
             add(root, column, review['review_id'] + ' · ' + {'stress': 'Разбор сценариев',
                 'claims': 'Аудит обещаний', 'research': 'Выбор исследования'}[prefix], status,
-                {**review, 'Текущая проверка': state,
+                {**review, **comparison, 'Текущая проверка': state,
                  'Границы': 'Условные сценарии не меняют решение. Исторические ссылки остаются в сохранённой версии.'}, path)
             children = []
             local = {}
