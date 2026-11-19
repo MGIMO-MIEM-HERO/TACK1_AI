@@ -282,7 +282,9 @@ def inspect(project, path, root, *, at=None, health=None):
             ask('result:'+r['result_id'],row['object_ref'],
                 'Основания результата требуют проверки.' if problems else 'Новая или ещё не решённая человеком версия результата; отметка прочтения не означает одобрение.',
                 'Проверить источник, сопоставить показатель с review_trigger обязательства и запросить решение человека. Не объявлять цель достигнутой автоматически.')
-    if project['stage'] in ('follow_up','complete') and not project.get('chosen_option_id'):
+    from decision_passport import recommendation_answer
+    response = recommendation_answer(project,path,root,changes.get('after_version')) if changes['enabled'] else None
+    if project['stage'] in ('follow_up','complete') and not project.get('chosen_option_id') and not response:
         ask('decision','/chosen_option_id','Выбор владельца не записан, хотя проект находится после этапа решения.','Уточнить фактическое решение; не выбирать вариант автоматически.')
     return {'project_id':project['project_id'],'as_of':now.isoformat(),'clock_override':at is not None,
             'timezone':tz_name,'source_expiry_timezone':tz_name or 'UTC (legacy expiry convention)',

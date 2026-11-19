@@ -243,9 +243,10 @@ def validate(project: dict[str, object]) -> list[str]:
     from follow_up import validate_fields as validate_follow_up_fields
     from feasibility import validate_fields as validate_feasibility_fields
     from material_changes import validate_fields as validate_change_fields
+    from decision_passport import validate_fields as validate_passport_fields
     return (errors + validate_fields(project) + validate_stress_fields(project)
             + validate_claim_fields(project) + validate_research_fields(project) + validate_follow_up_fields(project)
-            + validate_feasibility_fields(project) + validate_change_fields(project))
+            + validate_feasibility_fields(project) + validate_change_fields(project) + validate_passport_fields(project))
 
 
 def warnings(project: dict[str, object], today: date | None = None) -> list[str]:

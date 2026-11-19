@@ -65,10 +65,16 @@ def build(project, path, root, audit, follow_up, ledger):
             'проверки оснований и журнала', ['/sources', '/evidence', 'ledger'])
     assessments = [r for r in changes['history'] if r.get('assessment')]
     if assessments: observe('material_review', assessments[-1], 'разбор влияния изменения', ['/checkpoints'])
+    from decision_passport import confirmation_states
+    responses = confirmation_states(project, path, root, changes.get('after_version'), at=follow_up['as_of']) if changes['enabled'] else []
+    response = next((r for r in reversed(responses) if r['kind'] == 'recommendation' and r['status'] == 'current'), None)
+    if responses: observe('human_answers', responses, 'ответ владельца для версии', ['/checkpoints'])
     questions = []
     owner_questions = list(follow_up['human_questions'])
-    if project.get('recommended_option_id') and not project.get('chosen_option_id') and not owner_questions:
-        owner_questions.append({'question_id': 'recommendation:' + observations['decision'],
+    if project.get('recommended_option_id') and not project.get('chosen_option_id') and not owner_questions and not response:
+        from decision_passport import subject_version
+        question_version = subject_version(project, 'recommendation', '/recommended_option_id', changes['after_version']) if changes['enabled'] else observations['decision']
+        owner_questions.append({'question_id': 'recommendation:' + question_version,
             'object_ref': '/recommended_option_id', 'reason': 'Рекомендация есть, выбор владельца не записан.',
             'action': 'После проверки оснований показать рекомендацию и альтернативы владельцу; выбор оставлен человеку.'})
     for question in owner_questions:
@@ -111,12 +117,15 @@ def build(project, path, root, audit, follow_up, ledger):
         if len(fresh_questions) > 1: owner += ' Ещё вопросов: ' + str(len(fresh_questions) - 1) + '.'
     elif questions:
         owner_status = 'awaiting_decision'; owner = 'Ожидается ответ по уже рассмотренным вопросам; просмотр не является согласием.'
+    elif response:
+        answer_label = {'approved':'согласована', 'rejected':'отклонена', 'needs_changes':'требует доработки'}[response['outcome']]
+        owner_status = 'responded'; owner = 'Текущая рекомендация ' + answer_label + '. Разрешение действовать и подтверждение данных учитываются отдельно.'
     elif recommended and not selected:
         owner_status = 'decision_needed'; owner = 'Выбор владельца не записан. Рекомендацию можно согласовывать после проверки оснований.'
     else:
         owner_status = 'none'; owner = 'Нового запроса владельцу нет. Прежний выбор сам по себе не подтверждает обновлённую рекомендацию.'
 
-    step, step_refs = next_step(project, audit, follow_up, ledger, questions)
+    step, step_refs = next_step(project, audit, follow_up, ledger, questions, responses)
     version = (previous['version_hash'] if previous and old == observations else
                digest({'project_id': project['project_id'], 'parent': previous['version_hash'] if previous else None,
                        'observations': observations}))
@@ -147,7 +156,7 @@ def build(project, path, root, audit, follow_up, ledger):
             'note': 'Отметка просмотра относится к показанной версии. Она не подтверждает данные, рекомендацию, разрешение действовать или выполнение обязательства.'}
 
 
-def next_step(project, audit, follow_up, ledger, questions):
+def next_step(project, audit, follow_up, ledger, questions, responses=()):
     if ledger.get('error') or ledger.get('chain_intact') is False:
         return 'Проверить повреждение журнала; до проверки не доверять истории действий.', ['ledger']
     if ledger.get('unfinished_actions'):
@@ -155,7 +164,13 @@ def next_step(project, audit, follow_up, ledger, questions):
     if audit['material_changes']['needs_assessment'] or audit['health']['changed_sources']:
         return 'Разобрать изменения источников и затронутых оснований; затем повторить осуществимость и развилки, если их условия изменились.', ['/sources', '/evidence', '/checkpoints']
     if audit['errors']: return 'Исправить ошибки состояния: ' + audit['errors'][0], ['/']
-    if follow_up['source_alerts'] or follow_up['evidence_alerts'] or any(r['support_problems'] for r in follow_up['metric_results']):
+    answer = next((r for r in reversed(responses) if r['kind'] == 'recommendation' and r['status'] == 'current'), None)
+    if answer and answer['outcome'] != 'approved':
+        return 'Пересмотреть рекомендацию с учётом явного ответа владельца: ' + answer['statement'], [answer['object_ref']]
+    selected = {project.get('recommended_option_id'), project.get('chosen_option_id')} - {None}
+    relevant_alerts = [a for a in follow_up['source_alerts'] + follow_up['evidence_alerts']
+                       if not selected or selected.intersection(a['impact']['option_ids'])]
+    if relevant_alerts or any(r['support_problems'] for r in follow_up['metric_results']):
         return 'Проверить актуальность и происхождение затронутых оснований до выбора и действий.', ['/sources', '/evidence']
     feasibility = audit['feasibility']
     if feasibility['status'] == 'stale' or feasibility['blockers']:
@@ -182,7 +197,12 @@ def next_step(project, audit, follow_up, ledger, questions):
         if all(q['seen_in_summary'] for q in questions):
             return 'Дождаться ответа владельца по показанным вопросам; нового согласия не записано.', [q['object_ref'] for q in questions]
         return questions[0]['action'], [questions[0]['object_ref']]
-    if project.get('recommended_option_id') and not project.get('chosen_option_id'):
+    if answer:
+        permission = next((r for r in reversed(responses) if r['kind'] == 'permission' and r['status'] == 'current'
+                           and r['subject_ref'] == 'option:' + project.get('recommended_option_id', '')), None)
+        if not permission or permission['outcome'] != 'approved':
+            return 'Рекомендация согласована; отдельно уточнить разрешение на конкретный объём действий.', ['/checkpoints', '/feasibility_reviews']
+    if project.get('recommended_option_id') and not project.get('chosen_option_id') and not answer:
         return 'Показать проверенную рекомендацию и альтернативы владельцу; выбор оставлен человеку.', ['/recommended_option_id', '/options']
     return project['next_action'], ['/next_action']
 

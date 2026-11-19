@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "project_id": "decision-passport-case",
+  "kind": "data",
+  "subject_ref": "source:ACTIVE",
+  "decision_version": "5911217725e6bf4dbabd9a7eaff4ce11e425df10640ca196c6c2c2f166920aea",
+  "subject_version": "eaf8212a410786428b179483b7b915d9082de2d3c868ab9809b06faeeef429c5",
+  "context": "authored_example",
+  "confirmation_id": "DEMO-D1",
+  "outcome": "approved",
+  "confirmed_by": "Вымышленный владелец учебного кейса",
+  "confirmed_at": "2026-11-19T08:29:48.334335+00:00",
+  "statement": "Авторский вымышленный ответ: подтверждаю только предмет data source:ACTIVE для явно указанной версии; это не реальное согласие участника команды."
+}

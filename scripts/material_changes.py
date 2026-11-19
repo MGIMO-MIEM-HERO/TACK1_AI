@@ -277,13 +277,16 @@ def inspect(project, path, root):
         questions = [{'question_id': 'change:' + current['decision_version'], 'object_ref': '/recommended_option_id',
                       'reason': 'Рекомендация изменилась; прежний выбор не является согласием с новой версией.',
                       'action': 'Показать новые основания и получить решение владельца для этой версии.'}]
+    from decision_passport import recommendation_answer
+    response = recommendation_answer(project, path, root, current['decision_version'])
+    if response: questions = []
     return {**empty, 'status': 'pending' if events else 'current', 'events': events, 'event_set_hash': key,
             'before_version': previous.get('decision_version') if previous else None,
             'after_version': current['decision_version'], 'snapshot': current,
             'needs_assessment': any(e['classification'] != 'cosmetic' for e in events),
             'human_questions': questions, 'history': history,
             'human_choice': project.get('chosen_option_id'),
-            'approval_for_current_version': 'not_inferred',
+            'approval_for_current_version': response['outcome'] if response else 'not_inferred',
             'note': 'Read-only detection. Persist observed events through checkpoint save/record; assessment is not human approval.'}
 
 

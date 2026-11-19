@@ -90,7 +90,7 @@ def write_state(path: Path, project: dict) -> None:
 
 
 def save_checkpoint(project, path, summary, *, reviewed_changes=False, change_review=None,
-                    initial_tracking=False, expected=None):
+                    initial_tracking=False, expected=None, human_confirmation=None):
     """Shared checkpoint writer. A change assessment is not a human decision."""
     import copy
     from material_changes import enabled, source_versions, checkpoint_fields, snapshot as capture_snapshot
@@ -106,6 +106,11 @@ def save_checkpoint(project, path, summary, *, reviewed_changes=False, change_re
     if json.loads(path.read_text(encoding='utf-8-sig')) != (project if expected is None else expected):
         raise ValueError('Project changed; reload before checkpoint save')
     fields = checkpoint_fields(project, path, ROOT, change_review, initial=initial_tracking) if enabled(project) else {}
+    if human_confirmation is not None:
+        from decision_passport import pending_errors
+        problems = pending_errors(project, path, ROOT, human_confirmation)
+        if problems: raise ValueError('; '.join(problems))
+        fields['human_confirmation'] = copy.deepcopy(human_confirmation)
     if enabled(project) and (fields['change_snapshot'] != capture_snapshot(project, path, ROOT)
                              or versions != source_versions(project, base)):
         raise ValueError('Sources changed while assessing; read and prepare again')
