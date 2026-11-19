@@ -1,6 +1,6 @@
 let currentDecisionPath=null,pathOnly=false,pathNodes=new Set(),pathEdges=new Set();
 const pathPanel=document.getElementById('path-panel'),pathSelect=document.getElementById('path-option'),pathContent=document.getElementById('path-content');
-const pathStatusNames={source_fact:'факт о содержании источника',measured_fact:'измерение',association:'статистическая связь',qualitative_signal:'качественное свидетельство',hypothesis:'гипотеза',forecast:'прогноз',decision:'решение',provisional:'предварительно',corroborated:'подтверждено независимым основанием',withdrawn:'отозвано',contradicted:'противоречит данным',stale:'требует пересмотра',review_record_complete:'проверка записана',not_recorded:'не записана',blocked:'есть блокеры',feasible:'осуществимо по записанным условиям',infeasible:'неосуществимо в этом плане',unknown:'неизвестно'};
+const pathStatusNames={not_checked:'не проверено',complete:'запись проверки заполнена',incomplete:'запись проверки неполна',source_fact:'факт о содержании источника',measured_fact:'измерение',association:'статистическая связь',qualitative_signal:'качественное свидетельство',hypothesis:'гипотеза',forecast:'прогноз',decision:'решение',provisional:'предварительно',corroborated:'подтверждено независимым основанием',withdrawn:'отозвано',contradicted:'противоречит данным',stale:'требует пересмотра',review_record_complete:'проверка записана',not_recorded:'не записана',blocked:'есть блокеры',feasible:'осуществимо по записанным условиям',infeasible:'неосуществимо в этом плане',unknown:'неизвестно'};
 function pathStatus(text){return text.replace(/[a-z_]+/g,key=>pathStatusNames[key]||key)}
 function pathMatches(id){
   if(!pathOnly)return true;
@@ -26,7 +26,7 @@ function pathSection(title,ids,empty){
   }
 }
 function selectDecisionPath(oid){
-  clearScenarioMode();clearDecisionPath();
+  clearStatusFocus();clearScenarioMode();clearDecisionPath();
   const path=(data.decision_paths||[]).find(p=>p.option_id===oid);if(!path){highlight();return}
   currentDecisionPath=path;pathNodes=new Set(path.nodes);
   pathEdges=new Set(path.edge_indexes.map(i=>data.edges[i]));pathOnly=true;pathSelect.value=oid;
