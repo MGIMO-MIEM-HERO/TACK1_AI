@@ -120,8 +120,24 @@ def validate_fields(project):
     receipts = project.get('follow_up_reviews', [])
     if not isinstance(receipts,list): return errors + ['follow_up_reviews must be an array']
     seen = set()
+    previous_view = None
     for r in receipts:
         if not isinstance(r,dict): errors.append('Follow-up review receipt must be an object');continue
+        if r.get('kind') == 'resume':
+            from resume_summary import validate_receipt
+            from material_changes import digest
+            receipt_errors = validate_receipt(r)
+            errors.extend(receipt_errors)
+            if not receipt_errors:
+                expected = (previous_view['version_hash'] if previous_view and previous_view['observations'] == r['observations'] else
+                            digest({'project_id': project['project_id'], 'parent': previous_view['version_hash'] if previous_view else None,
+                                    'observations': r['observations']}))
+                if expected != r['version_hash']: errors.append('Resume receipt version/observation lineage mismatch')
+                if previous_view and previous_view['version_hash'] == r['version_hash']: errors.append('Duplicate resume-view receipt')
+                previous_view = r
+            continue
+        if 'kind' in r:
+            errors.append('Unknown follow-up receipt kind'); continue
         if not all(nonempty(r.get(k)) for k in ('result_id','version_hash','reviewer','note')) or not isinstance(r.get('version_hash'),str) or not SHA.fullmatch(r['version_hash']):
             errors.append('Review receipt needs result_id/version_hash/reviewer/note');continue
         key=(r['result_id'],r['version_hash'])
@@ -238,7 +254,7 @@ def inspect(project, path, root, *, at=None, health=None):
             ask('evidence:'+e['evidence_id'],'/evidence/'+str(i),reason,'Перечитать основания и пересмотреть вывод; не восстанавливать статус без проверки.')
     by_eid={e['evidence_id']:e for e in project['evidence']}
     by_source={s['source_id']:s for s in project['sources']}
-    receipt_rows=project.get('follow_up_reviews',[])
+    receipt_rows=[r for r in project.get('follow_up_reviews',[]) if r.get('kind') != 'resume']
     receipts={(r['result_id'],r['version_hash']) for r in receipt_rows if instant(r['reviewed_at'])<=now}
     previously={r['result_id'] for r in receipt_rows if instant(r['reviewed_at'])<=now}
     results=[]

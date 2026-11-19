@@ -240,7 +240,7 @@ class FeasibilityTests(unittest.TestCase):
         self.assessment(); self.refresh(); write_state(self.path, self.project)
         state = json.loads(self.run_cli('checkpoint.py', self.path, 'resume').stdout)
         self.assertEqual(state['feasibility']['assessments'][0]['outcome'], 'feasible')
-        self.assertIn('Осуществимость', self.run_cli('start.py', self.path).stdout)
+        self.assertIn('Осуществимость', self.run_cli('start.py', self.path, '--details').stdout)
         self.assertIn('Отдельная проверка осуществимости', report(self.project, self.path))
         prepared = json.loads(self.run_cli('feasibility.py', 'prepare', self.path, '--review-id', 'F2').stdout)
         self.assertEqual(prepared['review_id'], 'F2')

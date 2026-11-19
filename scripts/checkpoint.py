@@ -169,6 +169,7 @@ def main() -> None:
                               "chosen_option_affected": project.get("chosen_option_id") in options_hit}, ensure_ascii=False, indent=2))
             return
         if args.command == "resume":
+            from start import restore
             from stress_test import inspect as inspect_stress
             from claims_audit import inspect as inspect_claims
             from research_selection import inspect as inspect_research
@@ -176,6 +177,7 @@ def main() -> None:
             from feasibility import inspect as inspect_feasibility
             ledger_state = ledger_summary(path)
             print(json.dumps({
+                "resume_summary": restore(path, at=instant(args.as_of) if args.as_of else None)['resume_summary'],
                 "stage": project["stage"],
                 "last_checkpoint": {key: history[-1][key] for key in ("at", "summary")} if history else None,
                 "next_action": project["next_action"],

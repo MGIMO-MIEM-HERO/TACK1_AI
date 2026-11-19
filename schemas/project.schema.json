@@ -491,7 +491,10 @@
     "follow_up_reviews": {
       "type": "array",
       "items": {
-        "$ref": "#/$defs/followUpReview"
+        "oneOf": [
+          {"$ref": "#/$defs/followUpReview", "not": {"required": ["kind"]}},
+          {"$ref": "#/$defs/resumeViewReceipt"}
+        ]
       }
     },
     "feasibility_reviews": {
@@ -502,6 +505,19 @@
     }
   },
   "$defs": {
+    "resumeViewReceipt": {
+      "type": "object",
+      "required": ["kind", "version_hash", "observations", "reviewed_at", "reviewer", "note"],
+      "properties": {
+        "kind": {"const": "resume"},
+        "version_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "observations": {"type": "object", "minProperties": 1, "additionalProperties": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+        "reviewed_at": {"type": "string", "format": "date-time"},
+        "reviewer": {"type": "string", "minLength": 1},
+        "note": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
     "materialChangeSnapshot": {
       "type": "object",
       "required": ["schema_version", "project_id", "project_title", "sources", "evidence", "decision", "business", "input_digest", "decision_version", "recommendation_hash", "result_versions"],
