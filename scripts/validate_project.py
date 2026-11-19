@@ -241,8 +241,10 @@ def validate(project: dict[str, object]) -> list[str]:
     from claims_audit import validate_fields as validate_claim_fields
     from research_selection import validate_fields as validate_research_fields
     from follow_up import validate_fields as validate_follow_up_fields
+    from feasibility import validate_fields as validate_feasibility_fields
     return (errors + validate_fields(project) + validate_stress_fields(project)
-            + validate_claim_fields(project) + validate_research_fields(project) + validate_follow_up_fields(project))
+            + validate_claim_fields(project) + validate_research_fields(project) + validate_follow_up_fields(project)
+            + validate_feasibility_fields(project))
 
 
 def warnings(project: dict[str, object], today: date | None = None) -> list[str]:

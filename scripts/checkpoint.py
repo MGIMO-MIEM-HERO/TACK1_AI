@@ -142,6 +142,7 @@ def main() -> None:
             from claims_audit import inspect as inspect_claims
             from research_selection import inspect as inspect_research
             from follow_up import inspect as inspect_follow_up, instant
+            from feasibility import inspect as inspect_feasibility
             ledger_state = ledger_summary(path)
             print(json.dumps({
                 "stage": project["stage"],
@@ -157,6 +158,7 @@ def main() -> None:
                 "decision_stress_test": inspect_stress(project, path, ROOT),
                 "marketing_claims_audit": inspect_claims(project, path, ROOT),
                 "research_selection": inspect_research(project, path, ROOT),
+                "feasibility": inspect_feasibility(project, path, ROOT),
                 "follow_up": inspect_follow_up(project, path, ROOT,
                                                at=instant(args.as_of) if args.as_of else None),
                 "ledger": ledger_state,
