@@ -1,6 +1,7 @@
 import copy
 from datetime import datetime, timezone
 import json
+import os
 from pathlib import Path
 import shutil
 import sys
@@ -211,6 +212,20 @@ class PassportTests(unittest.TestCase):
         from output_guard import check_output
         self.case();file,_=self.reply();self.record(file)
         with self.assertRaises(ValueError):check_output(self.project,self.path,file)
+
+    @unittest.skipUnless(os.name=='nt','Windows short-path alias regression')
+    def test_windows_short_base_and_long_reply_path_refer_to_the_same_project(self):
+        import ctypes
+        self.case();file,_=self.reply()
+        buffer=ctypes.create_unicode_buffer(32768)
+        length=ctypes.windll.kernel32.GetShortPathNameW(str(self.root),buffer,len(buffer))
+        if not length or os.path.normcase(buffer.value)==os.path.normcase(str(self.root)):
+            self.skipTest('No distinct short-path alias available on this volume')
+        alias=Path(buffer.value)/'project.json'
+        result=record_answer(self.project,alias,ROOT,file)
+        self.assertTrue(result['recorded'])
+        row=build(self.path)['confirmations'][-1]
+        self.assertEqual(row['status'],'current');self.assertEqual(row['reference']['file'],file.name)
 
     def test_ambiguous_duplicate_reply_fields_are_rejected(self):
         self.case();file,_=self.reply()

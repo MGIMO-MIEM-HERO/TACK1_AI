@@ -112,9 +112,9 @@ def subject_version(project, kind, ref, decision_version):
 
 
 def reply_path(project, path, root, location):
-    base = path.parent if project.get('path_base') == 'project' else root
+    base = (path.parent if project.get('path_base') == 'project' else root).resolve()
     candidate = (base / location).resolve()
-    if not candidate.is_relative_to(base.resolve()) or not candidate.is_file() or candidate.stat().st_size > 1_000_000:
+    if not candidate.is_relative_to(base) or not candidate.is_file() or candidate.stat().st_size > 1_000_000:
         raise ValueError('Reply must be an existing local JSON file within the project base, at most 1 MB')
     return candidate, base
 
