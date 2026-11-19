@@ -953,7 +953,7 @@
               "pattern": "^[0-9a-f]{64}$"
             },
             "recommended_option_id": {
-              "type": "string",
+              "type": ["string", "null"],
               "minLength": 1
             },
             "option_ids": {
@@ -1229,6 +1229,7 @@
                     "enum": [
                       "keep",
                       "switch",
+                      "conditional_option",
                       "insufficient_evidence"
                     ]
                   },
