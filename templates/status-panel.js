@@ -13,7 +13,7 @@ function clearStatusFocus(){
 function showStatusNode(id){
   clearHistoryFocus();clearScenarioMode();clearDecisionPath();comparisonOnly=false;document.getElementById('changes-only').checked=false;
   query='';document.getElementById('search').value='';active.clear();[0,...groups.map(g=>g.column)].forEach(c=>active.add(c));document.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed','true'));
-  focus(id);
+  focus(id,true);
 }
 function statusLinks(row,parent){
   if(!row.nodes.length){html('p','Текущего узла на карте нет. Сохранённая запись доступна в этом списке.',parent,'status-empty-link');return}
@@ -51,6 +51,7 @@ function chooseStatusCategory(key,filter=true){
     selected=null;query='';document.getElementById('search').value='';active.clear();[0,...groups.map(g=>g.column)].forEach(c=>active.add(c));document.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed','true'));
     statusOnly=true;document.getElementById('status-only').checked=true;
   }
+  if(filter)revealNodes(statusNodes);
   for(const [id,{g}] of cards)g.classList.toggle('status-node',statusNodes.has(id));highlight();
   if(statusOnly)document.getElementById('status-fit').click();
 }
@@ -80,7 +81,5 @@ document.getElementById('status-toggle').onclick=()=>{statusPanel.hidden=!status
 document.getElementById('status-only').onchange=event=>{statusOnly=event.target.checked&&statusNodes.size>0;selected=null;highlight()};
 document.getElementById('status-clear').onclick=()=>{clearStatusFocus();selected=null;highlight()};
 document.getElementById('status-fit').onclick=()=>{
-  const ps=[...statusNodes].map(id=>positions.get(id)).filter(Boolean);if(!ps.length)return;
-  const box=svg.getBoundingClientRect(),minX=Math.min(...ps.map(p=>p.x-p.r-35)),maxX=Math.max(...ps.map(p=>p.x+p.r+35)),minY=Math.min(...ps.map(p=>p.y-p.r-35)),maxY=Math.max(...ps.map(p=>p.y+p.r+40));
-  zoom=Math.min(4,box.width/(maxX-minX+80),box.height/(maxY-minY+80));panX=box.width/2-(minX+maxX)/2*zoom;panY=box.height/2-(minY+maxY)/2*zoom;update();
+  fitNodeSet(statusNodes);
 };

@@ -54,9 +54,9 @@ function selectHistoryEvent(id){
   html('p','Исходная отметка: '+(event.at||'не записана'),raw);html('p','Источник записи: '+event.ref,raw);
   html('pre',JSON.stringify(event.details,null,2),raw);
   if(!event.nodes.length)html('p','У этой записи нет отдельного текущего узла. Сведения показаны здесь, без добавления узлов или реконструкции старой карты.',historyDetails,'history-note');
-  for(const id of event.nodes){const card=cards.get(id);if(!card)continue;const button=html('button','Открыть запись: '+card.n.title,historyDetails,'button');button.onclick=()=>focus(id)}
+  for(const id of event.nodes){const card=cards.get(id);if(!card)continue;const button=html('button','Открыть запись: '+card.n.title,historyDetails,'button');button.onclick=()=>focus(id,true)}
   for(const [key,{g}] of cards)g.classList.toggle('history-node',historyNodes.has(key));
-  if(event.nodes.length)focus(event.nodes[0]);else focus(cards.has('summary:current')?'summary:current':'task');selected=null;highlight();
+  revealNodes(event.nodes);if(event.nodes.length)focus(event.nodes[0]);else focus(cards.has('summary:current')?'summary:current':'task');selected=null;highlight();
   if(historyOnly)document.getElementById('history-fit').click();
   historyDetails.scrollIntoView({block:'nearest'});
 }
@@ -93,8 +93,6 @@ document.getElementById('history-search').oninput=renderHistoryList;
 document.getElementById('history-only').onchange=event=>{historyOnly=event.target.checked&&historyNodes.size>0;selected=null;highlight()};
 document.getElementById('history-clear').onclick=document.getElementById('history-exit').onclick=()=>{clearHistoryFocus();focus(cards.has('summary:current')?'summary:current':'task');selected=null;highlight()};
 document.getElementById('history-fit').onclick=()=>{
-  const ps=[...historyNodes].map(id=>positions.get(id)).filter(Boolean);if(!ps.length)return;
-  const box=svg.getBoundingClientRect(),minX=Math.min(...ps.map(p=>p.x-p.r-35)),maxX=Math.max(...ps.map(p=>p.x+p.r+35)),minY=Math.min(...ps.map(p=>p.y-p.r-35)),maxY=Math.max(...ps.map(p=>p.y+p.r+40));
-  zoom=Math.min(4,box.width/(maxX-minX+80),box.height/(maxY-minY+80));panX=box.width/2-(minX+maxX)/2*zoom;panY=box.height/2-(minY+maxY)/2*zoom;update();
+  fitNodeSet(historyNodes);
 };
 renderHistoryList();
