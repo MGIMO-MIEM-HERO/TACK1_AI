@@ -112,7 +112,8 @@ HTML = (_TEMPLATES / 'work-graph.html').read_text(encoding='utf-8').replace(
     '__PATH_SCRIPT__', (_TEMPLATES / 'decision-path.js').read_text(encoding='utf-8')).replace(
     '__SCENARIO_SCRIPT__', (_TEMPLATES / 'scenario-mode.js').read_text(encoding='utf-8')).replace(
     '__STATUS_SCRIPT__', (_TEMPLATES / 'status-panel.js').read_text(encoding='utf-8')).replace(
-    '__HISTORY_SCRIPT__', (_TEMPLATES / 'decision-history.js').read_text(encoding='utf-8'))
+    '__HISTORY_SCRIPT__', (_TEMPLATES / 'decision-history.js').read_text(encoding='utf-8')).replace(
+    '__CLUSTER_SCRIPT__', (_TEMPLATES / 'cluster-navigation.js').read_text(encoding='utf-8'))
 
 
 def main():

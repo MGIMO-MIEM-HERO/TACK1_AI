@@ -44,7 +44,7 @@ function selectScenario(id){
   const body=html('tbody','',table);
   for(const row of scenario.option_impacts){
     const tr=html('tr','',body,'scenario-row '+row.feasibility),name=html('td','',tr);
-    if(row.node_id){const button=html('button',row.option_id+' · '+row.title,name,'button');button.onclick=()=>focus(row.node_id)}else html('span',row.option_id,name);
+    if(row.node_id){const button=html('button',row.option_id+' · '+row.title,name,'button');button.onclick=()=>focus(row.node_id,true)}else html('span',row.option_id,name);
     html('td',scenarioLabels[row.feasibility]||row.feasibility,tr);
     const reason=html('td','',tr);html('strong',scenarioLabels[row.preference]||row.preference,reason);html('p',row.reason,reason);
     html('small','Основания: '+(row.evidence_ids.join(', ')||'не записаны'),reason);
@@ -62,7 +62,7 @@ function selectScenario(id){
   if(view.blockers.length)scenarioText('Блокеры текущего разбора',view.blockers.join('\n'));
   for(const [key,{g}] of cards)g.classList.toggle('scenario-node',scenarioNodes.has(key));
   for(const {e,line,grouping} of lines)line.classList.toggle('scenario-edge',!grouping&&scenarioEdges.has(e));
-  if(cards.has(scenario.node_id))focus(scenario.node_id);selected=null;highlight();
+  revealNodes(scenario.nodes);if(cards.has(scenario.node_id))focus(scenario.node_id);selected=null;highlight();fitNodeSet(scenario.nodes);
 }
 for(const view of data.scenario_views||[]){const option=html('option',view.review_id+' · '+(scenarioLabels[view.status]||view.status),scenarioVersion);option.value=view.review_id}
 if((data.scenario_views||[]).length){scenarioVersion.value=data.scenario_views.at(-1).review_id;chooseScenarioVersion(scenarioVersion.value)}
@@ -73,7 +73,5 @@ scenarioSelect.onchange=()=>selectScenario(scenarioSelect.value);
 document.getElementById('scenario-only').onchange=event=>{scenarioOnly=event.target.checked;selected=null;highlight()};
 document.getElementById('scenario-clear').onclick=document.getElementById('scenario-exit').onclick=()=>{clearScenarioMode();focus(cards.has('summary:current')?'summary:current':'task');selected=null;highlight()};
 document.getElementById('scenario-fit').onclick=()=>{
-  const ps=[...scenarioNodes].map(id=>positions.get(id)).filter(Boolean);if(!ps.length)return;
-  const box=svg.getBoundingClientRect(),minX=Math.min(...ps.map(p=>p.x-p.r-35)),maxX=Math.max(...ps.map(p=>p.x+p.r+35)),minY=Math.min(...ps.map(p=>p.y-p.r-35)),maxY=Math.max(...ps.map(p=>p.y+p.r+40));
-  zoom=Math.min(4,box.width/(maxX-minX+80),box.height/(maxY-minY+80));panX=box.width/2-(minX+maxX)/2*zoom;panY=box.height/2-(minY+maxY)/2*zoom;update();
+  fitNodeSet(scenarioNodes);
 };

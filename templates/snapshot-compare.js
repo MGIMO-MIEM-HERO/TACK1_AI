@@ -48,7 +48,7 @@ function showDifference(change){
   changesDetail.replaceChildren();
   html('h3',changeNames[change.kind]+' · '+change.title,changesDetail);
   if(change.kind==='removed')html('p','В текущем снимке записи нет. Она показана здесь из предыдущего снимка; это не отметка отзыва и не текущий узел карты.',changesDetail);
-  else if(cards.has(change.id))focus(change.id);
+  else if(cards.has(change.id))focus(change.id,true);
   const before=change.before?.record,after=change.after?.record;
   const keys=new Set([...Object.keys(before||{}),...Object.keys(after||{})]);
   for(const key of keys){

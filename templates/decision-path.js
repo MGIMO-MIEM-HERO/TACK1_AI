@@ -22,7 +22,7 @@ function pathSection(title,ids,empty){
   for(const id of ids){
     const card=cards.get(id);if(!card)continue;
     const button=html('button',card.n.title,section,'path-record');
-    html('small',pathStatus(card.n.status),button);button.onclick=()=>focus(id);
+    html('small',pathStatus(card.n.status),button);button.onclick=()=>focus(id,true);
   }
 }
 function selectDecisionPath(oid){
@@ -64,7 +64,7 @@ function selectDecisionPath(oid){
     line.classList.toggle('path-edge',!grouping&&pathEdges.has(e));
     line.classList.toggle('path-contradiction',!grouping&&pathEdges.has(e)&&path.contradictions.some(p=>p[0]===e.source&&p[1]===e.target));
   }
-  focus(path.node_id);selected=null;highlight();
+  revealNodes(path.nodes);focus(path.node_id);selected=null;highlight();fitNodeSet(path.nodes);
 }
 const placeholder=html('option','Выберите вариант…',pathSelect);placeholder.value='';
 for(const path of data.decision_paths||[]){
@@ -78,7 +78,5 @@ pathSelect.onchange=()=>selectDecisionPath(pathSelect.value);
 document.getElementById('path-only').onchange=event=>{pathOnly=event.target.checked;selected=null;highlight()};
 document.getElementById('path-clear').onclick=()=>{clearDecisionPath();selected=null;highlight()};
 document.getElementById('path-fit').onclick=()=>{
-  const ps=[...pathNodes].map(id=>positions.get(id)).filter(Boolean);if(!ps.length)return;
-  const box=svg.getBoundingClientRect(),minX=Math.min(...ps.map(p=>p.x-p.r-35)),maxX=Math.max(...ps.map(p=>p.x+p.r+35)),minY=Math.min(...ps.map(p=>p.y-p.r-35)),maxY=Math.max(...ps.map(p=>p.y+p.r+40));
-  zoom=Math.min(4,box.width/(maxX-minX+80),box.height/(maxY-minY+80));panX=box.width/2-(minX+maxX)/2*zoom;panY=box.height/2-(minY+maxY)/2*zoom;update();
+  fitNodeSet(pathNodes);
 };
