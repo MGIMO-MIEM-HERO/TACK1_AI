@@ -11,7 +11,7 @@ function clearStatusFocus(){
   for(const {g} of cards.values())g.classList.remove('status-node');
 }
 function showStatusNode(id){
-  clearScenarioMode();clearDecisionPath();comparisonOnly=false;document.getElementById('changes-only').checked=false;
+  clearHistoryFocus();clearScenarioMode();clearDecisionPath();comparisonOnly=false;document.getElementById('changes-only').checked=false;
   query='';document.getElementById('search').value='';active.clear();[0,...groups.map(g=>g.column)].forEach(c=>active.add(c));document.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed','true'));
   focus(id);
 }
@@ -21,7 +21,7 @@ function statusLinks(row,parent){
   for(const id of row.nodes){const card=cards.get(id);if(!card)continue;const button=html('button',card.n.title,links,'button');button.onclick=()=>showStatusNode(id)}
 }
 function chooseStatusCategory(key,filter=true){
-  clearStatusFocus();selected=null;statusCategory=key;statusContent.replaceChildren();
+  clearHistoryFocus();clearStatusFocus();selected=null;statusCategory=key;statusContent.replaceChildren();
   const category=statusData.categories[key];
   for(const button of statusCards.children)button.setAttribute('aria-pressed',String(button.dataset.category===key));
   html('h3',category.title+' · '+category.count,statusContent);html('p',category.caption,statusContent,'status-note');
@@ -47,7 +47,7 @@ function chooseStatusCategory(key,filter=true){
   document.getElementById('status-only').disabled=!statusNodes.size;
   document.getElementById('status-fit').disabled=!statusNodes.size;
   if(filter&&statusNodes.size){
-    clearScenarioMode();clearDecisionPath();comparisonOnly=false;document.getElementById('changes-only').checked=false;
+    clearHistoryFocus();clearScenarioMode();clearDecisionPath();comparisonOnly=false;document.getElementById('changes-only').checked=false;
     selected=null;query='';document.getElementById('search').value='';active.clear();[0,...groups.map(g=>g.column)].forEach(c=>active.add(c));document.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed','true'));
     statusOnly=true;document.getElementById('status-only').checked=true;
   }

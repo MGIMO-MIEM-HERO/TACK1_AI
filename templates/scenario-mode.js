@@ -25,7 +25,7 @@ function selectScenario(id){
   const reviewId=scenarioVersion.value;clearScenarioMode();
   const view=(data.scenario_views||[]).find(v=>v.review_id===reviewId),scenario=view?.scenarios.find(s=>s.scenario_id===id);
   if(!scenario){highlight();return}
-  clearStatusFocus();clearDecisionPath();comparisonOnly=false;document.getElementById('changes-only').checked=false;
+  clearHistoryFocus();clearStatusFocus();clearDecisionPath();comparisonOnly=false;document.getElementById('changes-only').checked=false;
   currentScenarioView=view;currentScenario=scenario;scenarioSelect.value=id;
   scenarioNodes=new Set(scenario.nodes);scenarioEdges=new Set(scenario.edge_indexes.map(i=>data.edges[i]));scenarioOnly=true;
   document.getElementById('scenario-only').disabled=false;document.getElementById('scenario-only').checked=true;document.getElementById('scenario-fit').disabled=false;
