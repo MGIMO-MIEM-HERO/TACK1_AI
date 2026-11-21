@@ -8,13 +8,22 @@ root=Path(__file__).resolve().parents[1]
 out=root/'projects/cluster-navigation-2026-11-22'
 out.mkdir(parents=True,exist_ok=True)
 subprocess.run([__import__('sys').executable,'-B',str(root/'scripts/visualize.py'),str(root/'examples/paired-case-review/project.json'),'--out',str(out/'paired.html')],check=True,cwd=root)
-p=subprocess.Popen([r'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe','--headless=new','--disable-gpu','--remote-debugging-port=9370','--remote-allow-origins=http://localhost:9370','--user-data-dir='+tempfile.mkdtemp(prefix='cluster-qa-'),(out/'paired.html').as_uri()],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+profile=Path(tempfile.mkdtemp(prefix='visualization-qa-'))
+page_url=(out/'paired.html').as_uri()
+p=subprocess.Popen([r'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe','--headless=new','--disable-gpu','--remote-debugging-port=0','--remote-allow-origins=http://localhost','--user-data-dir='+str(profile),page_url],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+ws=None
 try:
- for _ in range(100):
+ deadline=time.monotonic()+20
+ while True:
   try:
-   tabs=json.load(urllib.request.urlopen('http://127.0.0.1:9370/json')); tab=next(t for t in tabs if t['type']=='page');break
-  except Exception:time.sleep(.1)
- ws=websocket.create_connection(tab['webSocketDebuggerUrl'],origin='http://localhost:9370'); seq=0
+   port=int((profile/'DevToolsActivePort').read_text().splitlines()[0])
+   tabs=json.load(urllib.request.urlopen(f'http://127.0.0.1:{port}/json',timeout=1))
+   tab=next(t for t in tabs if t['type']=='page' and t['url']==page_url)
+   break
+  except (OSError,ValueError,IndexError,StopIteration):
+   if time.monotonic()>=deadline:raise RuntimeError('Test browser did not open the requested page')
+   time.sleep(.1)
+ ws=websocket.create_connection(tab['webSocketDebuggerUrl'],origin='http://localhost',timeout=10);seq=0
  def call(method,params={}):
   global seq
   seq+=1;ws.send(json.dumps({'id':seq,'method':method,'params':params}))
@@ -25,7 +34,10 @@ try:
   r=call('Runtime.evaluate',{'expression':code,'returnByValue':True})
   if 'exceptionDetails' in r:raise AssertionError(r['exceptionDetails'])
   return r['result'].get('value')
- time.sleep(1)
+ deadline=time.monotonic()+10
+ while not ev("document.readyState==='complete' && typeof cards!=='undefined'"):
+  if time.monotonic()>=deadline:raise RuntimeError('Visualization did not initialize')
+  time.sleep(.1)
  checks=[]
  def check(name,code):
   assert ev(code),name;checks.append(name)
@@ -71,4 +83,10 @@ try:
  check('empty groups safe',"clusterGroups.length===0&&clusterSelect.disabled&&cards.size===3&&Number.isFinite(zoom)")
  (out/'browser-checks.json').write_text(json.dumps(checks,ensure_ascii=False,indent=2),encoding='utf-8')
  print(json.dumps(checks,ensure_ascii=False,indent=2))
-finally:p.terminate()
+finally:
+ if ws is not None:
+  try:call('Browser.close')
+  except Exception:pass
+  ws.close()
+ try:p.wait(timeout=5)
+ except subprocess.TimeoutExpired:p.terminate()
