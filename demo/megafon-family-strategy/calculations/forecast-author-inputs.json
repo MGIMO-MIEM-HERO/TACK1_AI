@@ -1,0 +1,193 @@
+{
+  "status": "AUTHOR CONDITIONAL PLANNING INPUTS: not observations, not empirical estimates, not approved funding or resources",
+  "plan": "O1 simple family signal plus existing operation only if OR, rights, QA and financing gates pass by Q1; start at beginning of Q2; no O3 launch",
+  "baseline_quarterly_calibration": {
+    "new_family_connections": [
+      500,
+      700,
+      800,
+      1000
+    ],
+    "family_exits": [
+      300,
+      350,
+      400,
+      450
+    ],
+    "created_groups": [
+      1000,
+      1400,
+      1600,
+      2000
+    ],
+    "activated_14d": [
+      420,
+      630,
+      720,
+      900
+    ],
+    "owner_new_connections": [
+      70,
+      80,
+      90,
+      110
+    ],
+    "owner_exits": [
+      30,
+      35,
+      40,
+      45
+    ]
+  },
+  "channel_control_rates": {
+    "app": {
+      "create": "0.10",
+      "accept": "0.60"
+    },
+    "support": {
+      "create": "0.20",
+      "accept": "0.75"
+    }
+  },
+  "counterfactual": "Control channel connects are INCLUDED in the 3000 ordinary new family connections; only the difference is added. Exposures are unique nonconnected households, disjoint across channels and quarters.",
+  "cost_rule": "Direct ceilings are author round-number stress inputs, not a quote or an estimate. They include only new costs outside the 500 RUB contribution. All same costs counted once. Development/preparation cap is separate investment.",
+  "baseline_survival": "For age month a from launch: p0(a)=0.90-0.015*(a-1). Scenario p1=p0+lift; same cohort, same month. Payment cohorts are distinct existing operator numbers, not new groups. No added number-month revenue attributed merely to forming a group.",
+  "investment_by_quarter_rub": [
+    100000,
+    300000,
+    0,
+    0
+  ],
+  "scenarios": {
+    "main": {
+      "label": "Основной условный, не наиболее вероятный",
+      "app_exposed": [
+        0,
+        2000,
+        4000,
+        6000
+      ],
+      "support_exposed": [
+        0,
+        500,
+        1000,
+        1500
+      ],
+      "channel_rates": {
+        "app": {
+          "create": "0.20",
+          "accept": "0.70"
+        },
+        "support": {
+          "create": "0.40",
+          "accept": "0.80"
+        }
+      },
+      "saved_family_groups": [
+        0,
+        50,
+        100,
+        150
+      ],
+      "active_share_of_extra_year_end_groups": "0.60",
+      "activation_14d_counts": [
+        420,
+        765,
+        1056,
+        1450
+      ],
+      "paid_number_cohorts": [
+        {
+          "launch_month": 4,
+          "numbers": 1200
+        },
+        {
+          "launch_month": 7,
+          "numbers": 1800
+        },
+        {
+          "launch_month": 10,
+          "numbers": 2400
+        }
+      ],
+      "paid_survival_lift": "0.05",
+      "direct_cost_by_quarter_rub": [
+        0,
+        150000,
+        200000,
+        250000
+      ],
+      "direct_cost_categories_rub": {
+        "notifications": 120000,
+        "incremental_support": 240000,
+        "extra_traffic_not_already_in_500": 120000,
+        "incremental_acquisition": 120000
+      }
+    },
+    "adverse": {
+      "label": "Менее благоприятный условный, не доверительный интервал",
+      "app_exposed": [
+        0,
+        1000,
+        2000,
+        3000
+      ],
+      "support_exposed": [
+        0,
+        250,
+        500,
+        750
+      ],
+      "channel_rates": {
+        "app": {
+          "create": "0.15",
+          "accept": "0.60"
+        },
+        "support": {
+          "create": "0.30",
+          "accept": "0.70"
+        }
+      },
+      "saved_family_groups": [
+        0,
+        0,
+        25,
+        50
+      ],
+      "active_share_of_extra_year_end_groups": "0.40",
+      "activation_14d_counts": [
+        420,
+        649,
+        770,
+        979
+      ],
+      "paid_number_cohorts": [
+        {
+          "launch_month": 4,
+          "numbers": 600
+        },
+        {
+          "launch_month": 7,
+          "numbers": 900
+        },
+        {
+          "launch_month": 10,
+          "numbers": 1200
+        }
+      ],
+      "paid_survival_lift": "0.01",
+      "direct_cost_by_quarter_rub": [
+        0,
+        250000,
+        300000,
+        350000
+      ],
+      "direct_cost_categories_rub": {
+        "notifications": 120000,
+        "incremental_support": 450000,
+        "extra_traffic_not_already_in_500": 150000,
+        "incremental_acquisition": 180000
+      }
+    }
+  }
+}

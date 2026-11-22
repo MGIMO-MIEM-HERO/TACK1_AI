@@ -1,0 +1,28 @@
+{
+  "date": "2026-11-22",
+  "source_agent_commit": "4818ce8ab56288ee549a4e091461fadd5c44a2a4",
+  "source_case": "pdf-brief-mobile-2026-11-22-abc8fb4",
+  "scope": "Curated demo from run 3 and its continuation; not a new end-to-end run",
+  "files": {
+    ".gitattributes": "ae76da2a6230efff007bebf0ffb7683d89079a09a09c60c4d2f9eccb567d8d4c",
+    "calculations/calculations.json": "eeee53574ea9b11224aa91e994005d29cf21f49dac3581b7426eb8635c650c71",
+    "calculations/forecast-author-inputs.json": "7131be144ffa15632379eaef8966059620e9c0c26a391cbfc4f594c89719267a",
+    "calculations/forecast-results.json": "cd75a0aee40271fae7637e3e3a7fc03b7e445a53f3c92bff90e316cd88a3d49b",
+    "calculations/forecast-source-inputs.json": "1bd4e1d2381ac9566f46f38bddf5a7a6cb3b214ffc7c15a4022aead1b646a57d",
+    "calculations/forecast-verification.json": "8e978a93136a95c81d81546ac48f01751de6a062a5ef893af38ed06dbb9ffc43",
+    "calculations/forecast_model.py": "edd980c4e23c1ea828bbd47ceba02ca38462c0da0276898d9ef10af7ae2a9481",
+    "calculations/verify_forecast.py": "240f9acf47b0069861da07e9b0e7b91719cc312cdc667c486a12b6e997b912b3",
+    "communication-strategy.md": "4d03d9c6b8e58fe45bab722f7e4b7b0c2d55ab5b849d83df7fe6442606fc0d4f",
+    "demo-project.pdf": "8fa08224f8a16f0c54545dcbd1371c39e191ab5d52e511c6561811b5829ed71b",
+    "forecast.md": "c88507a4deb280f8cfec58bef01cbc55b9099a60731ca749d8f383a42a836950",
+    "numeric-N1.md": "694f77a4763718cae310a5c70c803d066758220f5c25d64ba7535214c321c9be",
+    "package-verification.json": "39affed8eb5add3a6304a0a6fec379c8e47183708045261e9754d94c56052859",
+    "product-strategy.md": "4222f7dfa877e0e576184c20cba4bebb0521595930bf6ed88453ca5f04f80cc1",
+    "README.md": "f870bf58cf0bb882bc0c9b126b3fbfeb5afbf3f836ec2aa6cb45d781a4e1a1fd",
+    "sources.md": "a2ae903383214cae211480a5a8a2583fca9dc9ed10b66636f1b45fae58057508",
+    "strategy.md": "c36612187c5afe86149aea5ff5be9e5816814871528aed9586d68d73752c75dd",
+    "task.md": "882cca1765bad3ad15cbc021d52ba69d0934d493c7c4353adc12b002a82267f4",
+    "verification.md": "2b324ccb27653564b5e1c69135862b9ece2b4d20daed5ac79a8d3a0940b407e8",
+    "work-graph.html": "3ee3d1354ad575d618121f92f67e59db57edc8c9f3735e44be81a6adf774f286"
+  }
+}

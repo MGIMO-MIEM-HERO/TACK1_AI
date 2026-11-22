@@ -1,0 +1,399 @@
+{
+  "status": "passed",
+  "assertions": 98,
+  "checks": [
+    {
+      "check": "inputs_current:forecast-source-inputs.json",
+      "passed": true
+    },
+    {
+      "check": "inputs_current:forecast-author-inputs.json",
+      "passed": true
+    },
+    {
+      "check": "PDF_anchors",
+      "passed": true
+    },
+    {
+      "check": "baseline_stock_calibrated",
+      "passed": true
+    },
+    {
+      "check": "main:independent_expected_KPIs",
+      "passed": true
+    },
+    {
+      "check": "main:exposed_within_household_base",
+      "passed": true
+    },
+    {
+      "check": "main:existing_retention_families",
+      "passed": true
+    },
+    {
+      "check": "main:Q1:stock_flow",
+      "passed": true
+    },
+    {
+      "check": "main:Q1:saved_are_subset_of_exits",
+      "passed": true
+    },
+    {
+      "check": "main:Q1:funnel",
+      "passed": true
+    },
+    {
+      "check": "main:Q1:14day_denominator",
+      "passed": true
+    },
+    {
+      "check": "main:Q1:counterfactual_is_not_added_twice",
+      "passed": true
+    },
+    {
+      "check": "main:Q1:profit",
+      "passed": true
+    },
+    {
+      "check": "main:Q1:cumulative_profit",
+      "passed": true
+    },
+    {
+      "check": "main:Q1:investment_separate",
+      "passed": true
+    },
+    {
+      "check": "main:Q2:stock_flow",
+      "passed": true
+    },
+    {
+      "check": "main:Q2:saved_are_subset_of_exits",
+      "passed": true
+    },
+    {
+      "check": "main:Q2:funnel",
+      "passed": true
+    },
+    {
+      "check": "main:Q2:14day_denominator",
+      "passed": true
+    },
+    {
+      "check": "main:Q2:counterfactual_is_not_added_twice",
+      "passed": true
+    },
+    {
+      "check": "main:Q2:profit",
+      "passed": true
+    },
+    {
+      "check": "main:Q2:cumulative_profit",
+      "passed": true
+    },
+    {
+      "check": "main:Q2:investment_separate",
+      "passed": true
+    },
+    {
+      "check": "main:Q3:stock_flow",
+      "passed": true
+    },
+    {
+      "check": "main:Q3:saved_are_subset_of_exits",
+      "passed": true
+    },
+    {
+      "check": "main:Q3:funnel",
+      "passed": true
+    },
+    {
+      "check": "main:Q3:14day_denominator",
+      "passed": true
+    },
+    {
+      "check": "main:Q3:counterfactual_is_not_added_twice",
+      "passed": true
+    },
+    {
+      "check": "main:Q3:profit",
+      "passed": true
+    },
+    {
+      "check": "main:Q3:cumulative_profit",
+      "passed": true
+    },
+    {
+      "check": "main:Q3:investment_separate",
+      "passed": true
+    },
+    {
+      "check": "main:Q4:stock_flow",
+      "passed": true
+    },
+    {
+      "check": "main:Q4:saved_are_subset_of_exits",
+      "passed": true
+    },
+    {
+      "check": "main:Q4:funnel",
+      "passed": true
+    },
+    {
+      "check": "main:Q4:14day_denominator",
+      "passed": true
+    },
+    {
+      "check": "main:Q4:counterfactual_is_not_added_twice",
+      "passed": true
+    },
+    {
+      "check": "main:Q4:profit",
+      "passed": true
+    },
+    {
+      "check": "main:Q4:cumulative_profit",
+      "passed": true
+    },
+    {
+      "check": "main:Q4:investment_separate",
+      "passed": true
+    },
+    {
+      "check": "main:contribution_survival",
+      "passed": true
+    },
+    {
+      "check": "main:cohort_month_bound",
+      "passed": true
+    },
+    {
+      "check": "main:quarters_equal_annual",
+      "passed": true
+    },
+    {
+      "check": "main:monthly_equals_annual",
+      "passed": true
+    },
+    {
+      "check": "main:cost_categories_once",
+      "passed": true
+    },
+    {
+      "check": "main:GP_anchor_and_costs",
+      "passed": true
+    },
+    {
+      "check": "main:coverage",
+      "passed": true
+    },
+    {
+      "check": "main:last_month_only",
+      "passed": true
+    },
+    {
+      "check": "main:gaps",
+      "passed": true
+    },
+    {
+      "check": "main:no_first_year_payback",
+      "passed": true
+    },
+    {
+      "check": "main:target_threshold",
+      "passed": true
+    },
+    {
+      "check": "adverse:independent_expected_KPIs",
+      "passed": true
+    },
+    {
+      "check": "adverse:exposed_within_household_base",
+      "passed": true
+    },
+    {
+      "check": "adverse:existing_retention_families",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q1:stock_flow",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q1:saved_are_subset_of_exits",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q1:funnel",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q1:14day_denominator",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q1:counterfactual_is_not_added_twice",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q1:profit",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q1:cumulative_profit",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q1:investment_separate",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q2:stock_flow",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q2:saved_are_subset_of_exits",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q2:funnel",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q2:14day_denominator",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q2:counterfactual_is_not_added_twice",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q2:profit",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q2:cumulative_profit",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q2:investment_separate",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q3:stock_flow",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q3:saved_are_subset_of_exits",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q3:funnel",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q3:14day_denominator",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q3:counterfactual_is_not_added_twice",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q3:profit",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q3:cumulative_profit",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q3:investment_separate",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q4:stock_flow",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q4:saved_are_subset_of_exits",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q4:funnel",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q4:14day_denominator",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q4:counterfactual_is_not_added_twice",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q4:profit",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q4:cumulative_profit",
+      "passed": true
+    },
+    {
+      "check": "adverse:Q4:investment_separate",
+      "passed": true
+    },
+    {
+      "check": "adverse:contribution_survival",
+      "passed": true
+    },
+    {
+      "check": "adverse:cohort_month_bound",
+      "passed": true
+    },
+    {
+      "check": "adverse:quarters_equal_annual",
+      "passed": true
+    },
+    {
+      "check": "adverse:monthly_equals_annual",
+      "passed": true
+    },
+    {
+      "check": "adverse:cost_categories_once",
+      "passed": true
+    },
+    {
+      "check": "adverse:GP_anchor_and_costs",
+      "passed": true
+    },
+    {
+      "check": "adverse:coverage",
+      "passed": true
+    },
+    {
+      "check": "adverse:last_month_only",
+      "passed": true
+    },
+    {
+      "check": "adverse:gaps",
+      "passed": true
+    },
+    {
+      "check": "adverse:no_first_year_payback",
+      "passed": true
+    },
+    {
+      "check": "adverse:target_threshold",
+      "passed": true
+    },
+    {
+      "check": "paid_months_independent_main",
+      "passed": true
+    },
+    {
+      "check": "paid_months_independent_adverse",
+      "passed": true
+    }
+  ],
+  "limits": "Arithmetic only. No empirical support, causality, sample-size adequacy, consent, budgets or resources validated."
+}

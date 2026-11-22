@@ -1,0 +1,30 @@
+{
+  "status": "ONLY these values come from the PDF; all quarterly splits below are author assumptions",
+  "pdf_pages": [
+    3,
+    6,
+    9,
+    10
+  ],
+  "base_year_estimate": {
+    "family_connected": 6500,
+    "owners_connected": 800
+  },
+  "no_change": {
+    "gross_profit_rub": 279000000,
+    "active_families_last_month": 5000,
+    "family_connected": 8000,
+    "owners_connected": 1000,
+    "activation_q4_pct": 45
+  },
+  "target": {
+    "gross_profit_rub": 285000000,
+    "active_families_last_month": 8000,
+    "family_connected": 12000,
+    "owners_connected": 2000,
+    "activation_q4_pct": 60
+  },
+  "accessible_households": 100000,
+  "accessible_owners": 40000,
+  "contribution_per_extra_paid_number_month_rub": 500
+}
