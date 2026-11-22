@@ -1,0 +1,32 @@
+{
+  "source_graph": "demo/megafon-family-strategy/work-graph.html",
+  "graph_sha256": "3ee3d1354ad575d618121f92f67e59db57edc8c9f3735e44be81a6adf774f286",
+  "state_sha256": "a1c103235b9e1326d787a54bdb8f3e535e58b1fccfe8fee75801fb01d17930ea",
+  "source": "Опубликованная обезличенная карта прогона 3; не новый прогон или исполняемый checkpoint",
+  "review_id": "S4-4818ce8",
+  "scenario_id": "SC2",
+  "scenario_title": "Польза есть, дополнительных оплат нет",
+  "method": "Actual Chromium UI capture through Playwright; no DOM text or styles changed; viewport height expanded to fit all six rows",
+  "screens": [
+    {
+      "file": "04-scenarios-provisional.png",
+      "viewport_width": 1280,
+      "viewport_height": 9203,
+      "width": 868,
+      "height": 3494,
+      "all_six_options_visible": true,
+      "data_unchanged": true,
+      "sha256": "1fc6a27498e86090f258ad6d64d1deac32df783bb35cddfd696d9fc1e833557f"
+    },
+    {
+      "file": "04-scenarios-provisional-mobile.png",
+      "viewport_width": 390,
+      "viewport_height": 21386,
+      "width": 328,
+      "height": 8786,
+      "all_six_options_visible": true,
+      "data_unchanged": true,
+      "sha256": "7d12d1a0aacbd1930823ddf037ccaeecc0941af6ad45c3f0d6963aad52402734"
+    }
+  ]
+}
