@@ -23,6 +23,7 @@ OUT = ROOT / 'docs/screenshots/agent'
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--overview-only', action='store_true', help='replace only the recommendation-path images')
     parser.add_argument('--full-only', action='store_true', help='capture the entire expanded graph only')
     parser.add_argument('--graph', type=Path, required=True, help='saved work-graph.html from the run')
     parser.add_argument('--project', type=Path, required=True, help='matching project.json (read-only)')
@@ -40,6 +41,10 @@ def main():
         'case_sha256': before, 'recommended_option': next((p['option_id'] for p in saved['decision_paths'] if p['is_recommended']), None),
         'evidence_id': args.evidence_id, 'source': 'Прогон 3; Пример брифа.pdf',
         'agent_commit': args.agent_commit}
+    if args.overview_only:
+        existing = json.loads((OUT/'capture.json').read_text(encoding='utf-8'))
+        if existing['graph_sha256'] != graph_before:
+            parser.error('Existing images belong to another snapshot; refusing partial replacement')
     profile = Path(tempfile.mkdtemp(prefix='readme-agent-screens-'))
     url = DEMO.as_uri()
     process = subprocess.Popen([r'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
@@ -130,10 +135,11 @@ def main():
                 'deviceScaleFactor': 1, 'mobile': False})
             call('Page.navigate', {'url': url})
             ready()
-            call('Emulation.setDeviceMetricsOverride', {'width': width, 'height': 900, 'deviceScaleFactor': 1, 'mobile': False})
-            time.sleep(.2)
-            js("setAllClusters(false);showCluster('group:sources');setMapDetail('compact');finishNavigation();selected=null;highlight();window.scrollTo(0,0)")
-            shot('01-overview'+suffix+'.png', '#canvas')
+            js("document.getElementById('path-toggle').click();selectDecisionPath((data.decision_paths.find(p=>p.is_recommended)||data.decision_paths[0]).option_id);finishNavigation();pathPanel.scrollTop=0")
+            shot('01-overview'+suffix+'.png', '#path-panel')
+            js("document.getElementById('path-toggle').click();clearDecisionPath()")
+            if args.overview_only:
+                continue
             call('Emulation.setDeviceMetricsOverride', {'width': width, 'height': 2600 if mobile else 1600, 'deviceScaleFactor': 1, 'mobile': False})
             time.sleep(.2)
             js("setAllClusters(true);document.getElementById('path-toggle').click();selectDecisionPath((data.decision_paths.find(p=>p.is_recommended)||data.decision_paths[0]).option_id);document.querySelector('.path-support').open=true")
@@ -157,6 +163,15 @@ def main():
             shot('05-history'+suffix+'.png', '#history-panel')
         assert hashlib.sha256(CASE.read_bytes()).hexdigest() == before
         assert hashlib.sha256(DEMO.read_bytes()).hexdigest() == graph_before
+        if args.overview_only:
+            metadata = json.loads((OUT/'capture.json').read_text(encoding='utf-8'))
+            assert metadata['graph_sha256'] == graph_before, 'Existing images belong to another snapshot'
+            replacements = {r['file']: r for r in results}
+            metadata['screens'] = [replacements.get(r['file'], r) for r in metadata['screens']]
+            metadata['overview_view'] = 'Recommendation path: recorded sources and evidence'
+            (OUT/'capture.json').write_text(json.dumps(metadata, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
+            print('Replaced two recommendation-path images; other screenshots unchanged.')
+            return
         (OUT/'capture.json').write_text(json.dumps({**provenance,
             'case_sha256': before, 'case_text_sha256': hashlib.sha256(CASE.read_text(encoding='utf-8').encode('utf-8')).hexdigest(), 'screens': results, 'case_unchanged': True,
             'note': 'Actual UI excerpts, fictional saved snapshot; no model reasoning trace.'}, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
