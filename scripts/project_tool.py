@@ -155,6 +155,12 @@ def audit(project, path, ready=False, quality=False):
     feasibility = inspect_feasibility(project, path, ROOT)
     from procedure_requirements import inspect as inspect_procedures
     procedures = inspect_procedures(project, stress, feasibility)
+    from numeric_forecast import inspect as inspect_forecast
+    forecast = inspect_forecast(project, path, ROOT)
+    procedures['checks']['numeric_forecast'] = {
+        'status': forecast['status'], 'reason': 'Численный прогноз по требуемым в брифе показателям; условные оценки не являются измерениями.',
+        'next_step': 'При требовании прогноза записать основной и неблагоприятный расчёты всех метрик через scripts/numeric_forecast.py.'}
+    procedures['blockers'].extend(forecast['blockers'])
     warnings.extend(feasibility['blockers'] + feasibility['decision_blockers'])
     for row in feasibility['assessments']:
         if row['outcome'] == 'unknown':
@@ -175,6 +181,7 @@ def audit(project, path, ready=False, quality=False):
               'marketing_claims_audit': claims, 'research_selection': research, 'follow_up': follow_up,
               'feasibility': feasibility,
               'procedure_requirements': procedures,
+              'numeric_forecast': forecast,
               'final_ready': final_ready,
               'material_changes': changes,
               'review_draft_only': bool(historical_choice_errors and
@@ -291,6 +298,9 @@ def report(project, path, final=False, *, output_path=None):
     for name, check in result['procedure_requirements']['checks'].items():
         lines.append('- ' + name + ': ' + check['status'] + ' — ' + check['reason'])
         if check.get('next_step'): lines.append('  Следующий шаг: ' + check['next_step'])
+    if result['numeric_forecast']['status'] != 'not_requested':
+        from numeric_forecast import markdown as forecast_markdown
+        lines.extend(['', forecast_markdown(result['numeric_forecast']).rstrip()])
     if project.get('decision_stress_tests'):
         from stress_test import markdown as stress_markdown
         lines.extend(['', stress_markdown(project, result['decision_stress_test']).rstrip()])
