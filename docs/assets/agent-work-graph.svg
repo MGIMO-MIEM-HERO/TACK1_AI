@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 1490" width="780" height="1490" role="img" aria-labelledby="map-title map-desc" lang="ru">
+  <title id="map-title">Карта работы агента «Контур решения»</title>
+  <desc id="map-desc">Агент и задача: цель и ограничения. Материалы ведут к фактам, гипотезам и неизвестному, связанным с источниками. Затем альтернативы, проверки ресурсов и осуществимости, неблагоприятных сценариев и существенных обещаний, рекомендация агента и отдельное решение владельца. Новые данные и изменения оснований возвращают к пересмотру. Неизвестное требует уточнения и не означает невозможности. Это схема процесса и записанных оснований, не скрытые рассуждения и не доказательство истинности.</desc>
+  <defs>
+    <marker id="flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M1 1 L9 5 L1 9" fill="none" stroke="#008c46" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </marker>
+    <marker id="review-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M1 1 L9 5 L1 9" fill="none" stroke="#731982" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </marker>
+  </defs>
+  <rect width="780" height="1490" rx="28" fill="#f5f7f6" />
+  <g font-family="Segoe UI, Arial, sans-serif">
+    <text x="36" y="53" font-size="22" fill="#008c46" font-weight="700" letter-spacing="2">КОНТУР РЕШЕНИЯ</text>
+    <text x="36" y="99" font-size="34" fill="#23282b" font-weight="700">Основания → выбор → пересмотр</text>
+    <g fill="none" stroke="#008c46" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" id="process-links">
+      <path d="M390 396 V374 Q390 366 382 366 H208 Q200 366 200 358 V340" marker-end="url(#flow-arrow)" data-from="task" data-to="materials" />
+      <path d="M364 238 H416" marker-end="url(#flow-arrow)" data-from="materials" data-to="evidence" />
+      <path d="M580 340 V592" marker-end="url(#flow-arrow)" data-from="evidence" data-to="options" />
+      <path d="M580 772 V844" marker-end="url(#flow-arrow)" data-from="options" data-to="checks" />
+      <path d="M580 1084 V1156" marker-end="url(#flow-arrow)" data-from="checks" data-to="recommendation" />
+      <path d="M416 1246 H364" marker-end="url(#flow-arrow)" data-from="recommendation" data-to="owner" />
+      <path d="M36 1246 H26 Q18 1246 18 1238 V690 Q18 682 26 682 H36" marker-end="url(#flow-arrow)" data-from="owner" data-to="changes" />
+      <path d="M56 592 V340" stroke="#731982" stroke-dasharray="7 7" marker-end="url(#review-arrow)" data-from="changes" data-to="materials" />
+    </g>
+    <text x="214" y="463" font-size="24" fill="#731982" font-weight="600" text-anchor="end">Пересмотр</text>
+    <text x="214" y="495" font-size="24" fill="#731982" font-weight="400" text-anchor="end">оснований</text>
+    <g id="materials">
+      <rect x="36" y="136" width="328" height="204" rx="24" fill="#fff" stroke="#d2e2d8" stroke-width="2" />
+      <text x="58" y="183" font-size="30" fill="#008c46" font-weight="700">1 Материалы</text>
+      <text x="58" y="225" font-size="28" fill="#334b3d" font-weight="400">Документы и данные</text>
+      <text x="58" y="261" font-size="28" fill="#334b3d" font-weight="400">Ссылки и фрагменты</text>
+      <text x="58" y="297" font-size="28" fill="#334b3d" font-weight="400">Проверка источников</text>
+    </g>
+    <g id="evidence">
+      <rect x="416" y="136" width="328" height="204" rx="24" fill="#fff" stroke="#d2e2d8" stroke-width="2" />
+      <text x="438" y="183" font-size="30" fill="#008c46" font-weight="700">2 Основания</text>
+      <text x="438" y="225" font-size="28" fill="#334b3d" font-weight="400">Факты и гипотезы</text>
+      <text x="438" y="261" font-size="28" fill="#334b3d" font-weight="400">Неизвестное отдельно</text>
+      <text x="438" y="297" font-size="28" fill="#334b3d" font-weight="400">Вывод ↔ источник</text>
+    </g>
+    <g id="task">
+      <rect x="228" y="396" width="324" height="140" rx="54" fill="#00ab55" />
+      <text x="390" y="452" font-size="32" fill="#fff" font-weight="700" text-anchor="middle">Агент и задача</text>
+      <text x="390" y="494" font-size="28" fill="#fff" font-weight="400" text-anchor="middle">Цель · ограничения</text>
+    </g>
+    <g id="changes">
+      <rect x="36" y="592" width="328" height="180" rx="24" fill="#f4eaf6" stroke="#d6b8dc" stroke-width="2" />
+      <text x="58" y="639" font-size="30" fill="#731982" font-weight="700">7 Новые данные</text>
+      <text x="58" y="681" font-size="28" fill="#334b3d" font-weight="400">Источники изменены</text>
+      <text x="58" y="717" font-size="28" fill="#334b3d" font-weight="400">Пересмотр выводов</text>
+    </g>
+    <g id="options">
+      <rect x="416" y="592" width="328" height="180" rx="24" fill="#fff" stroke="#d2e2d8" stroke-width="2" />
+      <text x="438" y="639" font-size="30" fill="#008c46" font-weight="700">3 Альтернативы</text>
+      <text x="438" y="681" font-size="28" fill="#334b3d" font-weight="400">Включая «не менять»</text>
+      <text x="438" y="717" font-size="28" fill="#334b3d" font-weight="400">и «остановить»</text>
+    </g>
+    <g id="checks">
+      <rect x="36" y="844" width="708" height="240" rx="24" fill="#fff" stroke="#d2e2d8" stroke-width="2" />
+      <text x="58" y="891" font-size="30" fill="#008c46" font-weight="700">4 Проверки</text>
+      <circle cx="65" cy="929" r="4" fill="#008c46" />
+      <text x="84" y="937" font-size="28" fill="#334b3d" font-weight="400">Ресурсы и осуществимость</text>
+      <circle cx="65" cy="972" r="4" fill="#008c46" />
+      <text x="84" y="980" font-size="28" fill="#334b3d" font-weight="400">Неблагоприятные сценарии</text>
+      <circle cx="65" cy="1015" r="4" fill="#008c46" />
+      <text x="84" y="1023" font-size="28" fill="#334b3d" font-weight="400">Существенные обещания</text>
+    </g>
+    <g id="recommendation">
+      <rect x="416" y="1156" width="328" height="180" rx="24" fill="#f4eaf6" stroke="#d6b8dc" stroke-width="2" />
+      <text x="438" y="1203" font-size="30" fill="#731982" font-weight="700">5 Рекомендация</text>
+      <text x="438" y="1245" font-size="28" fill="#334b3d" font-weight="400">Обоснование и риски</text>
+      <text x="438" y="1281" font-size="28" fill="#334b3d" font-weight="400">Условия пересмотра</text>
+    </g>
+    <g id="owner">
+      <rect x="36" y="1156" width="328" height="180" rx="24" fill="#731982" stroke="#731982" stroke-width="2" />
+      <text x="58" y="1203" font-size="27" fill="#fff" font-weight="700">6 Решение человека</text>
+      <text x="58" y="1245" font-size="28" fill="#fff" font-weight="400">Явный ответ</text>
+      <text x="58" y="1281" font-size="28" fill="#fff" font-weight="400">на версию решения</text>
+    </g>
+    <text x="36" y="1390" font-size="26" fill="#334b3d" font-weight="400">Неизвестное требует уточнения, а не отказа.</text>
+    <text x="36" y="1430" font-size="24" fill="#52645a" font-weight="400">Стрелки — процесс. Пунктир — возврат к пересмотру.</text>
+    <text x="36" y="1465" font-size="24" fill="#52645a" font-weight="400">Карта записанных оснований, не скрытых рассуждений.</text>
+  </g>
+</svg>
