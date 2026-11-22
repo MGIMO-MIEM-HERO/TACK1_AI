@@ -12,10 +12,10 @@
       "file": "01-overview.png",
       "viewport": 1280,
       "clip": {
-        "x": 0,
-        "y": 447.0625,
-        "width": 935,
-        "height": 580,
+        "x": 24,
+        "y": 207,
+        "width": 887,
+        "height": 768,
         "scale": 1
       }
     },
@@ -67,10 +67,10 @@
       "file": "01-overview-mobile.png",
       "viewport": 390,
       "clip": {
-        "x": 0,
-        "y": 1688.09375,
-        "width": 375,
-        "height": 460,
+        "x": 14,
+        "y": 2249.515625,
+        "width": 347,
+        "height": 1248,
         "scale": 1
       }
     },
@@ -120,5 +120,6 @@
     }
   ],
   "case_unchanged": true,
-  "note": "Actual UI excerpts, fictional saved snapshot; no model reasoning trace."
+  "note": "Actual UI excerpts, fictional saved snapshot; no model reasoning trace.",
+  "overview_view": "Recommendation path: recorded sources and evidence"
 }
