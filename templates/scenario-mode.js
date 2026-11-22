@@ -45,9 +45,17 @@ function selectScenario(id){
   for(const row of scenario.option_impacts){
     const tr=html('tr','',body,'scenario-row '+row.feasibility),name=html('td','',tr);
     if(row.node_id){const button=html('button',row.option_id+' · '+row.title,name,'button');button.onclick=()=>focus(row.node_id,true)}else html('span',row.option_id,name);
-    html('td',scenarioLabels[row.feasibility]||row.feasibility,tr);
+    const feasibility=html('td','',tr),estimate=row.provisional_assessment;
+    if(estimate){
+      const labels={likely_feasible:'Предположительно осуществимо',likely_infeasible:'Предположительно неосуществимо',undetermined:'Предварительная оценка не определена'};
+      html('strong',labels[estimate.verdict]||estimate.verdict,feasibility);
+      html('p',estimate.rationale,feasibility);
+      for(const aid of estimate.assumption_ids){const assumption=scenario.assumptions.find(a=>a.assumption_id===aid);html('p','Условие '+aid+': '+(assumption?.statement||'сохранённая гипотеза'),feasibility)}
+      html('p','Проверить: '+estimate.check_next,feasibility);
+      html('small','Ресурс не подтверждён. Записанная оценка: '+(scenarioLabels[row.feasibility]||row.feasibility)+'. Допущение не означает разрешение запуска.',feasibility);
+    }else html('span',scenarioLabels[row.feasibility]||row.feasibility,feasibility);
     const reason=html('td','',tr);html('strong',scenarioLabels[row.preference]||row.preference,reason);html('p',row.reason,reason);
-    html('small','Основания: '+(row.evidence_ids.join(', ')||'не записаны'),reason);
+    html('small','Фактические основания: '+(row.evidence_ids.join(', ')||'не записаны')+(estimate?' · Сценарные допущения: '+estimate.assumption_ids.join(', '):''),reason);
     if(view.graph_comparable&&row.node_id){const g=cards.get(row.node_id)?.g;if(g){g.classList.add('scenario-'+row.feasibility);g.classList.toggle('scenario-preferred',row.preference==='preferred')}}
   }
   const details=html('details','',scenarioContent,'scenario-details');html('summary','Изменяемые условия, допущения и основания',details);
