@@ -283,6 +283,7 @@ def build(path, *, state=None):
     requests = []
     if recommended: requests.append(request(project, path, ROOT, 'recommendation', '/recommended_option_id'))
     blockers = state['audit']['errors'] + state['content_review']['blockers'] + state['feasibility']['blockers'] + state['feasibility']['decision_blockers']
+    blockers += state['audit'].get('procedure_requirements', {}).get('blockers', [])
     for key in ('research_selection', 'decision_stress_test', 'marketing_claims_audit'):
         blockers += state[key]['blockers'] + state[key].get('publication_blockers', [])
     return {'schema_version':1, 'project_id':project['project_id'], 'title':project['title'], 'version':current,

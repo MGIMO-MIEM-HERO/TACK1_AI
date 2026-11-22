@@ -6,6 +6,7 @@ from pathlib import Path
 import shutil
 import tempfile
 
+from verify_required_procedures import assert_final_blocked
 from checkpoint import ROOT,write_state
 from project_tool import load,report
 from quality import state_hash
@@ -70,7 +71,8 @@ def verify_demo():
             rationale='Техническое условие и состав шаблона различили варианты. Вопросы спроса и UX лежат за пределами текущего решения; их нельзя считать закрытыми.')
         record(p,path,ROOT,r3);p=load(path)
         p['strategy_review']['state_hash']=state_hash(p,path,ROOT);write_state(path,p)
-        final=report(p,path,final=True)
+        assert_final_blocked(p,path,'Required decision stress')
+        final=report(p,path)
         result=inspect(p,path,ROOT)
         assert result['recommendation']['action']=='stop' and 'Когда остановиться' in final
         assert p['research_selection_reviews'][0]==original['research_selection_reviews'][0]

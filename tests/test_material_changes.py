@@ -98,7 +98,8 @@ class MaterialTests(unittest.TestCase):
         self.assertEqual(changes['after_version'],version)
         self.assertTrue(all(e['classification']=='cosmetic' for e in changes['events']))
         self.assertTrue(follow_up(self.project,self.path,ROOT)['metric_results'][0]['reviewed'])
-        self.assertTrue(audit(self.project,self.path,ready=True,quality=True)['ready'])
+        self.assertEqual(audit(self.project,self.path,ready=True,quality=True)['content_review']['blockers'], [])
+        self.assertFalse(audit(self.project,self.path,ready=True,quality=True)['final_ready'])
         save_checkpoint(self.project,self.path,'JSON formatted'); self.project=load(self.path)
         self.assertFalse(inspect(self.project,self.path,ROOT)['events'])
 
@@ -148,7 +149,8 @@ class MaterialTests(unittest.TestCase):
         r=self.assessment('unchanged'); self.persist(r)
         self.assertFalse(inspect(self.project,self.path,ROOT)['human_questions'])
         self.assertEqual(self.project['checkpoints'][-1]['change_review']['assessment']['conclusion'],'unchanged')
-        self.refresh(); self.assertTrue(audit(self.project,self.path,ready=True,quality=True)['ready'])
+        self.refresh(); self.assertEqual(audit(self.project,self.path,ready=True,quality=True)['content_review']['blockers'], [])
+        self.assertFalse(audit(self.project,self.path,ready=True,quality=True)['final_ready'])
 
     def test_unknown_impact_is_visible_and_keeps_one_versioned_owner_request(self):
         self.tracked(); self.project['sources'][0]['author']='Unverified author'; write_state(self.path,self.project)

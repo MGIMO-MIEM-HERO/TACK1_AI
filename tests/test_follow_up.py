@@ -175,7 +175,9 @@ class FollowUpTests(unittest.TestCase):
 
     def test_report_has_follow_up_and_cli_cannot_overwrite_inputs(self):
         self.setup_follow_up();self.project['strategy_review']['state_hash']=state_hash(self.project,self.path,ROOT);write_state(self.path,self.project)
-        self.assertIn('Сопровождение после решения',report(self.project,self.path,final=True))
+        self.assertIn('Сопровождение после решения',report(self.project,self.path))
+        with self.assertRaisesRegex(ValueError, 'Required decision stress'):
+            report(self.project,self.path,final=True)
         before=self.path.read_bytes()
         result=self.run_cli('follow_up.py','report',self.path,'--as-of','2026-11-19T10:00:00+03:00','--out',self.path)
         self.assertEqual(result.returncode,1);self.assertEqual(self.path.read_bytes(),before)

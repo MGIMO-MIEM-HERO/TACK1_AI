@@ -77,6 +77,22 @@ try:
  (out/'detailed.png').write_bytes(base64.b64decode(call('Page.captureScreenshot',{'format':'png'})['data']))
  call('Emulation.setDeviceMetricsOverride',{'width':800,'height':900,'deviceScaleFactor':1,'mobile':False});time.sleep(.2)
  check('mobile no overflow',"document.documentElement.scrollWidth<=800")
+ for width,height in ((390,844),(800,900)):
+  call('Emulation.setDeviceMetricsOverride',{'width':width,'height':height,'deviceScaleFactor':1,'mobile':False})
+  ev("document.getElementById('reset').click();window.scrollTo(0,0)");time.sleep(.2)
+  check('summary first screen '+str(width),"document.getElementById('detail-title').getBoundingClientRect().top<innerHeight && detailNodeId==='summary:current'")
+  check('next step first screen '+str(width),"[...document.querySelectorAll('#fields .field')].find(e=>e.querySelector('strong').textContent==='Следующий шаг').getBoundingClientRect().top<innerHeight")
+  check('summary precedes workspace '+str(width),"!!(document.querySelector('aside').compareDocumentPosition(document.getElementById('workspace'))&Node.DOCUMENT_POSITION_FOLLOWING)")
+  check('no horizontal overflow '+str(width),"document.documentElement.scrollWidth<=innerWidth")
+  (out/('mobile-'+str(width)+'.png')).write_bytes(base64.b64decode(call('Page.captureScreenshot',{'format':'png'})['data']))
+  ev("document.getElementById('mobile-map-toggle').focus()")
+  for kind in ('keyDown','keyUp'):call('Input.dispatchKeyEvent',{'type':kind,'key':'Enter','code':'Enter','windowsVirtualKeyCode':13,'text':'\r' if kind=='keyDown' else ''})
+  check('keyboard collapses map '+str(width),"workspace.hidden&&mobileMapToggle.getAttribute('aria-expanded')==='false'")
+  for kind in ('keyDown','keyUp'):call('Input.dispatchKeyEvent',{'type':kind,'key':'Enter','code':'Enter','windowsVirtualKeyCode':13,'text':'\r' if kind=='keyDown' else ''})
+  check('keyboard restores map '+str(width),"!workspace.hidden&&mobileMapToggle.getAttribute('aria-expanded')==='true'")
+ ev("document.getElementById('mobile-map-toggle').click()")
+ call('Emulation.setDeviceMetricsOverride',{'width':1280,'height':900,'deviceScaleFactor':1,'mobile':False});time.sleep(.2)
+ check('desktop restores collapsed mobile map',"!workspace.hidden&&document.querySelector('aside').getBoundingClientRect().left>document.getElementById('workspace').getBoundingClientRect().left")
  import sys
  sys.path.insert(0,str(root/'scripts'))
  from visualize import render

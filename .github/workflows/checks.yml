@@ -24,6 +24,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - run: python -m unittest discover -s tests -v
+      - run: python scripts/verify_required_procedures.py
       - run: python scripts/verify_demo.py
       - run: python scripts/verify_stress_demo.py
       - run: python scripts/verify_claims_demo.py
@@ -35,14 +36,14 @@ jobs:
       - run: python scripts/verify_resume_summary_demo.py
       - run: python scripts/verify_passport_demo.py
       - run: python scripts/verify_case_review_demo.py
-      - run: python scripts/project_tool.py audit examples/decision-passport-case/project.json --ready --quality
-      - run: python scripts/project_tool.py audit examples/research-branches-case/project.json --ready --quality
-      - run: python scripts/project_tool.py audit examples/feasibility-case/project.json --ready --quality
-      - run: python scripts/project_tool.py audit examples/decision-follow-up-case/project.json --ready --quality
-      - run: python scripts/project_tool.py audit examples/next-research-case/project.json --ready --quality
-      - run: python scripts/project_tool.py audit examples/marketing-claims-case/project.json --ready --quality
-      - run: python scripts/project_tool.py audit examples/decision-stress-case/project.json --ready --quality
+      - run: python scripts/verify_required_procedures.py --case decision-passport-case
+      - run: python scripts/verify_required_procedures.py --case research-branches-case
+      - run: python scripts/verify_required_procedures.py --case feasibility-case
+      - run: python scripts/verify_required_procedures.py --case decision-follow-up-case
+      - run: python scripts/verify_required_procedures.py --case next-research-case
+      - run: python scripts/verify_required_procedures.py --case marketing-claims-case
+      - run: python scripts/verify_required_procedures.py --case decision-stress-case
       - run: python scripts/project_tool.py audit examples/campus-strategy/project.json --ready
       - run: python scripts/validate_project.py examples/activation-case/project.json
       - run: python scripts/start.py examples/campus-strategy/project.json --json
-      - run: python scripts/project_tool.py audit examples/review-contract-case/project.json --ready --quality
+      - run: python scripts/verify_required_procedures.py --case review-contract-case

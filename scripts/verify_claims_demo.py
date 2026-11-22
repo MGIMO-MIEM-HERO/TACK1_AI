@@ -8,6 +8,7 @@ import tempfile
 
 from checkpoint import ROOT, write_state
 from claims_audit import baseline, inspect, record
+from verify_required_procedures import assert_final_blocked
 from project_tool import load, report
 from quality import state_hash
 
@@ -23,7 +24,8 @@ def verify_demo():
         assert initial['status']=='review_record_complete',initial
         assert initial['claims'][0]['status']=='unsupported'
         assert initial['claims'][0]['has_required_measurements'] is False
-        assert 'не подтверждено' in report(p,path,final=True)
+        assert 'не подтверждено' in report(p,path)
+        assert_final_blocked(p,path,'Required decision stress')
         original=copy.deepcopy(p)
         row=p['marketing_claims_audits'][-1]['assessments'][0]
         p['communication_strategy']['message']=row['original_claim']
@@ -48,7 +50,8 @@ def verify_demo():
         p=load(path)
         p['strategy_review']['state_hash']=state_hash(p,path,ROOT)
         write_state(path,p)
-        final=report(p,path,final=True)
+        assert_final_blocked(p,path,'Required decision stress')
+        final=report(p,path)
         assert row['accepted_wording'] in final and 'измерений нет' in final
         assert len(p['marketing_claims_audits'])==3
         assert p['marketing_claims_audits'][0]==original['marketing_claims_audits'][0]
