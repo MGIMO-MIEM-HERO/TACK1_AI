@@ -1,0 +1,895 @@
+{
+  "status": "Conditional author planning forecast, not observed effect of OR or approved pilot",
+  "source_inputs": {
+    "status": "ONLY these values come from the PDF; all quarterly splits below are author assumptions",
+    "pdf_pages": [
+      3,
+      6,
+      9,
+      10
+    ],
+    "base_year_estimate": {
+      "family_connected": 6500,
+      "owners_connected": 800
+    },
+    "no_change": {
+      "gross_profit_rub": 279000000,
+      "active_families_last_month": 5000,
+      "family_connected": 8000,
+      "owners_connected": 1000,
+      "activation_q4_pct": 45
+    },
+    "target": {
+      "gross_profit_rub": 285000000,
+      "active_families_last_month": 8000,
+      "family_connected": 12000,
+      "owners_connected": 2000,
+      "activation_q4_pct": 60
+    },
+    "accessible_households": 100000,
+    "accessible_owners": 40000,
+    "contribution_per_extra_paid_number_month_rub": 500
+  },
+  "input_sha256": {
+    "forecast-source-inputs.json": "1bd4e1d2381ac9566f46f38bddf5a7a6cb3b214ffc7c15a4022aead1b646a57d",
+    "forecast-author-inputs.json": "7131be144ffa15632379eaef8966059620e9c0c26a391cbfc4f594c89719267a"
+  },
+  "baseline_calibration": [
+    {
+      "quarter": 1,
+      "family_end": 6700,
+      "owners_end": 840,
+      "created": 1000,
+      "activated_14d": 420
+    },
+    {
+      "quarter": 2,
+      "family_end": 7050,
+      "owners_end": 885,
+      "created": 1400,
+      "activated_14d": 630
+    },
+    {
+      "quarter": 3,
+      "family_end": 7450,
+      "owners_end": 935,
+      "created": 1600,
+      "activated_14d": 720
+    },
+    {
+      "quarter": 4,
+      "family_end": 8000,
+      "owners_end": 1000,
+      "created": 2000,
+      "activated_14d": 900
+    }
+  ],
+  "scenarios": {
+    "main": {
+      "quarterly": [
+        {
+          "quarter": 1,
+          "channels": [
+            {
+              "channel": "app",
+              "unique_exposed_households": 0,
+              "created_plan": 0,
+              "invitation_accepted_connected_plan": 0,
+              "created_control": 0,
+              "connected_control": 0,
+              "incremental_connected": 0
+            },
+            {
+              "channel": "support",
+              "unique_exposed_households": 0,
+              "created_plan": 0,
+              "invitation_accepted_connected_plan": 0,
+              "created_control": 0,
+              "connected_control": 0,
+              "incremental_connected": 0
+            }
+          ],
+          "opening_connected_families": 6500,
+          "ordinary_new_connections": 500,
+          "incremental_connections": 0,
+          "total_new_connections": 500,
+          "ordinary_exits": 300,
+          "saved_groups": 0,
+          "actual_exits": 300,
+          "end_connected_families": 6700,
+          "created_groups": 1000,
+          "accepted_connected_new_groups": 500,
+          "activated_14d": 420,
+          "activation_pct": 42,
+          "cohort_maturity_rule": "Every created group including unanswered invitations; read after full 14 days for final creation in quarter",
+          "extra_paid_number_months": 0,
+          "contribution_rub": 0,
+          "new_direct_cost_rub": 0,
+          "incremental_net_gp_rub": 0,
+          "cumulative_net_gp_rub": 0,
+          "investment_rub": 100000,
+          "cumulative_investment_rub": 100000,
+          "unrecovered_investment_rub": 100000
+        },
+        {
+          "quarter": 2,
+          "channels": [
+            {
+              "channel": "app",
+              "unique_exposed_households": 2000,
+              "created_plan": 400,
+              "invitation_accepted_connected_plan": 280,
+              "created_control": 200,
+              "connected_control": 120,
+              "incremental_connected": 160
+            },
+            {
+              "channel": "support",
+              "unique_exposed_households": 500,
+              "created_plan": 200,
+              "invitation_accepted_connected_plan": 160,
+              "created_control": 100,
+              "connected_control": 75,
+              "incremental_connected": 85
+            }
+          ],
+          "opening_connected_families": 6700,
+          "ordinary_new_connections": 700,
+          "incremental_connections": 245,
+          "total_new_connections": 945,
+          "ordinary_exits": 350,
+          "saved_groups": 50,
+          "actual_exits": 300,
+          "end_connected_families": 7345,
+          "created_groups": 1700,
+          "accepted_connected_new_groups": 945,
+          "activated_14d": 765,
+          "activation_pct": 45,
+          "cohort_maturity_rule": "Every created group including unanswered invitations; read after full 14 days for final creation in quarter",
+          "extra_paid_number_months": 180,
+          "contribution_rub": 90000,
+          "new_direct_cost_rub": 150000,
+          "incremental_net_gp_rub": -60000,
+          "cumulative_net_gp_rub": -60000,
+          "investment_rub": 300000,
+          "cumulative_investment_rub": 400000,
+          "unrecovered_investment_rub": 460000
+        },
+        {
+          "quarter": 3,
+          "channels": [
+            {
+              "channel": "app",
+              "unique_exposed_households": 4000,
+              "created_plan": 800,
+              "invitation_accepted_connected_plan": 560,
+              "created_control": 400,
+              "connected_control": 240,
+              "incremental_connected": 320
+            },
+            {
+              "channel": "support",
+              "unique_exposed_households": 1000,
+              "created_plan": 400,
+              "invitation_accepted_connected_plan": 320,
+              "created_control": 200,
+              "connected_control": 150,
+              "incremental_connected": 170
+            }
+          ],
+          "opening_connected_families": 7345,
+          "ordinary_new_connections": 800,
+          "incremental_connections": 490,
+          "total_new_connections": 1290,
+          "ordinary_exits": 400,
+          "saved_groups": 100,
+          "actual_exits": 300,
+          "end_connected_families": 8335,
+          "created_groups": 2200,
+          "accepted_connected_new_groups": 1290,
+          "activated_14d": 1056,
+          "activation_pct": 48,
+          "cohort_maturity_rule": "Every created group including unanswered invitations; read after full 14 days for final creation in quarter",
+          "extra_paid_number_months": 450,
+          "contribution_rub": 225000,
+          "new_direct_cost_rub": 200000,
+          "incremental_net_gp_rub": 25000,
+          "cumulative_net_gp_rub": -35000,
+          "investment_rub": 0,
+          "cumulative_investment_rub": 400000,
+          "unrecovered_investment_rub": 435000
+        },
+        {
+          "quarter": 4,
+          "channels": [
+            {
+              "channel": "app",
+              "unique_exposed_households": 6000,
+              "created_plan": 1200,
+              "invitation_accepted_connected_plan": 840,
+              "created_control": 600,
+              "connected_control": 360,
+              "incremental_connected": 480
+            },
+            {
+              "channel": "support",
+              "unique_exposed_households": 1500,
+              "created_plan": 600,
+              "invitation_accepted_connected_plan": 480,
+              "created_control": 300,
+              "connected_control": 225,
+              "incremental_connected": 255
+            }
+          ],
+          "opening_connected_families": 8335,
+          "ordinary_new_connections": 1000,
+          "incremental_connections": 735,
+          "total_new_connections": 1735,
+          "ordinary_exits": 450,
+          "saved_groups": 150,
+          "actual_exits": 300,
+          "end_connected_families": 9770,
+          "created_groups": 2900,
+          "accepted_connected_new_groups": 1735,
+          "activated_14d": 1450,
+          "activation_pct": 50,
+          "cohort_maturity_rule": "Every created group including unanswered invitations; read after full 14 days for final creation in quarter",
+          "extra_paid_number_months": 810,
+          "contribution_rub": 405000,
+          "new_direct_cost_rub": 250000,
+          "incremental_net_gp_rub": 155000,
+          "cumulative_net_gp_rub": 120000,
+          "investment_rub": 0,
+          "cumulative_investment_rub": 400000,
+          "unrecovered_investment_rub": 280000
+        }
+      ],
+      "paid_cohort_months": [
+        {
+          "cohort_launch_month": 4,
+          "numbers": 1200,
+          "calendar_month": 4,
+          "age_month": 1,
+          "p_control": 0.9,
+          "p_plan": 0.95,
+          "expected_paid_control": 1080,
+          "expected_paid_plan": 1140,
+          "incremental_paid_number_months": 60
+        },
+        {
+          "cohort_launch_month": 4,
+          "numbers": 1200,
+          "calendar_month": 5,
+          "age_month": 2,
+          "p_control": 0.885,
+          "p_plan": 0.935,
+          "expected_paid_control": 1062,
+          "expected_paid_plan": 1122,
+          "incremental_paid_number_months": 60
+        },
+        {
+          "cohort_launch_month": 4,
+          "numbers": 1200,
+          "calendar_month": 6,
+          "age_month": 3,
+          "p_control": 0.87,
+          "p_plan": 0.92,
+          "expected_paid_control": 1044,
+          "expected_paid_plan": 1104,
+          "incremental_paid_number_months": 60
+        },
+        {
+          "cohort_launch_month": 4,
+          "numbers": 1200,
+          "calendar_month": 7,
+          "age_month": 4,
+          "p_control": 0.855,
+          "p_plan": 0.905,
+          "expected_paid_control": 1026,
+          "expected_paid_plan": 1086,
+          "incremental_paid_number_months": 60
+        },
+        {
+          "cohort_launch_month": 4,
+          "numbers": 1200,
+          "calendar_month": 8,
+          "age_month": 5,
+          "p_control": 0.84,
+          "p_plan": 0.89,
+          "expected_paid_control": 1008,
+          "expected_paid_plan": 1068,
+          "incremental_paid_number_months": 60
+        },
+        {
+          "cohort_launch_month": 4,
+          "numbers": 1200,
+          "calendar_month": 9,
+          "age_month": 6,
+          "p_control": 0.825,
+          "p_plan": 0.875,
+          "expected_paid_control": 990,
+          "expected_paid_plan": 1050,
+          "incremental_paid_number_months": 60
+        },
+        {
+          "cohort_launch_month": 4,
+          "numbers": 1200,
+          "calendar_month": 10,
+          "age_month": 7,
+          "p_control": 0.81,
+          "p_plan": 0.86,
+          "expected_paid_control": 972,
+          "expected_paid_plan": 1032,
+          "incremental_paid_number_months": 60
+        },
+        {
+          "cohort_launch_month": 4,
+          "numbers": 1200,
+          "calendar_month": 11,
+          "age_month": 8,
+          "p_control": 0.795,
+          "p_plan": 0.845,
+          "expected_paid_control": 954,
+          "expected_paid_plan": 1014,
+          "incremental_paid_number_months": 60
+        },
+        {
+          "cohort_launch_month": 4,
+          "numbers": 1200,
+          "calendar_month": 12,
+          "age_month": 9,
+          "p_control": 0.78,
+          "p_plan": 0.83,
+          "expected_paid_control": 936,
+          "expected_paid_plan": 996,
+          "incremental_paid_number_months": 60
+        },
+        {
+          "cohort_launch_month": 7,
+          "numbers": 1800,
+          "calendar_month": 7,
+          "age_month": 1,
+          "p_control": 0.9,
+          "p_plan": 0.95,
+          "expected_paid_control": 1620,
+          "expected_paid_plan": 1710,
+          "incremental_paid_number_months": 90
+        },
+        {
+          "cohort_launch_month": 7,
+          "numbers": 1800,
+          "calendar_month": 8,
+          "age_month": 2,
+          "p_control": 0.885,
+          "p_plan": 0.935,
+          "expected_paid_control": 1593,
+          "expected_paid_plan": 1683,
+          "incremental_paid_number_months": 90
+        },
+        {
+          "cohort_launch_month": 7,
+          "numbers": 1800,
+          "calendar_month": 9,
+          "age_month": 3,
+          "p_control": 0.87,
+          "p_plan": 0.92,
+          "expected_paid_control": 1566,
+          "expected_paid_plan": 1656,
+          "incremental_paid_number_months": 90
+        },
+        {
+          "cohort_launch_month": 7,
+          "numbers": 1800,
+          "calendar_month": 10,
+          "age_month": 4,
+          "p_control": 0.855,
+          "p_plan": 0.905,
+          "expected_paid_control": 1539,
+          "expected_paid_plan": 1629,
+          "incremental_paid_number_months": 90
+        },
+        {
+          "cohort_launch_month": 7,
+          "numbers": 1800,
+          "calendar_month": 11,
+          "age_month": 5,
+          "p_control": 0.84,
+          "p_plan": 0.89,
+          "expected_paid_control": 1512,
+          "expected_paid_plan": 1602,
+          "incremental_paid_number_months": 90
+        },
+        {
+          "cohort_launch_month": 7,
+          "numbers": 1800,
+          "calendar_month": 12,
+          "age_month": 6,
+          "p_control": 0.825,
+          "p_plan": 0.875,
+          "expected_paid_control": 1485,
+          "expected_paid_plan": 1575,
+          "incremental_paid_number_months": 90
+        },
+        {
+          "cohort_launch_month": 10,
+          "numbers": 2400,
+          "calendar_month": 10,
+          "age_month": 1,
+          "p_control": 0.9,
+          "p_plan": 0.95,
+          "expected_paid_control": 2160,
+          "expected_paid_plan": 2280,
+          "incremental_paid_number_months": 120
+        },
+        {
+          "cohort_launch_month": 10,
+          "numbers": 2400,
+          "calendar_month": 11,
+          "age_month": 2,
+          "p_control": 0.885,
+          "p_plan": 0.935,
+          "expected_paid_control": 2124,
+          "expected_paid_plan": 2244,
+          "incremental_paid_number_months": 120
+        },
+        {
+          "cohort_launch_month": 10,
+          "numbers": 2400,
+          "calendar_month": 12,
+          "age_month": 3,
+          "p_control": 0.87,
+          "p_plan": 0.92,
+          "expected_paid_control": 2088,
+          "expected_paid_plan": 2208,
+          "incremental_paid_number_months": 120
+        }
+      ],
+      "annual": {
+        "kpis": {
+          "gross_profit_rub": 279120000,
+          "active_families_last_month": 6062,
+          "family_connected": 9770,
+          "owners_connected": 1000,
+          "activation_q4_pct": 50
+        },
+        "gaps_to_target": {
+          "gross_profit_rub": 5880000,
+          "active_families_last_month": 1938,
+          "family_connected": 2230,
+          "owners_connected": 1000,
+          "activation_q4_pct": 10
+        },
+        "incremental_connections": 1470,
+        "saved_family_groups": 300,
+        "extra_end_connected_families": 1770,
+        "active_extra_families_last_month": 1062,
+        "extra_paid_number_months": 1440,
+        "new_direct_cost_rub": 600000,
+        "contribution_rub": 720000,
+        "net_gp_uplift_rub": 120000,
+        "family_coverage_pct": 9.77,
+        "owner_coverage_pct": 2.5,
+        "max_repayable_investment_by_year_end_rub": 120000,
+        "operating_loss_to_cover_before_any_investment_rub": 0,
+        "investment_cap_rub": 400000,
+        "year_end_unrecovered_investment_rub": 280000,
+        "peak_funding_need_rub": 460000,
+        "target_required_paid_number_months_at_scenario_cost": 13200,
+        "cost_neutral_ceiling_rub": 720000
+      }
+    },
+    "adverse": {
+      "quarterly": [
+        {
+          "quarter": 1,
+          "channels": [
+            {
+              "channel": "app",
+              "unique_exposed_households": 0,
+              "created_plan": 0,
+              "invitation_accepted_connected_plan": 0,
+              "created_control": 0,
+              "connected_control": 0,
+              "incremental_connected": 0
+            },
+            {
+              "channel": "support",
+              "unique_exposed_households": 0,
+              "created_plan": 0,
+              "invitation_accepted_connected_plan": 0,
+              "created_control": 0,
+              "connected_control": 0,
+              "incremental_connected": 0
+            }
+          ],
+          "opening_connected_families": 6500,
+          "ordinary_new_connections": 500,
+          "incremental_connections": 0,
+          "total_new_connections": 500,
+          "ordinary_exits": 300,
+          "saved_groups": 0,
+          "actual_exits": 300,
+          "end_connected_families": 6700,
+          "created_groups": 1000,
+          "accepted_connected_new_groups": 500,
+          "activated_14d": 420,
+          "activation_pct": 42,
+          "cohort_maturity_rule": "Every created group including unanswered invitations; read after full 14 days for final creation in quarter",
+          "extra_paid_number_months": 0,
+          "contribution_rub": 0,
+          "new_direct_cost_rub": 0,
+          "incremental_net_gp_rub": 0,
+          "cumulative_net_gp_rub": 0,
+          "investment_rub": 100000,
+          "cumulative_investment_rub": 100000,
+          "unrecovered_investment_rub": 100000
+        },
+        {
+          "quarter": 2,
+          "channels": [
+            {
+              "channel": "app",
+              "unique_exposed_households": 1000,
+              "created_plan": 150,
+              "invitation_accepted_connected_plan": 90,
+              "created_control": 100,
+              "connected_control": 60,
+              "incremental_connected": 30
+            },
+            {
+              "channel": "support",
+              "unique_exposed_households": 250,
+              "created_plan": 75,
+              "invitation_accepted_connected_plan": 52.5,
+              "created_control": 50,
+              "connected_control": 37.5,
+              "incremental_connected": 15
+            }
+          ],
+          "opening_connected_families": 6700,
+          "ordinary_new_connections": 700,
+          "incremental_connections": 45,
+          "total_new_connections": 745,
+          "ordinary_exits": 350,
+          "saved_groups": 0,
+          "actual_exits": 350,
+          "end_connected_families": 7095,
+          "created_groups": 1475,
+          "accepted_connected_new_groups": 745,
+          "activated_14d": 649,
+          "activation_pct": 44,
+          "cohort_maturity_rule": "Every created group including unanswered invitations; read after full 14 days for final creation in quarter",
+          "extra_paid_number_months": 18,
+          "contribution_rub": 9000,
+          "new_direct_cost_rub": 250000,
+          "incremental_net_gp_rub": -241000,
+          "cumulative_net_gp_rub": -241000,
+          "investment_rub": 300000,
+          "cumulative_investment_rub": 400000,
+          "unrecovered_investment_rub": 641000
+        },
+        {
+          "quarter": 3,
+          "channels": [
+            {
+              "channel": "app",
+              "unique_exposed_households": 2000,
+              "created_plan": 300,
+              "invitation_accepted_connected_plan": 180,
+              "created_control": 200,
+              "connected_control": 120,
+              "incremental_connected": 60
+            },
+            {
+              "channel": "support",
+              "unique_exposed_households": 500,
+              "created_plan": 150,
+              "invitation_accepted_connected_plan": 105,
+              "created_control": 100,
+              "connected_control": 75,
+              "incremental_connected": 30
+            }
+          ],
+          "opening_connected_families": 7095,
+          "ordinary_new_connections": 800,
+          "incremental_connections": 90,
+          "total_new_connections": 890,
+          "ordinary_exits": 400,
+          "saved_groups": 25,
+          "actual_exits": 375,
+          "end_connected_families": 7610,
+          "created_groups": 1750,
+          "accepted_connected_new_groups": 890,
+          "activated_14d": 770,
+          "activation_pct": 44,
+          "cohort_maturity_rule": "Every created group including unanswered invitations; read after full 14 days for final creation in quarter",
+          "extra_paid_number_months": 45,
+          "contribution_rub": 22500,
+          "new_direct_cost_rub": 300000,
+          "incremental_net_gp_rub": -277500,
+          "cumulative_net_gp_rub": -518500,
+          "investment_rub": 0,
+          "cumulative_investment_rub": 400000,
+          "unrecovered_investment_rub": 918500
+        },
+        {
+          "quarter": 4,
+          "channels": [
+            {
+              "channel": "app",
+              "unique_exposed_households": 3000,
+              "created_plan": 450,
+              "invitation_accepted_connected_plan": 270,
+              "created_control": 300,
+              "connected_control": 180,
+              "incremental_connected": 90
+            },
+            {
+              "channel": "support",
+              "unique_exposed_households": 750,
+              "created_plan": 225,
+              "invitation_accepted_connected_plan": 157.5,
+              "created_control": 150,
+              "connected_control": 112.5,
+              "incremental_connected": 45
+            }
+          ],
+          "opening_connected_families": 7610,
+          "ordinary_new_connections": 1000,
+          "incremental_connections": 135,
+          "total_new_connections": 1135,
+          "ordinary_exits": 450,
+          "saved_groups": 50,
+          "actual_exits": 400,
+          "end_connected_families": 8345,
+          "created_groups": 2225,
+          "accepted_connected_new_groups": 1135,
+          "activated_14d": 979,
+          "activation_pct": 44,
+          "cohort_maturity_rule": "Every created group including unanswered invitations; read after full 14 days for final creation in quarter",
+          "extra_paid_number_months": 81,
+          "contribution_rub": 40500,
+          "new_direct_cost_rub": 350000,
+          "incremental_net_gp_rub": -309500,
+          "cumulative_net_gp_rub": -828000,
+          "investment_rub": 0,
+          "cumulative_investment_rub": 400000,
+          "unrecovered_investment_rub": 1228000
+        }
+      ],
+      "paid_cohort_months": [
+        {
+          "cohort_launch_month": 4,
+          "numbers": 600,
+          "calendar_month": 4,
+          "age_month": 1,
+          "p_control": 0.9,
+          "p_plan": 0.91,
+          "expected_paid_control": 540,
+          "expected_paid_plan": 546,
+          "incremental_paid_number_months": 6
+        },
+        {
+          "cohort_launch_month": 4,
+          "numbers": 600,
+          "calendar_month": 5,
+          "age_month": 2,
+          "p_control": 0.885,
+          "p_plan": 0.895,
+          "expected_paid_control": 531,
+          "expected_paid_plan": 537,
+          "incremental_paid_number_months": 6
+        },
+        {
+          "cohort_launch_month": 4,
+          "numbers": 600,
+          "calendar_month": 6,
+          "age_month": 3,
+          "p_control": 0.87,
+          "p_plan": 0.88,
+          "expected_paid_control": 522,
+          "expected_paid_plan": 528,
+          "incremental_paid_number_months": 6
+        },
+        {
+          "cohort_launch_month": 4,
+          "numbers": 600,
+          "calendar_month": 7,
+          "age_month": 4,
+          "p_control": 0.855,
+          "p_plan": 0.865,
+          "expected_paid_control": 513,
+          "expected_paid_plan": 519,
+          "incremental_paid_number_months": 6
+        },
+        {
+          "cohort_launch_month": 4,
+          "numbers": 600,
+          "calendar_month": 8,
+          "age_month": 5,
+          "p_control": 0.84,
+          "p_plan": 0.85,
+          "expected_paid_control": 504,
+          "expected_paid_plan": 510,
+          "incremental_paid_number_months": 6
+        },
+        {
+          "cohort_launch_month": 4,
+          "numbers": 600,
+          "calendar_month": 9,
+          "age_month": 6,
+          "p_control": 0.825,
+          "p_plan": 0.835,
+          "expected_paid_control": 495,
+          "expected_paid_plan": 501,
+          "incremental_paid_number_months": 6
+        },
+        {
+          "cohort_launch_month": 4,
+          "numbers": 600,
+          "calendar_month": 10,
+          "age_month": 7,
+          "p_control": 0.81,
+          "p_plan": 0.82,
+          "expected_paid_control": 486,
+          "expected_paid_plan": 492,
+          "incremental_paid_number_months": 6
+        },
+        {
+          "cohort_launch_month": 4,
+          "numbers": 600,
+          "calendar_month": 11,
+          "age_month": 8,
+          "p_control": 0.795,
+          "p_plan": 0.805,
+          "expected_paid_control": 477,
+          "expected_paid_plan": 483,
+          "incremental_paid_number_months": 6
+        },
+        {
+          "cohort_launch_month": 4,
+          "numbers": 600,
+          "calendar_month": 12,
+          "age_month": 9,
+          "p_control": 0.78,
+          "p_plan": 0.79,
+          "expected_paid_control": 468,
+          "expected_paid_plan": 474,
+          "incremental_paid_number_months": 6
+        },
+        {
+          "cohort_launch_month": 7,
+          "numbers": 900,
+          "calendar_month": 7,
+          "age_month": 1,
+          "p_control": 0.9,
+          "p_plan": 0.91,
+          "expected_paid_control": 810,
+          "expected_paid_plan": 819,
+          "incremental_paid_number_months": 9
+        },
+        {
+          "cohort_launch_month": 7,
+          "numbers": 900,
+          "calendar_month": 8,
+          "age_month": 2,
+          "p_control": 0.885,
+          "p_plan": 0.895,
+          "expected_paid_control": 796.5,
+          "expected_paid_plan": 805.5,
+          "incremental_paid_number_months": 9
+        },
+        {
+          "cohort_launch_month": 7,
+          "numbers": 900,
+          "calendar_month": 9,
+          "age_month": 3,
+          "p_control": 0.87,
+          "p_plan": 0.88,
+          "expected_paid_control": 783,
+          "expected_paid_plan": 792,
+          "incremental_paid_number_months": 9
+        },
+        {
+          "cohort_launch_month": 7,
+          "numbers": 900,
+          "calendar_month": 10,
+          "age_month": 4,
+          "p_control": 0.855,
+          "p_plan": 0.865,
+          "expected_paid_control": 769.5,
+          "expected_paid_plan": 778.5,
+          "incremental_paid_number_months": 9
+        },
+        {
+          "cohort_launch_month": 7,
+          "numbers": 900,
+          "calendar_month": 11,
+          "age_month": 5,
+          "p_control": 0.84,
+          "p_plan": 0.85,
+          "expected_paid_control": 756,
+          "expected_paid_plan": 765,
+          "incremental_paid_number_months": 9
+        },
+        {
+          "cohort_launch_month": 7,
+          "numbers": 900,
+          "calendar_month": 12,
+          "age_month": 6,
+          "p_control": 0.825,
+          "p_plan": 0.835,
+          "expected_paid_control": 742.5,
+          "expected_paid_plan": 751.5,
+          "incremental_paid_number_months": 9
+        },
+        {
+          "cohort_launch_month": 10,
+          "numbers": 1200,
+          "calendar_month": 10,
+          "age_month": 1,
+          "p_control": 0.9,
+          "p_plan": 0.91,
+          "expected_paid_control": 1080,
+          "expected_paid_plan": 1092,
+          "incremental_paid_number_months": 12
+        },
+        {
+          "cohort_launch_month": 10,
+          "numbers": 1200,
+          "calendar_month": 11,
+          "age_month": 2,
+          "p_control": 0.885,
+          "p_plan": 0.895,
+          "expected_paid_control": 1062,
+          "expected_paid_plan": 1074,
+          "incremental_paid_number_months": 12
+        },
+        {
+          "cohort_launch_month": 10,
+          "numbers": 1200,
+          "calendar_month": 12,
+          "age_month": 3,
+          "p_control": 0.87,
+          "p_plan": 0.88,
+          "expected_paid_control": 1044,
+          "expected_paid_plan": 1056,
+          "incremental_paid_number_months": 12
+        }
+      ],
+      "annual": {
+        "kpis": {
+          "gross_profit_rub": 278172000,
+          "active_families_last_month": 5138,
+          "family_connected": 8345,
+          "owners_connected": 1000,
+          "activation_q4_pct": 44
+        },
+        "gaps_to_target": {
+          "gross_profit_rub": 6828000,
+          "active_families_last_month": 2862,
+          "family_connected": 3655,
+          "owners_connected": 1000,
+          "activation_q4_pct": 16
+        },
+        "incremental_connections": 270,
+        "saved_family_groups": 75,
+        "extra_end_connected_families": 345,
+        "active_extra_families_last_month": 138,
+        "extra_paid_number_months": 144,
+        "new_direct_cost_rub": 900000,
+        "contribution_rub": 72000,
+        "net_gp_uplift_rub": -828000,
+        "family_coverage_pct": 8.345,
+        "owner_coverage_pct": 2.5,
+        "max_repayable_investment_by_year_end_rub": 0,
+        "operating_loss_to_cover_before_any_investment_rub": 828000,
+        "investment_cap_rub": 400000,
+        "year_end_unrecovered_investment_rub": 1228000,
+        "peak_funding_need_rub": 1228000,
+        "target_required_paid_number_months_at_scenario_cost": 13800,
+        "cost_neutral_ceiling_rub": 72000
+      }
+    }
+  }
+}
