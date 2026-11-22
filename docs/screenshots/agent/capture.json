@@ -1,0 +1,119 @@
+{
+  "case": "examples/paired-case-review/project.json",
+  "case_sha256": "c9896ca32264437dff3f378b8059c0b7ea41efe08ed6bed3e399af8c6149abe4",
+  "screens": [
+    {
+      "file": "01-overview.png",
+      "viewport": 1280,
+      "clip": {
+        "x": 0,
+        "y": 447.0625,
+        "width": 935,
+        "height": 580,
+        "scale": 1
+      }
+    },
+    {
+      "file": "02-evidence.png",
+      "viewport": 1280,
+      "clip": {
+        "x": 41,
+        "y": 336.25,
+        "width": 838,
+        "height": 164.75,
+        "scale": 1
+      }
+    },
+    {
+      "file": "03-status.png",
+      "viewport": 1280,
+      "clip": {
+        "x": 24,
+        "y": 207,
+        "width": 887,
+        "height": 768,
+        "scale": 1
+      }
+    },
+    {
+      "file": "04-scenarios.png",
+      "viewport": 1280,
+      "clip": {
+        "x": 41,
+        "y": 283.359375,
+        "width": 838,
+        "height": 650.328125,
+        "scale": 1
+      }
+    },
+    {
+      "file": "05-history.png",
+      "viewport": 1280,
+      "clip": {
+        "x": 24,
+        "y": 319.75,
+        "width": 887,
+        "height": 648.984375,
+        "scale": 1
+      }
+    },
+    {
+      "file": "01-overview-mobile.png",
+      "viewport": 390,
+      "clip": {
+        "x": 0,
+        "y": 1845.671875,
+        "width": 375,
+        "height": 460,
+        "scale": 1
+      }
+    },
+    {
+      "file": "02-evidence-mobile.png",
+      "viewport": 390,
+      "clip": {
+        "x": 31,
+        "y": 2622.953125,
+        "width": 298,
+        "height": 241.5,
+        "scale": 1
+      }
+    },
+    {
+      "file": "03-status-mobile.png",
+      "viewport": 390,
+      "clip": {
+        "x": 14,
+        "y": 2320.515625,
+        "width": 347,
+        "height": 1248,
+        "scale": 1
+      }
+    },
+    {
+      "file": "04-scenarios-mobile.png",
+      "viewport": 390,
+      "clip": {
+        "x": 31,
+        "y": 3087.09375,
+        "width": 298,
+        "height": 1023.265625,
+        "scale": 1
+      }
+    },
+    {
+      "file": "05-history-mobile.png",
+      "viewport": 390,
+      "clip": {
+        "x": 14,
+        "y": 2029.21875,
+        "width": 347,
+        "height": 1197.15625,
+        "scale": 1
+      }
+    }
+  ],
+  "case_unchanged": true,
+  "note": "Actual UI excerpts, fictional saved snapshot; no model reasoning trace.",
+  "case_text_sha256": "83f8771ff5381caffc542ef706d14a5047fcdaebf60cf6d3201089b30de1c0db"
+}
