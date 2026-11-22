@@ -77,6 +77,7 @@ def validate_fields(project):
             error('needs key assumptions')
             assumptions = []
         aids = set()
+        assumption_options = {}
         for item in assumptions:
             if not isinstance(item, dict):
                 error('assumption must be an object')
@@ -93,6 +94,8 @@ def validate_fields(project):
                 error('assumption basis must be hypothesis/recorded_evidence/unknown')
             refs(item, 'evidence_ids', old_evidence, item.get('basis') == 'recorded_evidence')
             refs(item, 'option_ids', old_options, True)
+            if nonempty(aid) and strings(item.get('option_ids')):
+                assumption_options[aid] = set(item['option_ids'])
         scenarios = review.get('scenarios')
         if not isinstance(scenarios, list) or len(scenarios) < 2:
             error('needs at least two substantive adverse scenarios')
@@ -152,6 +155,24 @@ def validate_fields(project):
                 if not nonempty(impact.get('reason')):
                     error('each impact needs a reason')
                 refs(impact, 'evidence_ids', old_evidence)
+                if 'provisional_assessment' in impact:
+                    estimate = impact['provisional_assessment']
+                    if not isinstance(estimate, dict):
+                        error('provisional_assessment must be an explicit conditional estimate')
+                    else:
+                        if set(estimate) != {'verdict', 'assumption_ids', 'rationale', 'check_next'}:
+                            error('provisional assessment needs verdict, assumption_ids, rationale and check_next only')
+                        if estimate.get('verdict') not in ('likely_feasible', 'likely_infeasible', 'undetermined'):
+                            error('provisional verdict must be likely_feasible/likely_infeasible/undetermined')
+                        if impact.get('feasibility') != 'uncertain':
+                            error('provisional assessment supplements uncertain feasibility; it cannot override a recorded outcome')
+                        for key in ('rationale', 'check_next'):
+                            if not nonempty(estimate.get(key)): error('provisional assessment needs ' + key)
+                        refs(estimate, 'assumption_ids', aids, True)
+                        if strings(estimate.get('assumption_ids')) and strings(scenario.get('assumption_ids')):
+                            for aid in estimate['assumption_ids']:
+                                if aid not in scenario['assumption_ids'] or oid not in assumption_options.get(aid, set()):
+                                    error('provisional assumptions must belong to this scenario and cover this option')
             if seen != old_options:
                 error('compare every baseline option exactly once')
             decision = scenario.get('recommendation')
@@ -277,6 +298,9 @@ def inspect(project, path, root):
             blockers.append('Conditional preference needs more than hypotheses: ' + scenario['scenario_id'])
         results.append({'scenario_id': scenario['scenario_id'], 'premise_status': scenario['premise_status'],
                         'impact': impact, 'conditional_recommendation': decision})
+        estimates = [{'option_id':row['option_id'], **copy.deepcopy(row['provisional_assessment'])}
+                     for row in scenario['option_impacts'] if row.get('provisional_assessment')]
+        if estimates: results[-1]['provisional_assessments'] = estimates
     return {'status': 'blocked' if blockers else 'review_record_complete', 'review_id': review['review_id'],
             'comparison': comparison,
             'blockers': sorted(set(blockers)), 'scenarios': results,
@@ -327,6 +351,14 @@ def markdown(project, status):
         for item in s['option_impacts']:
             lines += [f"- {item['option_id']}: {item['feasibility']}; {item['preference']}. {item['reason']}",
                       '  Основания: ' + (', '.join(item['evidence_ids']) or 'нет; условное рассуждение')]
+            if item.get('provisional_assessment'):
+                estimate = item['provisional_assessment']
+                label = {'likely_feasible':'предположительно осуществимо',
+                         'likely_infeasible':'предположительно неосуществимо',
+                         'undetermined':'для предположения пока недостаточно оснований'}[estimate['verdict']]
+                lines += ['  Предварительная оценка: ' + label + '; ресурс не подтверждён.',
+                          '  Допущения: ' + ', '.join(estimate['assumption_ids']) + '. ' + estimate['rationale'],
+                          '  Проверить: ' + estimate['check_next']]
         d = s['recommendation']
         lines += ['Условный итог: ' + d['outcome'] + '; вариант: ' + str(d['option_id']),
                   d['rationale'], 'Основания итога: ' + (', '.join(d['evidence_ids']) or 'нет'),

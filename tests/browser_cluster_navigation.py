@@ -75,6 +75,26 @@ try:
  import sys
  sys.path.insert(0,str(root/'scripts'))
  from visualize import render
+ from test_provisional_feasibility import ProvisionalFeasibilityTests
+ from stress_test import record
+ from project_tool import load,audit
+ sample=ProvisionalFeasibilityTests();sample.setUp()
+ try:
+  review=sample.provisional();record(sample.project,sample.path,root,review);state=load(sample.path)
+  (out/'provisional.html').write_text(render(state,audit(state,sample.path,ready=True,quality=True),sample.path.read_bytes(),sample.path),encoding='utf-8')
+  call('Page.navigate',{'url':(out/'provisional.html').as_uri()});time.sleep(.5)
+  ev("scenarioPanel.hidden=false;scenarioVersion.value='WITH-ESTIMATE';chooseScenarioVersion('WITH-ESTIMATE');selectScenario('SC1')")
+  check('provisional verdict shown',"scenarioContent.textContent.includes('Предположительно осуществимо')")
+  check('conditional resource not confirmed',"scenarioContent.textContent.includes('Ресурс не подтверждён')&&scenarioContent.textContent.includes('Confirm analyst allocation')")
+  check('conditions visible without opening raw record',"scenarioContent.textContent.includes('For desk design only')")
+  check('estimate does not become actual feasibility',"currentScenario.option_impacts[0].feasibility==='uncertain'&&currentScenario.option_impacts[0].preference==='undetermined'")
+  check('estimate retains unknown highlighting',"cards.get(currentScenario.option_impacts[0].node_id).g.classList.contains('scenario-uncertain')")
+  check('estimate no mobile overflow',"document.documentElement.scrollWidth<=800")
+  import base64
+  ev("document.getElementById('scenario-panel').scrollIntoView()")
+  ev("scenarioContent.querySelector('.scenario-row').scrollIntoView({block:'center'})")
+  (out/'provisional.png').write_bytes(base64.b64decode(call('Page.captureScreenshot',{'format':'png'})['data']))
+ finally:sample.doCleanups()
  project=json.loads((root/'examples/review-contract-case/project.json').read_text(encoding='utf-8'))
  for key in ('sources','evidence','options'):project[key]=[]
  (out/'minimal.html').write_text(render(project,{'ready':False,'health':{},'errors':[]},b'minimal'),encoding='utf-8')
