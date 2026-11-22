@@ -1,9 +1,14 @@
 {
-  "case": "examples/paired-case-review/project.json",
-  "case_sha256": "c9896ca32264437dff3f378b8059c0b7ea41efe08ed6bed3e399af8c6149abe4",
+  "case_id": "pdf-brief-mobile-2026-11-22-abc8fb4",
+  "graph_sha256": "a9afc0a8eafdfb731374cdd7180cdee975366710a16019a232c4c2153ea7d5c1",
+  "case_sha256": "55338add60022910b9e1b1fc7cefae5d6ee74b93a4b817f996067ad940c24260",
+  "recommended_option": "OR",
+  "evidence_id": "F_RIGHTS",
+  "source": "Прогон 3; Пример брифа.pdf",
+  "agent_commit": "abc8fb468b37d5b3e069de03ce9be12fb118db65",
   "all_groups_expanded": true,
-  "nodes": 104,
-  "edges": 213,
+  "nodes": 143,
+  "edges": 267,
   "no_nodes_clipped": true,
   "screens": [
     {
@@ -11,9 +16,9 @@
       "viewport": 1800,
       "clip": {
         "x": 0,
-        "y": 310.5,
+        "y": 271.5,
         "width": 1470,
-        "height": 1029.5,
+        "height": 1068.5,
         "scale": 1
       }
     }
