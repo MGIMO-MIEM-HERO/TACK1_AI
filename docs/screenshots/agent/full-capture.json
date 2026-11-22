@@ -1,0 +1,21 @@
+{
+  "case": "examples/paired-case-review/project.json",
+  "case_sha256": "c9896ca32264437dff3f378b8059c0b7ea41efe08ed6bed3e399af8c6149abe4",
+  "all_groups_expanded": true,
+  "nodes": 104,
+  "edges": 213,
+  "no_nodes_clipped": true,
+  "screens": [
+    {
+      "file": "00-full-graph.png",
+      "viewport": 1800,
+      "clip": {
+        "x": 0,
+        "y": 310.5,
+        "width": 1470,
+        "height": 1029.5,
+        "scale": 1
+      }
+    }
+  ]
+}

@@ -4,6 +4,7 @@
 Readers need only the committed PNGs. No DOM text or styles are rewritten.
 Source: the public fictional paired-case-review. Uses an isolated Edge profile.
 """
+import argparse
 import base64
 import hashlib
 import json
@@ -22,6 +23,9 @@ OUT = ROOT / 'docs/screenshots/agent'
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--full-only', action='store_true', help='capture the entire expanded graph only')
+    args = parser.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
     before = hashlib.sha256(CASE.read_bytes()).hexdigest()
     subprocess.run([__import__('sys').executable, '-B', str(ROOT/'scripts/visualize.py'),
@@ -90,6 +94,24 @@ def main():
             results.append({'file': name, 'viewport': width, 'clip': clip})
 
         call('Emulation.setEmulatedMedia', {'features': [{'name': 'prefers-reduced-motion', 'value': 'reduce'}]})
+        if args.full_only:
+            width = 1800
+            call('Emulation.setDeviceMetricsOverride', {'width': width, 'height': 1400,
+                'deviceScaleFactor': 2, 'mobile': False})
+            call('Page.navigate', {'url': url})
+            ready()
+            time.sleep(.2)
+            js("setAllClusters(true);selected=null;highlight();fit(false)")
+            assert js("collapsedGroups.size===0&&data.nodes.every(n=>cards.has(n.id)&&!isClusterHidden(n.id))")
+            assert js("(()=>{const b=svg.getBoundingClientRect();return [...positions.values()].every(p=>{const x=p.x*zoom+panX,y=p.y*zoom+panY;return x-p.r*zoom>=0&&x+p.r*zoom<=b.width&&y-p.r*zoom>=0&&y+p.r*zoom<=b.height})})()")
+            shot('00-full-graph.png', '#canvas')
+            assert hashlib.sha256(CASE.read_bytes()).hexdigest() == before
+            (OUT/'full-capture.json').write_text(json.dumps({'case': 'examples/paired-case-review/project.json',
+                'case_sha256': before, 'all_groups_expanded': True,
+                'nodes': js('data.nodes.length'), 'edges': js('data.edges.length'),
+                'no_nodes_clipped': True, 'screens': results}, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
+            print('Full graph captured: all groups expanded, no nodes clipped, case unchanged.')
+            return
         for width in (1280, 390):
             mobile = width == 390
             suffix = '-mobile' if mobile else ''
