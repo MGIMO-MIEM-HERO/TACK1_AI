@@ -1,13 +1,171 @@
 {
   "file": "video.mp4",
   "duration_seconds": 387.24,
-  "size_bytes": 12768266,
-  "width": 1600,
-  "height": 900,
-  "codec": "h264",
-  "full_decode": "passed",
-  "screen_recording_segments": 2,
-  "audio": "none; Russian on-screen captions",
-  "sha256": "e56d74542ebeaf80eb70022b9e0b3fcc05ff757259d836fbbec7e9561d63a18e",
-  "source_agent_commit": "ee9d2b278c9f192dfecb2264a06560962f8c8a8e"
+  "size_bytes": 20085474,
+  "sha256": "7d8b1e7ab039170a50cf3e6b2ef7ff52f8e9c752de10d91602474bdfcc75ab03",
+  "video": {
+    "codec": "h264",
+    "width": 1600,
+    "height": 900,
+    "original_stream_unchanged": true
+  },
+  "audio": {
+    "codec": "aac",
+    "sample_rate": 48000,
+    "channels": 1,
+    "language": "ru",
+    "type": "synthetic stock female voice",
+    "model": "Supertonic 3",
+    "voice": "F5",
+    "speaker_id": 4,
+    "speed": 0.96,
+    "denoising_steps": 16,
+    "loudness_lufs": -18.02,
+    "true_peak_dbtp": -2.08,
+    "background_music": false,
+    "engine": "sherpa-onnx 2.0.3"
+  },
+  "verification": {
+    "full_decode": "passed",
+    "twelve_chapters_aligned": true,
+    "speech_cut_off": false,
+    "chromium_audio_video_playback": {
+      "duration": 387.24,
+      "current_time": 2.012226,
+      "playing": true,
+      "audio_signal_rms": 0.24385163685176284,
+      "audio_context": "running",
+      "decoded_video_frames": 54,
+      "error": null
+    }
+  },
+  "model_source": "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/sherpa-onnx-supertonic-3-tts-int8-2026-05-11.tar.bz2",
+  "model_archive_sha256": "82fa96f91c4ef8abaae3a14a3f4153facf88bed821d1f7331cec2700f432c427",
+  "alignment": [
+    {
+      "id": 1,
+      "title": "Запрос и формат работы",
+      "visual_start": 0.8,
+      "visual_end": 25.8,
+      "speech_start": 1.35,
+      "speech_end": 25.02575963718821,
+      "overlap_next_scene": false,
+      "time_stretch": false
+    },
+    {
+      "id": 2,
+      "title": "Новый проект и исходный документ",
+      "visual_start": 25.8,
+      "visual_end": 51.6,
+      "speech_start": 26.35,
+      "speech_end": 49.45521541950114,
+      "overlap_next_scene": false,
+      "time_stretch": false
+    },
+    {
+      "id": 3,
+      "title": "Чтение брифа и рамка задачи",
+      "visual_start": 51.6,
+      "visual_end": 82.4,
+      "speech_start": 52.15,
+      "speech_end": 80.61013605442176,
+      "overlap_next_scene": false,
+      "time_stretch": false
+    },
+    {
+      "id": 4,
+      "title": "Работа агента: основания и гипотеза",
+      "visual_start": 82.4,
+      "visual_end": 113.2,
+      "speech_start": 82.95,
+      "speech_end": 107.9442403628118,
+      "overlap_next_scene": false,
+      "time_stretch": false
+    },
+    {
+      "id": 5,
+      "title": "Шесть вариантов и сильные возражения",
+      "visual_start": 113.2,
+      "visual_end": 154.0,
+      "speech_start": 113.75,
+      "speech_end": 151.90081632653062,
+      "overlap_next_scene": false,
+      "time_stretch": false
+    },
+    {
+      "id": 6,
+      "title": "Продуктовая и коммуникационная стратегия",
+      "visual_start": 154.0,
+      "visual_end": 190.8,
+      "speech_start": 154.55,
+      "speech_end": 188.79340136054424,
+      "overlap_next_scene": false,
+      "time_stretch": false
+    },
+    {
+      "id": 7,
+      "title": "Численный прогноз и проверка арифметики",
+      "visual_start": 190.8,
+      "visual_end": 235.6,
+      "speech_start": 191.35000000000002,
+      "speech_end": 231.28868480725626,
+      "overlap_next_scene": false,
+      "time_stretch": false
+    },
+    {
+      "id": 8,
+      "title": "Экономика, кварталы и риски",
+      "visual_start": 235.6,
+      "visual_end": 272.8,
+      "speech_start": 236.15,
+      "speech_end": 268.65700680272107,
+      "overlap_next_scene": false,
+      "time_stretch": false
+    },
+    {
+      "id": 9,
+      "title": "Карта оснований и сохранение",
+      "visual_start": 272.8,
+      "visual_end": 304.0,
+      "speech_start": 273.35,
+      "speech_end": 300.1997052154195,
+      "overlap_next_scene": false,
+      "time_stretch": false
+    },
+    {
+      "id": 10,
+      "title": "Перерыв: закрываем сессию браузера",
+      "visual_start": 304.0,
+      "visual_end": 315.0,
+      "speech_start": 304.55,
+      "speech_end": 311.6362358276644,
+      "overlap_next_scene": false,
+      "time_stretch": false
+    },
+    {
+      "id": 11,
+      "title": "Продолжение после перерыва",
+      "visual_start": 315.0,
+      "visual_end": 355.8,
+      "speech_start": 315.55,
+      "speech_end": 352.4550113378685,
+      "overlap_next_scene": false,
+      "time_stretch": false
+    },
+    {
+      "id": 12,
+      "title": "Результат и честные границы",
+      "visual_start": 355.8,
+      "visual_end": 387.24,
+      "speech_start": 356.35,
+      "speech_end": 385.40462585034015,
+      "overlap_next_scene": false,
+      "time_stretch": false
+    }
+  ],
+  "standalone_audio": {
+    "file": "narration.mp3",
+    "size_bytes": 7745890,
+    "sha256": "694f769e8e2265b89ecb85bed95f8778c7a7285e4ce7d9e27455c200b904e60b"
+  }
 }

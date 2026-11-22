@@ -1,0 +1,13 @@
+{
+  "file": "video-silent.mp4",
+  "duration_seconds": 387.24,
+  "size_bytes": 12768266,
+  "width": 1600,
+  "height": 900,
+  "codec": "h264",
+  "full_decode": "passed",
+  "screen_recording_segments": 2,
+  "audio": "none; Russian on-screen captions",
+  "sha256": "e56d74542ebeaf80eb70022b9e0b3fcc05ff757259d836fbbec7e9561d63a18e",
+  "source_agent_commit": "ee9d2b278c9f192dfecb2264a06560962f8c8a8e"
+}
