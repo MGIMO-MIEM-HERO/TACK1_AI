@@ -7,6 +7,7 @@ import shutil
 import tempfile
 
 from checkpoint import ROOT, write_state
+from verify_required_procedures import assert_final_blocked
 from project_tool import load, report
 from stress_test import baseline, inspect, record
 
@@ -76,7 +77,8 @@ def verify_demo():
             reversal_condition=revised['reversal_condition'])
         after['strategy_review']['state_hash'] = state_hash(after, path, ROOT)
         write_state(path, after)
-        final = report(after, path, final=True)
+        assert_final_blocked(after, path, 'Feasibility applicability')
+        final = report(after, path)
         assert 'O2' in final and 'R2' in final
         return {'passed': True, 'initial_recommendation': 'O1',
                 'scenario_outcomes': ['switch to O2', 'keep O1', 'insufficient_evidence'],

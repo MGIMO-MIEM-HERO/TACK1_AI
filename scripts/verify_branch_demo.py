@@ -34,7 +34,7 @@ def verify_demo():
             assert project.get('commitments') == original.get('commitments')
 
         check('UNKNOWN')
-        assert audit(project, path, ready=True, quality=True)['ready']
+        assert audit(project, path, ready=True, quality=True)['structural_ready']
         for index, capacity, expected in ((1, 10, 'PROTOTYPE'), (2, 4, 'PAPER')):
             passage = ('Авторское новое условие ' + str(index) + ': DEV доступен на ' + str(capacity) +
                        ' человеко-часов. Оценка W1 — 6, W2 — 2 человеко-часа. Окно и зависимости прежние; бумага отдельно допускается по F_B. '
@@ -86,7 +86,8 @@ def verify_demo():
             record(project, path, ROOT, review); project = load(path)
             project['strategy_review']['state_hash'] = state_hash(project, path, ROOT); write_state(path, project)
             check(expected)
-            assert audit(project, path, ready=True, quality=True)['ready'] == (expected == 'PROTOTYPE')
+            assert audit(project, path, ready=True, quality=True)['structural_ready'] == (expected == 'PROTOTYPE')
+            assert not audit(project, path, ready=True, quality=True)['final_ready']
         assert project['research_selection_reviews'][0] == original['research_selection_reviews'][0]
         assert project['feasibility_reviews'][0] == original['feasibility_reviews'][0]
         assert len(project['research_selection_reviews']) == len(project['feasibility_reviews']) == 3

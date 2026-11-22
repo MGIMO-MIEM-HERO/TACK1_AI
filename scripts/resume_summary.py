@@ -105,8 +105,19 @@ def build(project, path, root, audit, follow_up, ledger):
     decision_ids = touched or [oid for oid in (recommended, selected) if oid]
     decision_ids = list(dict.fromkeys(decision_ids))
     titles = {o['option_id']: compact(o['title'], 50) for o in project['options']}
-    impact = (('Затронуты варианты: ' if touched else 'Текущее решение: ') +
-              ', '.join(oid + ' — ' + titles.get(oid, 'исторический вариант') for oid in decision_ids[:3])) if decision_ids else 'Решение ещё не сформировано; уточнить рамку задачи.'
+    def option_label(oid):
+        return oid + ' — ' + compact(titles.get(oid, 'исторический вариант'), 24)
+    impact = 'Рекомендация агента: ' + (option_label(recommended) if recommended else 'не сформирована') + '. '
+    different = selected and recommended and selected != recommended
+    historical = selected and (selected in audit['health']['affected_options'] or
+                              any(e.startswith('Human choice') for e in audit['errors']))
+    impact += ('Прежний выбор владельца: ' if historical else 'Выбор владельца: ') + (option_label(selected) if selected else 'не записан') + '.'
+    if historical:
+        impact += ' Требуется пересмотр; новый выбор не записан.'
+    elif different:
+        impact += ' Рекомендация не заменяет выбор владельца.'
+    if touched:
+        impact += ' Затронуты варианты: ' + ', '.join(touched[:3]) + '.'
     if changes['needs_assessment']: impact += '; влияние на вывод ещё оценивается.'
     if assessments:
         last = assessments[-1]['assessment']
@@ -144,7 +155,10 @@ def build(project, path, root, audit, follow_up, ledger):
     return {'schema_version': 1, 'version_hash': version,
             'context': context,
             'changes': {'status': status, 'text': compact(text), 'refs': refs},
-            'decision': {'text': compact(impact), 'option_ids': decision_ids, 'refs': ['/recommended_option_id', '/chosen_option_id', '/options', '/checkpoints']},
+            'decision': {'text': compact(impact), 'option_ids': decision_ids,
+                         'recommendation_id': recommended, 'owner_choice_id': selected,
+                         'owner_choice_status': 'historical' if historical else 'different' if different else 'recorded' if selected else 'not_recorded',
+                         'refs': ['/recommended_option_id', '/chosen_option_id', '/options', '/checkpoints']},
             'owner': {'status': owner_status, 'text': compact(owner), 'questions': questions,
                       'refs': [q['object_ref'] for q in questions]},
             'next_step': {'text': compact(step), 'refs': step_refs},

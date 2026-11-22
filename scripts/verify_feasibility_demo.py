@@ -51,13 +51,18 @@ def verify_demo():
             assert project['chosen_option_id'] is None and project['recommended_option_id'] == original['recommended_option_id']
             assert project.get('commitments') == original.get('commitments') and project['next_action'] == original['next_action']
             result = audit(project, path, ready=True, quality=True)
-            assert result['ready'] == (scenario != 'shortfall'), result
+            assert result['structural_ready'] == (scenario != 'shortfall'), result
+            assert not result['final_ready']
+            assert any('Required decision stress' in b for b in result['procedure_requirements']['blockers'])
             if scenario == 'shortfall':
                 try: report(project, path, final=True)
                 except ValueError: pass
                 else: raise AssertionError('Final export must not silently approve an infeasible selected plan')
             else:
-                assert 'Отдельная проверка осуществимости' in report(project, path, final=True)
+                assert 'Отдельная проверка осуществимости' in report(project, path)
+                try: report(project, path, final=True)
+                except ValueError as error: assert 'Required decision stress' in str(error)
+                else: raise AssertionError('Missing scenarios must block final export')
             outcomes[scenario] = {'prototype': rows['O1']['outcome'], 'paper': rows['O2']['outcome'],
                                   'ready': result['ready'], 'choice_written': False,
                                   'repeat_open_writes': False, 'review_versions': len(project['feasibility_reviews'])}

@@ -90,7 +90,11 @@ def status_panel(project, audit, data):
         'blockers': {'title':'Блокеры итоговой записки', 'caption':'Уникальные сообщения проверок; одинаковый текст учитывается один раз.', 'items':list(blockers.values())},
         'owner': {'title':'Вопросы владельцу', 'caption':'Только вопросы из текущей штатной сводки. Просмотр не означает ответ.', 'items':owner_rows}}
     for category in categories.values():category['count'] = len(category['items'])
-    return {'categories':categories, 'ready':audit.get('ready'), 'review_draft_only':audit.get('review_draft_only',False),
+    for message in audit.get('procedure_requirements', {}).get('blockers', []):
+        collect([message], 'Обязательные процедуры', ['review'])
+    categories['blockers']['items'] = list(blockers.values())
+    categories['blockers']['count'] = len(blockers)
+    return {'categories':categories, 'ready':audit.get('final_ready', audit.get('ready')), 'review_draft_only':audit.get('review_draft_only',False),
             'owner_status':owner['status'], 'owner_text':owner['text'],
             'next_step':summary['next_step']['text'] if summary else 'Проверенный следующий шаг не построен.',
             'as_of':follow.get('display_time') or follow.get('as_of'),

@@ -28,6 +28,8 @@ class QualityContractTests(unittest.TestCase):
             {'source_id':'S', 'locator':'line 1', 'relation':'supports', 'passage':'Original evidence',
              'reason':'The claim describes this test document, not demand or a real effect'}])
         p['recommended_option_id'] = 'O1'
+        p['options'][0]['feasibility_requirement'] = {'status':'not_applicable', 'action':'research',
+            'rationale':'Only compare the supplied document before a commitment; no development or launch is recommended.'}
         p['recommendation_rationale'] = 'Investigate before making a real commitment'
         for i, kind in ((0,'status_quo'), (2,'stop')):
             p['options'].append({'option_id':f'O{i}', 'kind':kind, 'title':kind, 'benefits':['Save resources'],
@@ -60,11 +62,14 @@ class QualityContractTests(unittest.TestCase):
         p = self.complete_record()
         self.assertEqual(validate(p), [])
         result = audit(p, self.path, ready=True, quality=True)
-        self.assertTrue(result['ready'], result)
+        self.assertTrue(result['structural_ready'], result)
+        self.assertFalse(result['ready'])
+        self.assertTrue(result['procedure_requirements']['blockers'])
         self.assertFalse(result['content_review']['independent_truth_check'])
         self.assertEqual(result['content_review']['experiment_status'], 'planned')
         self.assertIn('ЧЕРНОВИК', report(p, self.path))
-        self.assertIn('Записка для решения', report(p, self.path, final=True))
+        with self.assertRaisesRegex(ValueError, 'Required decision stress'):
+            report(p, self.path, final=True)
 
     def test_missing_task_required_table_blocks_but_irrelevant_table_does_not(self):
         p = self.complete_record()
@@ -143,7 +148,9 @@ class QualityContractTests(unittest.TestCase):
             'source_ids':[],'method':'Old draft','status':'withdrawn','limitations':'No longer a basis'})
         self.refresh()
         result = audit(p, self.path, ready=True, quality=True)
-        self.assertTrue(result['ready'],result)
+        self.assertTrue(result['structural_ready'],result)
+        self.assertEqual(result['content_review']['blockers'], [])
+        self.assertFalse(result['ready'])
         self.assertTrue(result['advisories'])
 
     def test_circular_justification_is_rejected(self):

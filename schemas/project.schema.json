@@ -871,6 +871,15 @@
           },
           "additionalProperties": false
         },
+        "feasibility_requirement": {
+          "type": "object", "required": ["status", "action", "rationale"],
+          "properties": {
+            "status": {"enum": ["required", "not_applicable"]},
+            "action": {"enum": ["development", "launch", "research", "maintenance", "freeze", "other"]},
+            "rationale": {"type": "string", "minLength": 1}
+          },
+          "additionalProperties": false
+        },
         "option_id": {
           "type": "string"
         },

@@ -155,7 +155,9 @@ class ResearchTests(unittest.TestCase):
         self.selection();self.project['strategy_review']['state_hash']=state_hash(self.project,self.path,ROOT)
         write_state(self.path,self.project)
         self.assertEqual(restore(self.path)['research_selection']['recommendation']['question_id'],'Q1')
-        self.assertIn('Когда остановиться',report(self.project,self.path,final=True))
+        self.assertIn('Когда остановиться',report(self.project,self.path))
+        with self.assertRaisesRegex(ValueError, 'Required decision stress'):
+            report(self.project,self.path,final=True)
         self.project['constraints']=['Changed'];write_state(self.path,self.project)
         self.assertIn('пересмотр',restore(self.path)['decision_question'])
         with self.assertRaises(ValueError):report(self.project,self.path,final=True)
