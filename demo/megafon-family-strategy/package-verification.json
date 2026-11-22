@@ -7,7 +7,9 @@
     "pdf_pages_visually_reviewed": 8,
     "broken_local_markdown_links": [],
     "personal_path_or_token_pattern_findings": [],
-    "graph_json_parsed": true
+    "graph_json_parsed": true,
+    "reproduced_from_git_index": true,
+    "git_index_file_hashes_verified": 20
   },
   "limits": [
     "No empirical validation of author assumptions",
