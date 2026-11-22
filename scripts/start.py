@@ -49,6 +49,7 @@ def restore(path, *, at=None):
         'audit': result, 'content_review': result['content_review'],
         'experiment_status': result['content_review']['experiment_status'], 'ledger': ledger,
         'decision_stress_test': result['decision_stress_test'],
+        'numeric_forecast': result['numeric_forecast'],
         'marketing_claims_audit': result['marketing_claims_audit'],
         'research_selection': result['research_selection'],
         'follow_up': follow_up,

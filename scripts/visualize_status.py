@@ -101,7 +101,7 @@ def status_panel(project, audit, data):
             'context':summary['context'] if summary else follow.get('context'),
             'advisories':audit.get('advisories', []),
             'review_statuses':{name:audit.get(name,{}).get('status','not_checked') for name in
-                               ('content_review','decision_stress_test','marketing_claims_audit','research_selection','feasibility')},
+                               ('content_review','decision_stress_test','marketing_claims_audit','research_selection','feasibility','numeric_forecast')},
             'note':'Панель описывает текущее сохранённое состояние проекта, а не выбранный условный сценарий. '
                    'Сводка на момент экспорта; открытие HTML не обновляет часы и проверки. '
                    'Счётчики не складываются: записи могут встречаться в нескольких разделах. '

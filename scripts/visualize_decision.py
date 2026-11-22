@@ -95,6 +95,25 @@ def extend_decision(project, audit, nodes, edges, add, refs, registry):
                     link(branch, key, 'сопоставленный исход; не решение человека')
                 refs(key, result)
 
+    forecasts = project.get('numeric_forecast_reviews', [])
+    for i, review in enumerate(forecasts):
+        current = i == len(forecasts) - 1
+        state = audit.get('numeric_forecast', {}) if current else {}
+        status = state.get('status', 'не проверено') if current else 'историческая версия'
+        root = 'forecast:' + review['review_id']
+        add(root, 4, 'Численный условный прогноз · ' + review['review_id'], status,
+            {**review, 'Текущая проверка':state,
+             'Границы':'Авторские сценарные оценки не являются измерениями, согласованным бюджетом или выбором человека.'},
+            f'/numeric_forecast_reviews/{i}')
+        if current: link('o:' + review['option_id'], root, 'условный прогноз; не выбор')
+        for j, row in enumerate(review['metrics']):
+            add(root + ':metric:' + row['metric_id'], 4, row['metric_id'] + ' · основной / неблагоприятный',
+                status, row, f'/numeric_forecast_reviews/{i}/metrics/{j}', root)
+        for j, row in enumerate(review['assumptions']):
+            key = add(root + ':input:' + row['assumption_id'], 4, row['assumption_id'], status + ' · ' + row['basis'],
+                      row, f'/numeric_forecast_reviews/{i}/assumptions/{j}', root)
+            refs(key, row, current=current)
+
     changes = audit.get('material_changes', {})
     if changes.get('enabled'):
         add('changes:current', 11, 'Изменения и влияние на решение', changes['status'],
